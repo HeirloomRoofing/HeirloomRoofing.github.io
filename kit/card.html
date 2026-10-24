@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Heirloom Roofing Rep</title>
+<meta name="description" content="Save your Heirloom Roofing rep's contact and text them directly.">
+<style>
+  :root { --navy:#014F89; --navy-deep:#0b3252; --blue:#0161A8; --gold:#c9a227; --ink:#1c2b36; --muted:#5a6b78; --paper:#f7f5f0; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; background:var(--paper); color:var(--ink); font-family:-apple-system,Helvetica,Arial,sans-serif; }
+  .band { background:linear-gradient(150deg,var(--navy-deep),var(--navy) 60%,var(--blue)); padding:24px 20px 66px; border-bottom:4px solid var(--gold); text-align:center; }
+  .band img { width:110px; height:110px; object-fit:contain; background:#fff; border-radius:22px; padding:8px; box-shadow:0 14px 34px rgba(0,0,0,.32); }
+  main { max-width:460px; margin:-40px auto 0; padding:0 20px 34px; }
+  .cardbox { border-radius:22px; padding:26px 22px; background:#fff; border:1px solid #e3ddd0; box-shadow:0 18px 44px rgba(11,50,82,.16); }
+  h1 { font-family:Georgia,'Times New Roman',serif; margin:0; font-size:27px; color:var(--navy-deep); text-align:center; }
+  .tag { text-align:center; color:var(--gold); font-weight:800; letter-spacing:.12em; font-size:12px; margin-top:6px; text-transform:uppercase; }
+  a.big { display:block; text-decoration:none; text-align:center; font-weight:800; font-size:16px; border-radius:12px; padding:15px 10px; margin-top:16px; background:linear-gradient(135deg,#e3b93a,var(--gold)); color:#3a2f05; }
+  a.big small { display:block; font-weight:700; font-size:12px; margin-top:3px; }
+  a.line { display:block; text-decoration:none; color:var(--ink); font-weight:800; font-size:15px; border:1px solid #e3ddd0; border-left:5px solid var(--navy); border-radius:12px; padding:13px 14px; background:#f7fafc; margin-top:10px; }
+  a.line small { display:block; color:var(--muted); font-weight:600; margin-top:3px; }
+  a.co { display:block; text-decoration:none; text-align:center; font-weight:800; font-size:14px; border-radius:12px; padding:13px 10px; margin-top:18px; border:1px solid var(--navy); background:#fff; color:var(--navy); }
+  label { display:block; font-size:12px; font-weight:800; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; margin:16px 0 6px; }
+  input { width:100%; padding:13px 14px; font-size:16px; border:1.5px solid #d8d2c4; border-radius:12px; background:#fbfaf7; color:var(--ink); }
+  .fineprint { text-align:center; color:var(--muted); font-size:11px; font-weight:600; margin-top:14px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="band"><img src="../heirloom-logo.png" alt="Heirloom Roofing logo"></div>
+<main>
+  <div class="cardbox">
+    <h1 id="repname">Your Heirloom Roofing Rep</h1>
+    <div class="tag">Heirloom Roofing LLC</div>
+    <div id="fields">
+      <a class="big" id="save" href="#">Save My Contact<small>Opens a contact card - tap Add or Done to keep it</small></a>
+      <a class="line" id="call" href="#"><span id="phonetext">Call or text</span><small>Fastest way to reach me</small></a>
+      <a class="line" id="mail" href="#" style="display:none"><span id="emailtext"></span><small>Email me</small></a>
+    </div>
+    <div id="noname" style="display:none">
+      <p class="fineprint" style="font-size:13px">Type what your rep wrote on your sheet:</p>
+      <label for="repnamein">Rep's name</label>
+      <input id="repnamein" type="text" placeholder="Their name">
+      <label for="repnum">Rep's cell number</label>
+      <input id="repnum" type="tel" placeholder="602-555-0123">
+      <a class="big" id="savefallback" href="#">Save Their Contact<small>Opens a contact card - tap Add or Done to keep it</small></a>
+      <a class="big" id="textfallback" href="#" style="background:#fff;color:var(--navy);border:1.5px solid var(--navy);">Text My Rep Instead</a>
+    </div>
+    <div id="textblock">
+      <label for="hname">Your name (optional)</label>
+      <input id="hname" type="text" placeholder="So your rep knows who's texting">
+      <a class="big" id="text" href="#" style="background:linear-gradient(150deg,var(--navy-deep),var(--navy)); color:#fff;">Text Me<small>Opens Messages with a note started for you</small></a>
+    </div>
+    <a class="co" href="company.html">About Heirloom Roofing - license and company info</a>
+    <div class="fineprint">Heirloom Roofing LLC - AZ ROC 366805</div>
+  </div>
+</main>
+<script>
+(function(){
+  var h = location.hash.replace(/^#/, '');
+  var q = {};
+  h.split('&').forEach(function(kv){ var i = kv.indexOf('='); if (i > 0) q[kv.slice(0,i)] = decodeURIComponent(kv.slice(i+1).replace(/\+/g,' ')); });
+  var name = (q.n || '').trim(), phone = (q.p || '').trim(), email = (q.e || '').trim();
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  function smsHref(num, body){ return 'sms:' + num + (isIOS ? '?&body=' : '?body=') + encodeURIComponent(body); }
+  function pretty(p){ var d = p.replace(/\D/g,''); if (d.length === 11 && d[0] === '1') d = d.slice(1); return d.length === 10 ? d.slice(0,3) + '-' + d.slice(3,6) + '-' + d.slice(6) : p; }
+  if (!name && !phone) {
+    document.getElementById('fields').style.display = 'none';
+    document.getElementById('textblock').style.display = 'none';
+    document.getElementById('noname').style.display = 'block';
+    document.getElementById('textfallback').addEventListener('click', function(ev){
+      var d = document.getElementById('repnum').value.replace(/\D/g,'');
+      if (d.length === 10) d = '1' + d;
+      if (!d) { ev.preventDefault(); alert('Please enter the rep\'s cell number.'); return; }
+      this.href = smsHref('+' + d, 'Hi, this is the homeowner you just met with about my roof.');
+    });
+    document.getElementById('savefallback').addEventListener('click', function(ev){
+      var n = document.getElementById('repnamein').value.trim();
+      var d = document.getElementById('repnum').value.replace(/\D/g,'');
+      if (d.length === 10) d = '1' + d;
+      if (!n && !d) { ev.preventDefault(); alert('Please enter the rep\'s name or cell number.'); return; }
+      var fn = n || 'Heirloom Roofing Rep';
+      var parts = n.split(/\s+/), last = parts.length > 1 ? parts.pop() : '', first = parts.join(' ') || n;
+      var lines = ['BEGIN:VCARD','VERSION:3.0','N:' + last + ';' + first + ';;;','FN:' + fn,'ORG:Heirloom Roofing LLC'];
+      if (d) lines.push('TEL;TYPE=CELL:+' + d);
+      lines.push('END:VCARD');
+      var blob = new Blob([lines.join('\r\n')], {type:'text/vcard'});
+      this.href = URL.createObjectURL(blob);
+      this.download = (first || 'rep').toLowerCase().replace(/[^a-z0-9]+/g,'-') + '-heirloom-roofing.vcf';
+    });
+    return;
+  }
+  if (name) document.getElementById('repname').textContent = name;
+  if (phone) {
+    document.getElementById('call').href = 'tel:' + phone;
+    document.getElementById('phonetext').textContent = pretty(phone);
+  } else {
+    document.getElementById('call').style.display = 'none';
+  }
+  if (email) {
+    var m = document.getElementById('mail');
+    m.style.display = 'block'; m.href = 'mailto:' + email;
+    document.getElementById('emailtext').textContent = email;
+  }
+  var lines = ['BEGIN:VCARD','VERSION:3.0'];
+  var parts = name.split(/\s+/), last = parts.length > 1 ? parts.pop() : '', first = parts.join(' ') || name;
+  lines.push('N:' + last + ';' + first + ';;;', 'FN:' + (name || 'Heirloom Roofing Rep'), 'ORG:Heirloom Roofing LLC');
+  if (phone) lines.push('TEL;TYPE=CELL:' + phone);
+  if (email) lines.push('EMAIL:' + email);
+  lines.push('END:VCARD');
+  var blob = new Blob([lines.join('\r\n')], {type:'text/vcard'});
+  var save = document.getElementById('save');
+  save.href = URL.createObjectURL(blob);
+  save.download = (first || 'rep').toLowerCase().replace(/[^a-z0-9]+/g,'-') + '-heirloom-roofing.vcf';
+  document.getElementById('text').addEventListener('click', function(ev){
+    if (!phone) { ev.preventDefault(); return; }
+    var hn = document.getElementById('hname').value.trim();
+    var body = 'Hi' + (name ? ' ' + name.split(' ')[0] : '') + ', this is ' + (hn || 'the homeowner you just met with') + ' - you just shared your Heirloom Roofing contact with me about my roof.';
+    this.href = smsHref(phone, body);
+  });
+})();
+</script>
+</body>
+</html>

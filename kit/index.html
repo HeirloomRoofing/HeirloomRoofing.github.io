@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heirloom Roofing | Rep Kit</title>
+<meta name="description" content="Heirloom Roofing rep kit - enter your details to make your own rep info and company info codes.">
+<style>
+  :root { --navy:#014F89; --navy-deep:#0b3252; --blue:#0161A8; --gold:#c9a227; --ink:#1c2b36; --muted:#5a6b78; --paper:#f7f5f0; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; background:var(--paper); color:var(--ink); font-family:-apple-system,Helvetica,Arial,sans-serif; }
+  .band { background:linear-gradient(150deg,var(--navy-deep),var(--navy) 60%,var(--blue)); padding:24px 20px 66px; border-bottom:4px solid var(--gold); text-align:center; }
+  .band img { width:110px; height:110px; object-fit:contain; background:#fff; border-radius:22px; padding:8px; box-shadow:0 14px 34px rgba(0,0,0,.32); }
+  main { max-width:460px; margin:-40px auto 0; padding:0 20px 34px; }
+  .cardbox { border-radius:22px; padding:26px 22px; background:#fff; border:1px solid #e3ddd0; box-shadow:0 18px 44px rgba(11,50,82,.16); }
+  h1 { font-family:Georgia,'Times New Roman',serif; margin:0; font-size:26px; color:var(--navy-deep); text-align:center; }
+  .tag { text-align:center; color:var(--gold); font-weight:800; letter-spacing:.12em; font-size:12px; margin-top:6px; text-transform:uppercase; }
+  p.hint { color:var(--muted); font-size:13px; line-height:1.55; text-align:center; margin:14px 0 0; }
+  label { display:block; font-size:12px; font-weight:800; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; margin:16px 0 6px; }
+  input { width:100%; padding:13px 14px; font-size:16px; border:1.5px solid #d8d2c4; border-radius:12px; background:#fbfaf7; color:var(--ink); }
+  input:focus { outline:2px solid var(--gold); border-color:var(--gold); }
+  button.make { width:100%; margin-top:20px; border:0; cursor:pointer; font-weight:800; font-size:16px; border-radius:12px; padding:15px 10px; background:linear-gradient(135deg,#e3b93a,var(--gold)); color:#3a2f05; }
+  #codes { display:none; }
+  .qrrow { display:flex; gap:14px; justify-content:center; margin-top:18px; }
+  .qrbox { flex:1; background:#fff; border:1px solid #e3ddd0; border-radius:16px; padding:14px 8px 12px; text-align:center; }
+  .qrbox img { width:100%; max-width:150px; image-rendering:pixelated; }
+  .qrbox b { display:block; margin-top:8px; font-size:12px; letter-spacing:.1em; color:var(--navy-deep); text-transform:uppercase; }
+  button.print { width:100%; margin-top:16px; border:1.5px solid var(--navy); cursor:pointer; font-weight:800; font-size:15px; border-radius:12px; padding:13px 10px; background:#fff; color:var(--navy); }
+  .fineprint { text-align:center; color:var(--muted); font-size:11px; font-weight:600; margin-top:14px; line-height:1.5; }
+  @media print {
+    body { background:#fff; }
+    .band, form, p.hint, .fineprint, button.print { display:none !important; }
+    main { margin:20px auto 0; }
+    .cardbox { box-shadow:none; border:0; }
+    #codes { display:block !important; }
+  }
+</style>
+</head>
+<body>
+<div class="band"><img src="../heirloom-logo.png" alt="Heirloom Roofing logo"></div>
+<main>
+  <div class="cardbox">
+    <h1>Rep Kit</h1>
+    <div class="tag">Heirloom Roofing LLC</div>
+    <form id="repform" onsubmit="return false;">
+      <p class="hint">Enter your details to make your two codes: one that lets a homeowner save your contact, one for company info.</p>
+      <label for="name">Your name</label>
+      <input id="name" type="text" autocomplete="name" placeholder="First and last name" required>
+      <label for="phone">Your cell</label>
+      <input id="phone" type="tel" autocomplete="tel" placeholder="602-555-0123" required>
+      <label for="email">Your email</label>
+      <input id="email" type="email" autocomplete="email" placeholder="you@heirloomroofing.com">
+      <button class="make" id="make">Make My Codes</button>
+    </form>
+    <div id="codes">
+      <div class="qrrow">
+        <div class="qrbox"><img id="qr-rep" alt="Rep info QR code"><b>Rep Info</b></div>
+        <div class="qrbox"><img id="qr-co" alt="Company info QR code"><b>Company Info</b></div>
+      </div>
+      <a class="print" id="sheetlink" href="#" style="display:block;text-decoration:none;text-align:center;">Open My Full Printable Sheet</a>
+      <button class="print" onclick="window.print()">Print Codes Only</button>
+      <div class="fineprint">Rep info code opens your contact card. Company info code opens the company page.<br>Printed codes keep working as long as these pages stay up.</div>
+    </div>
+  </div>
+</main>
+<script src="qrcode.min.js"></script>
+<script>
+(function(){
+  var BASE = 'https://heirloomroofing.github.io/kit/';
+  function digits(p){ var d = (p||'').replace(/\D/g,''); if (d.length === 10) d = '1' + d; return d ? '+' + d : ''; }
+  function qrTo(el, text){
+    var q = qrcode(0, 'M'); q.addData(text); q.make();
+    el.src = q.createDataURL(6, 4);
+  }
+  document.getElementById('make').addEventListener('click', function(){
+    var n = document.getElementById('name').value.trim();
+    var p = digits(document.getElementById('phone').value);
+    var e = document.getElementById('email').value.trim();
+    if (!n || !p) { alert('Please enter your name and cell number.'); return; }
+    var params = 'n=' + encodeURIComponent(n) + '&p=' + encodeURIComponent(p);
+    if (e) params += '&e=' + encodeURIComponent(e);
+    qrTo(document.getElementById('qr-rep'), BASE + 'card.html#' + params);
+    qrTo(document.getElementById('qr-co'), BASE + 'company.html');
+    document.getElementById('sheetlink').href = BASE + 'sheet.html#' + params;
+    document.getElementById('codes').style.display = 'block';
+    document.getElementById('codes').scrollIntoView({behavior:'smooth'});
+  });
+})();
+</script>
+</body>
+</html>

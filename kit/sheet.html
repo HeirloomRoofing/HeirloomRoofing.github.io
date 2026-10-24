@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @page { size: Letter; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 8.5in; }
+  body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #2b3442; height: 11in; display: flex; flex-direction: column; }
+  .header { background: #16304e; padding: 0.16in 0.55in 0.14in; display: flex; align-items: center; }
+  .logocard { background: #ffffff; border-radius: 8px; padding: 6px 10px; margin-right: 0.24in; }
+  .logocard img { height: 0.44in; display: block; }
+  .htext h1 { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 700; color: #ffffff; font-size: 21pt; }
+  .htext p { color: #f0b44c; font-size: 10pt; letter-spacing: 2.4px; font-weight: 700; margin-top: 4px; }
+  .pics { margin-left: auto; display: flex; gap: 9px; align-items: center; }
+  .pic { background: #ffffff; border-radius: 8px; padding: 4px; }
+  .pic img { display: block; width: 0.55in; border-radius: 5px; }
+  .pic img.round { width: 0.55in; height: 0.55in; border-radius: 50%; }
+  .grid { flex: 1; padding: 0.07in 0.55in 0.04in; display: flex; flex-direction: column; justify-content: space-evenly; }
+  .card { border: 1.5px solid #d8e2ee; border-radius: 10px; padding: 7px 13px; position: relative; }
+  .card.amber { background: #fdf3df; border-color: #ecc26a; }
+  .num { position: absolute; top: -13px; left: 16px; width: 26px; height: 26px; border-radius: 50%; background: #16304e; color: #fff; font-weight: 800; font-size: 13pt; text-align: center; line-height: 26px; }
+  .kick { font-size: 10pt; font-weight: 800; letter-spacing: 1.5px; color: #b3780e; text-transform: uppercase; }
+  .tag { float: right; background: #b3780e; color: #fff; font-size: 7.5pt; font-weight: 800; letter-spacing: 1.2px; border-radius: 4px; padding: 3px 8px; margin-left: 8px; }
+  .card h2 { font-family: Georgia, serif; font-size: 14pt; color: #16304e; margin: 2px 0 3px; }
+  .card p { font-size: 10.7pt; line-height: 1.3; }
+  .card p + p { margin-top: 4px; }
+  .script { background: #ffffff; border-left: 4px solid #b3780e; border-radius: 4px; padding: 6px 10px; margin-top: 6px; font-style: italic; color: #16304e; font-size: 11.2pt; }
+  .contactline { margin-top: 7px; font-weight: 700; color: #16304e; font-size: 10.9pt; }
+  .writein { display: flex; gap: 16px; margin-top: 6px; }
+  .writein .box { flex: 1; border: 1.5px dashed #b3780e; border-radius: 6px; height: 0.26in; background: #fff; position: relative; }
+  .writein .box span { position: absolute; top: -9px; left: 8px; background: #fdf3df; padding: 0 5px; font-size: 8pt; font-weight: 800; letter-spacing: 1.5px; color: #b3780e; }
+  .contactcard { background: #ffffff; border: 2px solid #16304e; border-radius: 10px; padding: 8px 13px 9px; display: flex; align-items: center; gap: 12px; }
+  .contactcard .ctitle { flex: none; font-size: 10pt; font-weight: 800; letter-spacing: 1.8px; color: #16304e; text-transform: uppercase; }
+  .cbox { flex: 1; border: 1.5px dashed #b3780e; border-radius: 6px; height: 0.30in; background: #fff; position: relative; }
+  .cbox .val { position:absolute; left:4px; right:4px; top:0; bottom:0; display:flex; align-items:center; justify-content:center; font-size:10.5pt; font-weight:800; color:#16304e; letter-spacing:0.2px; white-space:nowrap; }
+  .cbox span { position: absolute; top: -9px; left: 8px; background: #ffffff; padding: 0 5px; font-size: 8pt; font-weight: 800; letter-spacing: 1.5px; color: #b3780e; }
+  .bottomrow { display: flex; gap: 12px; align-items: stretch; }
+  .calcard { width: 2.72in; flex: none; background: #ffffff; }
+  .calcard .month { display: flex; align-items: flex-end; gap: 8px; margin: 4px 0 5px; }
+  .calcard .month .lbl { font-size: 8pt; font-weight: 800; letter-spacing: 1.5px; color: #b3780e; }
+  .calcard .month .line { flex: 1; border-bottom: 1.5px dashed #b3780e; height: 13px; }
+  .calgrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2.5px; }
+  .calgrid .dow { text-align: center; font-size: 7pt; font-weight: 800; color: #b3780e; padding-bottom: 1px; }
+  .calgrid .cell { border: 1px solid #d8e2ee; border-radius: 4px; aspect-ratio: 1 / 1; background: #fff; }
+  .mile { margin-top: 6px; }
+  .mile .mtitle { font-size: 8pt; font-weight: 800; letter-spacing: 1.1px; color: #16304e; margin-bottom: 2px; }
+  .mile .mrow { display: flex; align-items: baseline; gap: 6px; font-size: 8.6pt; margin-top: 3.5px; }
+  .mile .mn { flex: none; width: 13px; height: 13px; border-radius: 50%; background: #16304e; color: #fff; font-weight: 800; font-size: 7pt; text-align: center; line-height: 13px; }
+  .mile .mname { white-space: nowrap; }
+  .mile .mdots { flex: 1; border-bottom: 1.5px dotted #9aa7b8; height: 10px; }
+  .next { background: #ffffff; flex: 1; }
+  .next ul { list-style: none; margin-top: 2px; }
+  .next li { font-size: 10pt; line-height: 1.2; padding-left: 25px; position: relative; margin-top: 2px; }
+  .next li .n { position: absolute; left: 0; top: 0; width: 19px; height: 19px; border-radius: 50%; background: #16304e; color: #fff; font-weight: 800; font-size: 9pt; text-align: center; line-height: 19px; }
+  .next li b { color: #16304e; }
+  .big { font-size: 1.32em; }
+  .caveat { margin-top: 4px; font-size: 9.8pt; }
+  .footer { background: #16304e; color: #cfd9e6; padding: 0.08in 0.55in; font-size: 9.5pt; line-height: 1.35; text-align: center; }
+
+  .grid { padding-left: 0.3in; padding-right: 0.5in; }
+  .rrow { display:flex; gap:10px; align-items:stretch; }
+  .rrow > .card { flex:1; }
+  .rail { width: 0.62in; flex: none; display:flex; flex-direction:column; justify-content:space-around; align-items:center; }
+  .dbox { width:1.34in; min-height:0.62in; border:1.5px dashed #b3780e; border-radius:6px; background:#fff; position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:2px; padding:5px 6px; }
+  .dbox b { background:#16304e; color:#fff; border-radius:10px; font-size:8pt; padding:1px 6px; height:15px; }
+  .dbox .t { font-size:8pt; font-weight:800; letter-spacing:0.2px; color:#b3780e; text-align:center; line-height:1.25; }
+  .bottomrow { gap:10px; }
+
+  .next ul { display:flex; flex-direction:column; gap:5px; margin-top:6px; }
+  .next li { border:1px solid #d8e2ee; border-left:4px solid #16304e; border-radius:6px; background:#f6f9fc; padding:4px 8px 4px 32px; margin-top:0; }
+  .next li .n { left:6px; top:5px; }
+  .next li:nth-child(even) { background:#ffffff; }
+
+  .st { font-size:11.5pt; font-weight:800; color:#16304e; font-family:Georgia,serif; }
+  .sa { font-size:10.3pt; font-weight:700; color:#16304e; line-height:1.2; margin-top:1px; }
+  .sd { font-size:8.3pt; font-weight:400; color:#667384; line-height:1.22; margin-top:2px; }
+  .sd i { color:#667384; }
+  .next li .big { font-size:13pt; font-weight:800; }
+  .next li { padding:4px 8px 5px 34px; }
+
+  .next ul { gap:3px; margin-top:3px; }
+  .next li { padding:2px 8px 3px 34px; }
+  .next li .n { top:6px; }
+  .st { font-size:10.5pt; }
+  .sa { font-size:9.8pt; }
+  .sd { font-size:7.9pt; margin-top:1px; line-height:1.15; }
+  .next li .big { font-size:12pt; }
+  .caveat { font-size:8.8pt; margin-top:3px; }
+  .card { padding:5px 13px; }
+  .card p { font-size:10.2pt; line-height:1.25; }
+  .script { margin-top:4px; padding:4px 10px; }
+  .grid { padding-top:0.14in; padding-bottom:0.08in; justify-content:space-between; }
+  .contactcard { padding:6px 13px 7px; }
+  .rrow { margin-top:2px; }
+
+  .cbox { height:0.52in; }
+  .cbox:nth-of-type(1){flex:1.1} .cbox:nth-of-type(2){flex:1.1} .cbox:nth-of-type(3){flex:1.5}
+  .contactcard .ctitle { width:1.0in; line-height:1.2; font-size:9pt; letter-spacing:1.2px; }
+  .writein .box { height:0.40in; }
+  .rail { width:1.34in; }
+  .dbox { width:1.34in; }
+  .grid { padding-left:0.22in; }
+  .card p { font-size:10pt; }
+  .sd { font-size:7.8pt; }
+  .caveat { font-size:8.5pt; }
+
+  .header { padding-top:0.1in; padding-bottom:0.1in; }
+  .pics { gap:10px; align-items:center; }
+  .pic { height:0.86in; display:flex; align-items:center; justify-content:center; padding:4px; }
+  .pic img.round { width:0.78in; height:0.78in; }
+  .pic img.erik { width:auto; height:0.78in; border-radius:5px; }
+
+  .header { padding-left:0.22in; padding-right:0.5in; }
+  .grid { padding:0.13in 0.5in 0.13in 0.22in; justify-content:flex-start; gap:0.12in; }
+  .rrow, .bottomrow { margin-top:0; }
+  .bottomrow { flex:1; gap:10px; }
+  .rail { justify-content:center; }
+  .bottomrow .rail { position:relative; justify-content:flex-start; }
+  .bottomrow .rail .dbox { position:absolute; left:0; }
+  .card.amber { padding-top:12px; }
+  .num { top:-14px; left:14px; }
+  .kick { margin-left:0; }
+  .next { display:flex; flex-direction:column; }
+  .next ul { flex:1; margin-top:5px; }
+  .next li { flex:1; display:flex; flex-direction:column; justify-content:center; }
+  .next li .n { top:50%; transform:translateY(-50%); }
+  .caveat { margin-top:5px; }
+  .contactcard { margin-left:0; }
+  .pic { height:0.9in; }
+  .pic img.round { width:0.82in; height:0.82in; }
+  .pic img.erik { height:0.82in; }
+
+  .pic { width:0.9in; height:0.9in; padding:4px; }
+  .pic img.round { width:0.82in; height:0.82in; }
+  .pic img.erik { width:0.82in; height:0.82in; object-fit:contain; border-radius:0; }
+  .header { padding-top:0.08in; padding-bottom:0.08in; }
+  .grid { gap:0.085in; padding-top:0.1in; padding-bottom:0.1in; }
+  .cbox { height:0.46in; }
+  .writein .box { height:0.36in; }
+  .card p + p { margin-top:2px; }
+  .next li { min-height:0; }
+
+  .contactcard { padding-top:10px; padding-bottom:11px; }
+  .cbox { height:0.52in; }
+  .cbox.bigphone { flex:1.15; }
+  .cbox.bigphone .val { font-size:15pt; letter-spacing:0.3px; }
+  .cbox.bigemail { flex:2.05; }
+  .cbox.bigemail .val { font-size:12.6pt; letter-spacing:0.2px; }
+  .cbox.bigphone span, .cbox.bigemail span { font-size:9pt; }
+
+  .qrblock { margin-left:auto; display:flex; align-items:center; gap:8px; }
+  .qrcard { background:#ffffff; border-radius:8px; padding:6px 7px 5px; display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .qrcard img { height:0.60in; display:block; }
+  .qrcap { font-size:6pt; font-weight:800; letter-spacing:0.6px; color:#16304e; line-height:1.3; text-align:center; }
+  /* v4 fit adjustments */
+  .header { padding: 0.08in 0.55in 0.06in; }
+  .grid { padding-top: 0.08in; padding-bottom: 0.05in; }
+  .contactcard { padding: 5px 13px 6px; }
+  .card { padding: 4px 13px; }
+  .cbox { height: 0.50in; }
+  .writein .box { height: 0.24in; }
+  .next ul { gap: 2px; }
+
+  /* v5: larger, physically separated QR codes */
+  .qrcard { background:#ffffff; border:1.5px solid #16304e; border-radius:8px; padding:7px 8px 6px; display:flex; flex-direction:column; align-items:center; gap:4px; flex:none; margin:0; }
+  .qrcard img { width:0.85in; height:0.85in; display:block; }
+  .qrcap { font-size:6.5pt; font-weight:800; letter-spacing:0.6px; color:#16304e; line-height:1.35; text-align:center; }
+  .contactcard .qrcard { margin-left:2px; }
+  .footer { display:flex; align-items:center; justify-content:center; gap:16px; padding:0.07in 0.35in; }
+  .footer .ftext { flex:1; text-align:center; }
+  .header { padding:0.07in 0.55in 0.05in; }
+  .grid { gap:0.06in; padding-top:0.06in; padding-bottom:0.04in; }
+  .card { padding:3px 13px; }
+  .card p { font-size:9.6pt; line-height:1.22; }
+  .card h2 { font-size:13pt; margin:1px 0 2px; }
+  .script { margin-top:3px; padding:3px 10px; font-size:10.6pt; }
+  .contactline { margin-top:5px; font-size:10.3pt; }
+  .writein { margin-top:5px; }
+  .writein .box { height:0.22in; }
+  .cbox { height:0.46in; }
+  .contactcard { padding:4px 13px 5px; }
+  .next ul { gap:2px; margin-top:3px; }
+  .next li { padding:2px 8px 2px 34px; }
+  .st { font-size:10pt; }
+  .sa { font-size:9.4pt; }
+  .sd { font-size:7.6pt; line-height:1.12; }
+  .caveat { font-size:8.2pt; margin-top:3px; }
+
+  /* v5b fit trims */
+  .qrcard img { width:0.82in; height:0.82in; }
+  .qrcard { padding:6px 7px 5px; gap:3px; }
+  .header { padding:0.06in 0.55in 0.04in; }
+  .grid { gap:0.05in; padding-top:0.05in; padding-bottom:0.03in; }
+  .card p { font-size:9.4pt; line-height:1.2; }
+  .script { font-size:10.2pt; margin-top:2px; }
+  .writein .box { height:0.20in; }
+  .writein { margin-top:4px; }
+  .cbox { height:0.44in; }
+  .contactcard { padding:4px 13px 4px; }
+  .next li { padding:1px 8px 1px 34px; }
+  .sa { font-size:9.2pt; }
+  .sd { font-size:7.5pt; }
+  .caveat { font-size:8pt; margin-top:2px; }
+  .footer { padding:0.06in 0.35in; gap:14px; }
+
+  /* v5c bigger codes */
+  .qrcard img { width:0.92in; height:0.92in; }
+  .qrcard { padding:6px 7px 5px; }
+  .footer { padding:0.05in 0.35in; }
+  .grid { gap:0.045in; }
+  .next li { padding:1px 8px 1px 34px; }
+  .card p { font-size:9.3pt; line-height:1.18; }
+  .contactcard { gap:9px; }
+  .cbox { height:0.42in; }
+
+  /* v6: both codes grouped in header, modest gap, plain labels; footer back to text-only */
+  .qrblock { margin-left:auto; display:flex; align-items:center; gap:14px; flex:none; }
+  .qrcard { background:#ffffff; border:1.5px solid #16304e; border-radius:8px; padding:6px 7px 5px; display:flex; flex-direction:column; align-items:center; gap:3px; flex:none; margin:0; }
+  .qrcard img { width:0.92in; height:0.92in; display:block; }
+  .qrcap { font-size:6.5pt; font-weight:800; letter-spacing:1px; color:#16304e; line-height:1.35; text-align:center; }
+  .footer { display:block; text-align:center; padding:0.09in 0.55in; }
+  /* v6 relaxation: grid gains ~0.4in from the footer losing its QR card */
+  .grid { gap:0.075in; padding-top:0.09in; padding-bottom:0.06in; }
+  .card { padding:5px 13px; }
+  .card p { font-size:9.8pt; line-height:1.24; }
+  .card h2 { font-size:13.5pt; margin:2px 0 3px; }
+  .script { font-size:10.8pt; margin-top:4px; padding:4px 10px; }
+  .contactline { margin-top:6px; font-size:10.5pt; }
+  .writein { margin-top:6px; }
+  .writein .box { height:0.26in; }
+  .cbox { height:0.48in; }
+  .contactcard { padding:6px 13px 7px; gap:10px; }
+  .next ul { gap:3px; margin-top:4px; }
+  .next li { padding:2px 8px 3px 34px; }
+  .st { font-size:10.4pt; }
+  .sa { font-size:9.7pt; }
+  .sd { font-size:7.9pt; line-height:1.18; margin-top:2px; }
+  .caveat { font-size:8.5pt; margin-top:4px; }
+
+  /* v6b fit trims */
+  .grid { gap:0.055in; padding-top:0.06in; padding-bottom:0.04in; }
+  .card { padding:4px 13px; }
+  .card p { font-size:9.5pt; line-height:1.21; }
+  .card h2 { font-size:13pt; margin:1px 0 2px; }
+  .script { font-size:10.4pt; margin-top:3px; padding:3px 10px; }
+  .contactline { margin-top:5px; font-size:10.3pt; }
+  .writein { margin-top:4px; }
+  .writein .box { height:0.22in; }
+  .cbox { height:0.44in; }
+  .contactcard { padding:4px 13px 5px; gap:9px; }
+  .next ul { gap:2px; margin-top:3px; }
+  .next li { padding:1px 8px 2px 34px; }
+  .st { font-size:10.1pt; }
+  .sa { font-size:9.3pt; }
+  .sd { font-size:7.6pt; line-height:1.14; margin-top:1px; }
+  .caveat { font-size:8.2pt; margin-top:3px; }
+
+
+  /* kit sheet: constrain long rep values visibly */
+  #repname, #repphone1, #repemail { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; display:block; }
+  .val[contenteditable] { outline:none; cursor:text; }
+  .val[contenteditable]:focus { background:#fff8e8; }
+  .edithint { text-align:center; font-size:8.5pt; font-weight:700; color:#8a6d1f; background:#fdf3df; border:1px dashed #b3780e; border-radius:6px; padding:4px 8px; margin:6px auto 0; max-width:7.2in; }
+  @media print { .edithint { display:none; } }
+</style>
+<script>
+window.addEventListener('load',()=>{
+  const rail=document.querySelector('.bottomrow .rail');
+  const lis=[...document.querySelectorAll('.next li')];
+  const boxes=[...rail.querySelectorAll('.dbox')];
+  const groups=[[0,1],[2],[3,4,5]];
+  const r0=rail.getBoundingClientRect().top;
+  groups.forEach((g,i)=>{
+    const a=lis[g[0]].getBoundingClientRect(), b=lis[g[g.length-1]].getBoundingClientRect();
+    const mid=(a.top+b.bottom)/2-r0;
+    boxes[i].style.top=(mid-boxes[i].offsetHeight/2)+'px';
+  });
+});
+</script>
+</head>
+<body>
+  <div class="header">
+    <div class="logocard"><img src="../heirloom-logo.png" alt="Heirloom Roofing"></div>
+    <div class="htext">
+      <h1>Your Project Calendar</h1>
+      <p>THE TWO THINGS I NEED FROM YOU</p>
+    </div>
+    <div class="qrblock">
+      <a class="qrcard" href="#" id="lnk-rep" style="text-decoration:none;color:inherit;"><img id="qr-rep" alt="Rep info QR code"><div class="qrcap">REP<br>INFO</div></a>
+      <a class="qrcard" href="#" id="lnk-co" style="text-decoration:none;color:inherit;"><img id="qr-co" alt="Company info QR code"><div class="qrcap">COMPANY<br>INFO</div></a>
+    </div>
+  </div>
+  <div class="edithint">Type your name, cell, and email into the boxes above - the REP INFO code updates as you type - then print or save as PDF. Or just print and write it in.</div>
+  <div class="grid">
+    <div class="contactcard">
+      <span class="ctitle">Your Contractor</span>
+      <div class="cbox"><span>NAME</span><div class="val" id="repname"></div></div>
+      <div class="cbox bigphone"><span>CALL OR TEXT</span><div class="val" id="repphone1"></div></div>
+      <div class="cbox bigemail"><span>EMAIL</span><div class="val" id="repemail"></div></div>
+    </div>
+    <div class="rrow"><div class="rail"><div class="dbox"><b>1</b><div class="t">RIGHT AWAY</div><div class="t">AS SOON AS</div><div class="t">SCHEDULED</div></div></div>
+    <div class="card amber">
+      <div class="num">1</div>
+      <span class="tag">TEXT ME RIGHT AWAY</span>
+      <span class="kick">As soon as your inspection is scheduled</span>
+      <h2>Text me the inspection date and time</h2>
+      <p>Text me the exact date, the time window, and the adjuster's name and phone number. If it changes, text me again. <b>Please send it right away - I can't do my job until I have it.</b></p>
+      <p class="contactline">Call / text your contractor at the number above.</p>
+      <div class="writein">
+        <div class="box"><span>DATE</span></div>
+        <div class="box"><span>TIME</span></div>
+      </div>
+    </div></div>
+    <div class="rrow"><div class="rail"><div class="dbox"><b>2</b><div class="t">WHEN INSURANCE</div><div class="t">CALLS</div></div></div>
+    <div class="card amber">
+      <div class="num">2</div>
+      <span class="tag">IMPORTANT</span>
+      <span class="kick">When your insurance company calls</span>
+      <h2>What to say on the call</h2>
+      <p>The adjuster evaluates your claim. Answer questions honestly. Don't guess. Don't know a roof answer? Say:</p>
+      <div class="script">"I'm not sure, but my roofing contractor can help answer that."</div>
+      <p>Worth asking: <b>"Do I have replacement cost coverage or actual cash value?"</b></p>
+      <p>If they ask for my contractor's number: <b><span id="repphone2"></span></b></p>
+    </div></div>
+    <div class="bottomrow">
+      <div class="rail"><div class="dbox"><b>3-4</b><div class="t">3: ~1-2 WKS</div><div class="t">AFTER CLAIM</div><div class="t">4: ~1-3 WKS</div><div class="t">AFTER INSPECTION</div></div><div class="dbox"><b>5</b><div class="t">WHEN THE CHECK</div><div class="t">ARRIVES</div></div><div class="dbox"><b>6-8</b><div class="t">6: ~1-4 WKS</div><div class="t">7: APPROVAL + DEPOSIT</div><div class="t">8: INSTALL +</div><div class="t">FINAL PAYMENT</div></div></div>
+      <div class="card next">
+        <span class="kick" style="color:#16304e;">Then here's what happens</span>
+        <ul>
+<li><span class="n">3</span><div class="st">Inspection day</div><div class="sa">I meet the adjuster at your home and show them the damage.</div><div class="sd">You don't have to be there if you can't make it. Insurance decides what it covers. <i>Plan for roughly 1-2 weeks after your claim is filed - your insurer confirms the date.</i></div></li>
+<li><span class="n">4</span><div class="st">The estimate</div><div class="sa">Text or email me the estimate PDF.</div><div class="sd">Insurance emails it to you as a PDF, or sometimes texts a link to the cell number they have on file. Can't find it? Just ask your adjuster for it. <i>Allow roughly 1-3 weeks after inspection - it can take longer.</i></div></li>
+<li><span class="n">5</span><div class="st">First payment</div><div class="sa"><span class="big">Text me as soon as it arrives.</span></div><div class="sd">Insurance mails you a physical check (your lender may need to sign it if you have a mortgage). Your deposit from it lets us order your materials - I'll pick it up, or you can pay online from a link we send - whichever's easier.</div></li>
+<li><span class="n">6</span><div class="st">Supplement</div><div class="sa">We review the estimate and send insurance a supplement for anything it missed. We handle this part.</div><div class="sd">It can overlap with your first check. <i>Allow roughly 1-4 weeks - it can take longer.</i></div></li>
+<li><span class="n">7</span><div class="st">Start date</div><div class="sa">Once insurance approves the full roof replacement and your deposit is in, we confirm the start day.</div></li>
+<li><span class="n">8</span><div class="st">Install and final payment</div><div class="sa">We replace your roof and handle all the final paperwork with insurance.</div><div class="sd">Once you're happy and love everything, we collect the final payment.</div></li>
+</ul>
+        <p class="caveat">Suggested planning windows only - your insurer confirms the real timing, and delays can extend these estimates.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer">HEIRLOOM ROOFING LLC &nbsp;|&nbsp; 602-456-2787 &nbsp;|&nbsp; heirloomroofing.com &nbsp;|&nbsp; 4700 E Thomas Rd, Suite 104, Phoenix, AZ 85018 &nbsp;|&nbsp; AZ ROC 366805</div>
+<script src="qrcode.min.js"></script>
+<script>
+(function(){
+  var h = location.hash.replace(/^#/, '');
+  var q = {};
+  h.split('&').forEach(function(kv){ var i = kv.indexOf('='); if (i > 0) q[kv.slice(0,i)] = decodeURIComponent(kv.slice(i+1).replace(/\+/g,' ')); });
+  var name = (q.n || '').trim(), phone = (q.p || '').trim(), email = (q.e || '').trim();
+  function pretty(p){ var d = p.replace(/\D/g,''); if (d.length === 11 && d[0] === '1') d = d.slice(1); return d.length === 10 ? d.slice(0,3) + '-' + d.slice(3,6) + '-' + d.slice(6) : p; }
+  function qrTo(el, text){
+    var qrc = qrcode(0, 'M'); qrc.addData(text); qrc.make();
+    el.src = qrc.createDataURL(6, 4);
+  }
+  var BASE = 'https://heirloomroofing.github.io/kit/';
+  var nameEl = document.getElementById('repname'), phoneEl = document.getElementById('repphone1'),
+      phone2El = document.getElementById('repphone2'), emailEl = document.getElementById('repemail');
+  nameEl.textContent = name;
+  phoneEl.textContent = phone ? pretty(phone) : '';
+  phone2El.textContent = phone ? pretty(phone) : '';
+  emailEl.textContent = email;
+  function fit(el){
+    if (!el) return;
+    var size = parseFloat(getComputedStyle(el).fontSize), guard = 0;
+    while (el.scrollWidth > el.clientWidth && size > 7 && guard < 40) {
+      size -= 0.5; el.style.fontSize = size + 'px'; guard++;
+    }
+  }
+  [nameEl, phoneEl, emailEl].forEach(fit);
+  qrTo(document.getElementById('qr-co'), BASE + 'company.html');
+  document.getElementById('lnk-co').href = BASE + 'company.html';
+  var repQr = document.getElementById('qr-rep'), repLnk = document.getElementById('lnk-rep');
+  function refreshRep(){
+    var n = nameEl.textContent.trim(), p = phoneEl.textContent.trim(), e = emailEl.textContent.trim();
+    var digits = p.replace(/\D/g, '');
+    var url;
+    if (n && digits.length >= 10) {
+      url = BASE + 'card.html#n=' + encodeURIComponent(n) + '&p=' + encodeURIComponent(p.replace(/[^\d+]/g, ''));
+      if (e) url += '&e=' + encodeURIComponent(e);
+    } else {
+      // Blank or incomplete: the code opens the rep card's enter-the-number fallback.
+      url = BASE + 'card.html';
+    }
+    qrTo(repQr, url);
+    repLnk.href = url;
+    phone2El.textContent = p;
+  }
+  refreshRep();
+  // The slip is also the fill-in page: type straight into the boxes; the Rep code follows.
+  [nameEl, phoneEl, emailEl].forEach(function(el){
+    el.contentEditable = 'true';
+    el.setAttribute('spellcheck', 'false');
+    el.addEventListener('input', function(){
+      el.style.fontSize = '';
+      fit(el);
+      refreshRep();
+    });
+    el.addEventListener('paste', function(ev){
+      ev.preventDefault();
+      var t = (ev.clipboardData || window.clipboardData).getData('text');
+      document.execCommand('insertText', false, t);
+    });
+  });
+})();
+</script>
+</body>
+</html>
