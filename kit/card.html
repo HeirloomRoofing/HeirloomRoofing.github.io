@@ -19,7 +19,7 @@
   a.big small { display:block; font-weight:700; font-size:12px; margin-top:3px; }
   a.line { display:block; text-decoration:none; color:var(--ink); font-weight:800; font-size:15px; border:1px solid #e3ddd0; border-left:5px solid var(--navy); border-radius:12px; padding:13px 14px; background:#f7fafc; margin-top:10px; }
   a.line small { display:block; color:var(--muted); font-weight:600; margin-top:3px; }
-  a.co { display:block; text-decoration:none; text-align:center; font-weight:800; font-size:14px; border-radius:12px; padding:13px 10px; margin-top:18px; border:1px solid var(--navy); background:#fff; color:var(--navy); }
+  a.co { display:block; text-decoration:none; text-align:center; font-weight:800; font-size:17px; border-radius:12px; padding:17px 12px; margin-top:20px; border:1px solid var(--blue); background:var(--blue); color:#fff; }
   label { display:block; font-size:12px; font-weight:800; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; margin:16px 0 6px; }
   input { width:100%; padding:13px 14px; font-size:16px; border:1.5px solid #d8d2c4; border-radius:12px; background:#fbfaf7; color:var(--ink); }
   .fineprint { text-align:center; color:var(--muted); font-size:11px; font-weight:600; margin-top:14px; line-height:1.5; }
@@ -42,19 +42,53 @@
       <input id="repnamein" type="text" placeholder="Their name">
       <label for="repnum">Rep's cell number</label>
       <input id="repnum" type="tel" placeholder="602-555-0123">
+      <label for="hname2">Your name (optional)</label>
+      <input id="hname2" type="text" placeholder="So your rep knows who's texting" autocomplete="name">
+      <label for="hcell2">Your cell number (optional)</label>
+      <input id="hcell2" type="tel" placeholder="So they can save you back" autocomplete="tel">
       <a class="big" id="savefallback" href="#">Save Their Contact<small>Opens a contact card - tap Add or Done to keep it</small></a>
       <a class="big" id="textfallback" href="#" style="background:#fff;color:var(--navy);border:1.5px solid var(--navy);">Text My Rep Instead</a>
+      <a class="big" id="sharecardbtn2" href="#" style="display:none; background:linear-gradient(135deg,#e3b93a,var(--gold)); color:#3a2f05;">Send My Contact Card<small>Opens your share menu - pick Messages, then your rep</small></a>
     </div>
     <div id="textblock">
-      <label for="hname">Your name (optional)</label>
-      <input id="hname" type="text" placeholder="So your rep knows who's texting">
-      <a class="big" id="text" href="#" style="background:linear-gradient(150deg,var(--navy-deep),var(--navy)); color:#fff;">Text Me<small>Opens Messages with a note started for you</small></a>
+      <label for="hname">Your name</label>
+      <input id="hname" type="text" placeholder="So your rep knows who's texting" autocomplete="name">
+      <label for="hcell">Your cell number (optional)</label>
+      <input id="hcell" type="tel" placeholder="So they can save you back" autocomplete="tel">
+      <a class="big" id="text" href="#" style="background:linear-gradient(150deg,var(--navy-deep),var(--navy)); color:#fff;">Send Me Your Contact<small>Opens Messages with your name and number filled in - just press send</small></a>
+      <a class="big" id="sharecardbtn" href="#" style="display:none; background:linear-gradient(135deg,#e3b93a,var(--gold)); color:#3a2f05;">Send It as a Contact Card<small>Opens your share menu - pick Messages, then your rep</small></a>
+      <p class="fineprint">Nothing is collected or stored by this page - the text goes from your phone, and you review it before sending.</p>
     </div>
     <a class="co" href="company.html">About Heirloom Roofing - license and company info</a>
     <div class="fineprint">Heirloom Roofing LLC - AZ ROC 366805</div>
   </div>
 </main>
 <script>
+(function(){
+  function wireShare(btnId, nameId, cellId){
+    var btn = document.getElementById(btnId);
+    if (!btn || !window.File || !navigator.canShare) return;
+    var test;
+    try { test = new File(['BEGIN:VCARD\r\nVERSION:3.0\r\nFN:x\r\nEND:VCARD'], 'x.vcf', {type:'text/vcard'}); } catch(e){ return; }
+    try { if (!navigator.canShare({files:[test]})) return; } catch(e){ return; }
+    btn.style.display = 'block';
+    btn.addEventListener('click', function(ev){
+      ev.preventDefault();
+      var n = document.getElementById(nameId).value.trim();
+      var c = document.getElementById(cellId).value.trim();
+      if (!n) { alert('Please type your name so your rep knows who it is.'); return; }
+      var parts = n.split(/\s+/), last = parts.length>1?parts.pop():'', first = parts.join(' ')||n;
+      var d = c.replace(/\D/g,''); if (d.length===10) d='1'+d;
+      var lines = ['BEGIN:VCARD','VERSION:3.0','N:'+last+';'+first+';;;','FN:'+n];
+      if (d) lines.push('TEL;TYPE=CELL:+'+d);
+      lines.push('END:VCARD');
+      var f = new File([lines.join('\r\n')], n.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.vcf', {type:'text/vcard'});
+      navigator.share({files:[f], title:n, text:'My contact card - '+n}).catch(function(){});
+    });
+  }
+  wireShare('sharecardbtn', 'hname', 'hcell');
+  wireShare('sharecardbtn2', 'hname2', 'hcell2');
+})();
 (function(){
   var h = location.hash.replace(/^#/, '');
   var q = {};
@@ -71,7 +105,9 @@
       var d = document.getElementById('repnum').value.replace(/\D/g,'');
       if (d.length === 10) d = '1' + d;
       if (!d) { ev.preventDefault(); alert('Please enter the rep\'s cell number.'); return; }
-      this.href = smsHref('+' + d, 'Hi, this is the homeowner you just met with about my roof.');
+      var hn = document.getElementById('hname2').value.trim();
+      var hc = document.getElementById('hcell2').value.trim();
+      this.href = smsHref('+' + d, 'Hi, this is ' + (hn || 'the homeowner you just met with') + (hc ? ' - my cell is ' + hc : '') + '. You just shared your Heirloom Roofing contact with me about my roof.');
     });
     document.getElementById('savefallback').addEventListener('click', function(ev){
       var n = document.getElementById('repnamein').value.trim();
@@ -114,7 +150,9 @@
   document.getElementById('text').addEventListener('click', function(ev){
     if (!phone) { ev.preventDefault(); return; }
     var hn = document.getElementById('hname').value.trim();
-    var body = 'Hi' + (name ? ' ' + name.split(' ')[0] : '') + ', this is ' + (hn || 'the homeowner you just met with') + ' - you just shared your Heirloom Roofing contact with me about my roof.';
+    var hc = document.getElementById('hcell').value.trim();
+    if (!hn) { ev.preventDefault(); alert('Please type your name so your rep knows who it is.'); return; }
+    var body = 'Hi' + (name ? ' ' + name.split(' ')[0] : '') + ', this is ' + hn + (hc ? ' - my cell is ' + hc : '') + '. You just shared your Heirloom Roofing contact with me about my roof.';
     this.href = smsHref(phone, body);
   });
 })();
