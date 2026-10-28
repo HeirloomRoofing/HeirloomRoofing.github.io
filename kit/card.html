@@ -42,7 +42,7 @@
       <input id="repnamein" type="text" placeholder="Their name">
       <label for="repnum">Rep's cell number</label>
       <input id="repnum" type="tel" placeholder="602-555-0123">
-      <label for="hname2">Your name (optional)</label>
+      <label for="hname2">Your name</label>
       <input id="hname2" type="text" placeholder="So your rep knows who's texting" autocomplete="name">
       <label for="hcell2">Your cell number (optional)</label>
       <input id="hcell2" type="tel" placeholder="So they can save you back" autocomplete="tel">
@@ -107,7 +107,8 @@
       if (!d) { ev.preventDefault(); alert('Please enter the rep\'s cell number.'); return; }
       var hn = document.getElementById('hname2').value.trim();
       var hc = document.getElementById('hcell2').value.trim();
-      this.href = smsHref('+' + d, 'Hi, this is ' + (hn || 'the homeowner you just met with') + (hc ? ' - my cell is ' + hc : '') + '. You just shared your Heirloom Roofing contact with me about my roof.');
+      if (!hn) { ev.preventDefault(); alert('Please type your name so your rep knows who it is.'); return; }
+      this.href = smsHref('+' + d, 'Hi, this is ' + hn + (hc ? ' - my cell is ' + hc : '') + '. You just shared your Heirloom Roofing contact with me about my roof.');
     });
     document.getElementById('savefallback').addEventListener('click', function(ev){
       var n = document.getElementById('repnamein').value.trim();
