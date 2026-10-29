@@ -55,13 +55,11 @@
       <input id="repnamein" type="text" placeholder="Their name">
       <label for="repnum">Rep's cell number</label>
       <input id="repnum" type="tel" placeholder="602-555-0123">
-      <label for="hname2">Your name</label>
+      <label for="hname2">Your name (optional)</label>
       <input id="hname2" type="text" placeholder="So your rep knows who's texting" autocomplete="name">
-      <label for="hcell2">Your cell number (optional)</label>
-      <input id="hcell2" type="tel" placeholder="So they can save you back" autocomplete="tel">
       <a class="big" id="savefallback" href="#">Save Their Contact<small>Opens a contact card - tap Add or Done to keep it</small></a>
-      <a class="big" id="textfallback" href="#">Text My Rep Instead</a>
-      <a class="big" id="sharecardbtn2" href="#" style="display:none;">Send My Contact Card<small>Opens your share menu - pick Messages, then your rep</small></a>
+      <a class="big" id="textfallback" href="#">Text My Rep<small>Opens Messages - press send. Your number goes with the text automatically.</small></a>
+      <p class="fineprint">Nothing is collected or stored by this page - the text goes from your phone, and you review it before sending.</p>
     </div>
     <div id="textblock">
       <label for="hname">Your name</label>
@@ -100,7 +98,6 @@
     });
   }
   wireShare('sharecardbtn', 'hname', 'hcell');
-  wireShare('sharecardbtn2', 'hname2', 'hcell2');
 })();
 (function(){
   var h = location.hash.replace(/^#/, '');
@@ -119,9 +116,10 @@
       if (d.length === 10) d = '1' + d;
       if (!d) { ev.preventDefault(); alert('Please enter the rep\'s cell number.'); return; }
       var hn = document.getElementById('hname2').value.trim();
-      var hc = document.getElementById('hcell2').value.trim();
-      if (!hn) { ev.preventDefault(); alert('Please type your name so your rep knows who it is.'); return; }
-      this.href = smsHref('+' + d, 'Hi, this is ' + hn + (hc ? ' - my cell is ' + hc : '') + '. You just shared your Heirloom Roofing contact with me about my roof.');
+      var body = hn
+        ? 'Hi, this is ' + hn + '. You just shared your Heirloom Roofing contact with me about my roof.'
+        : 'Hi, you just shared your Heirloom Roofing contact with me about my roof.';
+      this.href = smsHref('+' + d, body);
     });
     document.getElementById('savefallback').addEventListener('click', function(ev){
       var n = document.getElementById('repnamein').value.trim();
