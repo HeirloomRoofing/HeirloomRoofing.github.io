@@ -135,7 +135,7 @@
       </select>
       <label class="f">Drip Edge Color</label>
       <div class="chips" data-f="dripedge">
-        <button class="chip" data-v="White">White</button><button class="chip" data-v="Black">Black</button><button class="chip" data-v="Brown">Brown</button><button class="chip" data-v="Bronze">Bronze</button><button class="chip" data-v="Almond">Almond</button><button class="chip" data-v="Clay">Clay</button><button class="chip" data-v="Gray">Gray</button><button class="chip" data-v="Galvanized">Galvanized</button><button class="chip" data-v="Other">Other</button><button class="chip" data-v="Match shingle color">Match Shingle Color</button>
+        <button class="chip" data-v="White">White</button><button class="chip" data-v="Black">Black</button><button class="chip" data-v="Brown">Brown</button><button class="chip" data-v="Bronze">Bronze</button><button class="chip" data-v="Almond">Almond</button><button class="chip" data-v="Clay">Clay</button><button class="chip" data-v="Gray">Gray</button><button class="chip" data-v="Galvanized">Galvanized</button><button class="chip" data-v="Other">Other</button><button class="chip" data-v="Match">Match</button>
       </div>
       <label class="f">Flat Roof Color</label>
       <div class="chips" data-f="flatcolor">
@@ -229,7 +229,13 @@
   <div id="output">
     <div class="wo" id="wopaper"></div>
     <div class="outbtns no-print">
-      <a class="btn primary" id="emailbtn" href="#" style="text-decoration:none;text-align:center">Email to Nick &amp; Erik</a>
+      <a class="btn primary" id="emailbtn" href="#" style="text-decoration:none;text-align:center">Email Work Order</a>
+      <div id="rcptsetup" style="display:none;background:#fff;border:1.5px solid var(--brand);border-radius:12px;padding:12px">
+        <label class="f" for="rcpts" style="margin-top:0">Email work orders to</label>
+        <input type="text" id="rcpts" placeholder="Emails, separated by commas" autocomplete="off">
+        <div class="hint">Saved on this device only - nothing is published or shared. Ask once, then every order is addressed automatically.</div>
+        <button class="btn primary" id="rcptsave" style="width:100%;margin-top:8px">Save Recipients</button>
+      </div>
       <button class="btn ghost" id="printbtn">Print / Save as PDF</button>
       <button class="btn ghost" id="sharebtn">Share (text / email / Drive)</button>
       <button class="btn ghost" id="copybtn">Copy as Text</button>
@@ -432,7 +438,11 @@
 
   document.getElementById('genbtn').addEventListener('click', function(){
     document.getElementById('wopaper').innerHTML = buildOutput();
-    document.getElementById('emailbtn').href = buildMailto();
+    var eb = document.getElementById('emailbtn');
+    var m = buildMailto();
+    eb.href = getRcpts() ? m.url : '#';
+    eb.setAttribute('data-copied', m.copied ? '1' : '');
+    eb.setAttribute('data-full', m.copied ? m.full : '');
     document.getElementById('form').style.display='none';
     document.getElementById('savebar').style.display='none';
     document.getElementById('output').style.display='block';
@@ -444,10 +454,51 @@
     document.getElementById('savebar').style.display='flex';
     window.scrollTo(0,0);
   });
+  var RKEY = 'hr-workorder-recipients';
+  function getRcpts(){ try{ return (localStorage.getItem(RKEY)||'').trim(); }catch(e){ return ''; } }
+  function compactText(){
+    var L=['HEIRLOOM ROOFING - PRODUCTION WORK ORDER', new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'}), ''];
+    var p=function(k,v){ if(v) L.push(k+': '+v); };
+    p('PM', val('pm')); p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', val('gate'));
+    p('Roof System', val('roofsystem')); p('Malarkey', val('malarkey')); p('Shingle Color', val('shinglecolor')); p('Job Type', val('jobtype'));
+    p('Layers', val('layers')); p('Decking', val('decking')); p('A/C / Crane', val('accrane')); p('Fascia', val('fascia')); p('Special Conditions', val('special'));
+    L.push(''); L.push('Full work order with all quantities is copied to your clipboard - paste it below this line.'); L.push('');
+    return L.join('\n');
+  }
   function buildMailto(){
     var s = 'Work Order - ' + (val('customer')||'New job') + (val('address')? ' - '+val('address') : '');
-    return 'mailto:nick@heirloomroofing.com,erik@heirloomroofing.com?subject='+encodeURIComponent(s)+'&body='+encodeURIComponent(summaryText());
+    var full = summaryText();
+    var url = 'mailto:'+encodeURIComponent(getRcpts()).replace(/%40/g,'@').replace(/%2C/g,',')+'?subject='+encodeURIComponent(s)+'&body='+encodeURIComponent(full);
+    if(url.length > 1800){
+      return {url:'mailto:'+encodeURIComponent(getRcpts()).replace(/%40/g,'@').replace(/%2C/g,',')+'?subject='+encodeURIComponent(s)+'&body='+encodeURIComponent(compactText()), copied:true, full:full};
+    }
+    return {url:url, copied:false, full:full};
   }
+  function copyText(t, ok){
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(ok, function(){}); }
+    else { var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); ok(); }catch(e){} document.body.removeChild(ta); }
+  }
+  document.getElementById('emailbtn').addEventListener('click', function(e){
+    if(!getRcpts()){
+      e.preventDefault();
+      document.getElementById('rcptsetup').style.display='block';
+      document.getElementById('rcpts').focus();
+      return;
+    }
+    if(this.getAttribute('data-copied')==='1'){ copyText(this.getAttribute('data-full'), function(){ toast('Long order - full text copied, paste it into the email'); }); }
+  });
+  document.getElementById('rcptsave').addEventListener('click', function(){
+    var v = document.getElementById('rcpts').value.trim();
+    if(!v || v.indexOf('@')<0){ toast('Enter at least one email address'); return; }
+    try{ localStorage.setItem(RKEY, v); }catch(e){}
+    document.getElementById('rcptsetup').style.display='none';
+    var m = buildMailto();
+    var eb = document.getElementById('emailbtn');
+    eb.href = m.url;
+    eb.setAttribute('data-copied', m.copied ? '1' : '');
+    eb.setAttribute('data-full', m.copied ? m.full : '');
+    toast('Recipients saved on this device');
+  });
   document.getElementById('printbtn').addEventListener('click', function(){ window.print(); });
   document.getElementById('copybtn').addEventListener('click', function(){
     var txt = summaryText();
