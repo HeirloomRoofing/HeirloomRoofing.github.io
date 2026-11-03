@@ -585,9 +585,9 @@
       var pdf=new window.jspdf.jsPDF({unit:'pt',format:'letter'});
       var pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight(),m=28;
       var imgw=pw-2*m,imgh=cv.height*imgw/cv.width,left=imgh,pos=0;
-      while(left>0){
+      while(left>0.5){
         pdf.addImage(cv.toDataURL('image/jpeg',0.92),'JPEG',m,pos,imgw,imgh);
-        left-=ph-2*m;pos-=ph-2*m;if(left>0)pdf.addPage();
+        left-=ph-2*m;pos-=ph-2*m;if(left>0.5)pdf.addPage();
       }
       var name=(val('customer')||'Work Order').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'Work-Order';
       pdf.save('Heirloom-Work-Order-'+name+'.pdf');
