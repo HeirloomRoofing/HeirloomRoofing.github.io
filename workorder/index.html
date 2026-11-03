@@ -584,15 +584,60 @@
       var cv=await html2canvas(w,{backgroundColor:'#ffffff',scale:2,useCORS:true,logging:false});
       var pdf=new window.jspdf.jsPDF({unit:'pt',format:'letter'});
       var pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight(),m=28,imgw=pw-2*m;
-      var pageCanvasHeight=Math.floor(cv.width*(ph-2*m)/imgw);
-      var stride=pageCanvasHeight,start=0,last=false;
-      while(!last){
-        var h=Math.min(pageCanvasHeight,cv.height-start);
+      var pageH=Math.floor(cv.width*(ph-2*m)/imgw); // canvas px that fit on one page
+      var sx=cv.width/w.offsetWidth;                // css px -> canvas px
+      var wTop=w.getBoundingClientRect().top;
+      function topOf(el){ return Math.round((el.getBoundingClientRect().top-wTop)*sx); }
+      // Candidate break points: tops of block elements and table rows, so pages
+      // always break between whole lines/rows, never through text.
+      var bounds=[];
+      for(var i=0;i<w.children.length;i++){
+        var el=w.children[i];
+        if(el.classList.contains('foot')) continue; // footer must stay with preceding content
+        if(el.tagName==='TABLE'&&el.previousElementSibling&&el.previousElementSibling.tagName==='H3') continue; // keep heading with its table
+        bounds.push({y:topOf(el),block:true});
+      }
+      w.querySelectorAll('table tr').forEach(function(tr){
+        var td=tr.querySelector('td');
+        if(td&&td.classList.contains('inote')) return; // keep a note row with its item row
+        bounds.push({y:topOf(tr),block:false});
+      });
+      // Line-box break points inside any tall cell or text block, so even a
+      // single very long entry splits between whole text lines, never through one.
+      function addLineBounds(el){
+        var walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT),n;
+        while(n=walker.nextNode()){
+          if(!n.textContent.replace(/\s/g,'')) continue;
+          var r=document.createRange(); r.selectNodeContents(n);
+          var rs=r.getClientRects();
+          for(var q=0;q<rs.length;q++) bounds.push({y:Math.round((rs[q].top-wTop)*sx),block:false});
+          r.detach();
+        }
+      }
+      w.querySelectorAll('td, #wopaper > div').forEach(function(el){
+        if(el.classList.contains('wohead')||el.classList.contains('foot')) return;
+        if(el.offsetHeight*sx>pageH*0.6) addLineBounds(el);
+      });
+      bounds=bounds.filter(function(b){return b.y>6&&b.y<cv.height-6;}).sort(function(a,b){return a.y-b.y;});
+      var ub=[];
+      bounds.forEach(function(b){ if(!ub.length||b.y-ub[ub.length-1].y>2) ub.push(b); });
+      var starts=[0],start=0,guard=0;
+      while(cv.height-start>pageH && guard++<200){
+        var limit=start+pageH,pick=-1;
+        for(var k=0;k<ub.length;k++){
+          if(ub[k].y<=limit&&ub[k].y>start+8) pick=ub[k].y;
+          else if(ub[k].y>limit) break;
+        }
+        if(pick<0) pick=limit; // one element taller than a page: last-resort slice
+        starts.push(pick); start=pick;
+      }
+      for(var p=0;p<starts.length;p++){
+        if(p>0) pdf.addPage();
+        var y0=starts[p], h=(p+1<starts.length?starts[p+1]:cv.height)-y0;
         var piece=document.createElement('canvas');piece.width=cv.width;piece.height=h;
         var ctx=piece.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,piece.width,piece.height);
-        ctx.drawImage(cv,0,start,cv.width,h,0,0,cv.width,h);
+        ctx.drawImage(cv,0,y0,cv.width,h,0,0,cv.width,h);
         pdf.addImage(piece.toDataURL('image/jpeg',0.92),'JPEG',m,m,imgw,h*imgw/cv.width);
-        if(start+h>=cv.height)last=true;else{pdf.addPage();start+=stride;}
       }
       var name=(val('customer')||'Work Order').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'Work-Order';
       pdf.save('Heirloom-Work-Order-'+name+'.pdf');
