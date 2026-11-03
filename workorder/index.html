@@ -96,6 +96,12 @@
 <main>
   <div id="form">
     <div class="card">
+      <button type="button" class="btn ghost" id="opendraft">Open Draft File</button>
+      <input type="file" id="draftfile" accept=".json,application/json" hidden>
+      <div class="hint">Private JSON drafts stay on this device. Opening a draft replaces this device's current answers only after confirmation. It never sends an order.</div>
+      <div id="draftnotice" role="status" style="display:none;background:#fff4e5;color:#704800;padding:12px;border-radius:10px;margin-top:10px;white-space:pre-line;max-height:180px;overflow:auto"></div>
+    </div>
+    <div class="card">
       <h2>Project Manager</h2>
       <label class="f" for="pm">Heirloom Project Manager</label>
       <input type="text" id="pm" data-f="pm" placeholder="Name">
@@ -331,7 +337,7 @@
   });
   wi.addEventListener('input', function(e){
     var inp = e.target.closest('input[data-item]');
-    if(inp){ inp.value = Math.max(0, parseInt(inp.value,10)||0); state.items[inp.getAttribute('data-item')].qty = parseInt(inp.value,10)||0; updateCounts(); save(); return; }
+    if(inp){ state.items[inp.getAttribute('data-item')].qty = inp.value.trim()===''?null:Math.max(0,parseInt(inp.value,10)||0); updateCounts(); save(); return; }
     var ta = e.target.closest('textarea[data-notefor]');
     if(ta){ state.items[ta.getAttribute('data-notefor')].note = ta.value; save(); }
   });
@@ -345,17 +351,68 @@
         if(el.classList.contains('chips')){ f[el.getAttribute('data-f')] = chipVal(el.getAttribute('data-f')); }
         else if(!el.hasAttribute('data-nosave')){ f[el.getAttribute('data-f')] = el.value; }
       });
-      state.fields = f;
+      state.fields = f; refreshDraftNotice();
       try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
       var s=document.getElementById('savestatus'); s.textContent='Draft saved on this device '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
     }, 350);
   }
 
+
+  function pendingMessage(){
+    if(!state.review) return '';
+    var a=[];
+    (state.review.pending||[]).forEach(function(k){var el=document.querySelector('[data-f="'+k+'"]'); if(el && !val(k)){var label=document.querySelector('label[for="'+k+'"]');a.push((label?label.textContent:k)+': PENDING');}});
+    Object.keys(state.items).forEach(function(k){if(state.items[k].qty==null){var x=k.split('-');a.push(WORK[+x[0]].items[+x[1]][0]+': PENDING quantity / scope');}});
+    return (a.length?a.join('\n'):'All listed choices entered. Still a draft for review.')+(state.review.notes?'\nReview notes: '+state.review.notes:'');
+  }
+  function refreshDraftNotice(){var n=document.getElementById('draftnotice'); if(!n)return; n.style.display=state.review?'block':'none';n.textContent=state.review?'DRAFT - not ready to send. '+pendingMessage():'';}
+  function validateDraft(d){
+    if(!d||typeof d!=='object'||Array.isArray(d))throw Error('Expected a draft object.');
+    Object.keys(d).forEach(function(k){if(['fields','items','review','version'].indexOf(k)<0)throw Error('Unexpected draft key: '+k);});
+    if(!d.fields||typeof d.fields!=='object'||Array.isArray(d.fields)||!d.items||typeof d.items!=='object'||Array.isArray(d.items))throw Error('Draft must have fields and items objects.');
+    var out={fields:{},items:{},review:{pending:[],notes:''}};
+    document.querySelectorAll('[data-f]').forEach(function(el){if(!el.hasAttribute('data-nosave'))out.fields[el.getAttribute('data-f')]='';});
+    Object.keys(d.fields).forEach(function(k){
+      if(!Object.prototype.hasOwnProperty.call(out.fields,k))throw Error('Unknown or private field: '+k);
+      var v=d.fields[k];if(v==null)v='';if(typeof v!=='string'||v.length>10000)throw Error('Invalid field: '+k);
+      var el=document.querySelector('[data-f="'+k+'"]');
+      if(v&&el.classList.contains('chips')&&!Array.from(el.querySelectorAll('[data-v]')).some(function(b){return b.getAttribute('data-v')===v;}))throw Error('Invalid choice: '+k);
+      if(v&&el.tagName==='SELECT'&&!Array.from(el.options).some(function(o){return o.value===v;}))throw Error('Invalid choice: '+k);
+      out.fields[k]=v;
+    });
+    Object.keys(state.items).forEach(function(k){out.items[k]={qty:null,note:''};});
+    Object.keys(d.items).forEach(function(k){
+      if(!Object.prototype.hasOwnProperty.call(out.items,k))throw Error('Unknown work item: '+k);
+      var x=d.items[k];if(!x||typeof x!=='object'||Array.isArray(x))throw Error('Invalid item: '+k);
+      Object.keys(x).forEach(function(a){if(['qty','note'].indexOf(a)<0)throw Error('Unexpected item field.');});
+      if(x.qty!=null&&(typeof x.qty!=='number'||!Number.isFinite(x.qty)||x.qty<0||x.qty>100000||!Number.isInteger(x.qty)))throw Error('Invalid quantity: '+k);
+      if(x.note!=null&&(typeof x.note!=='string'||x.note.length>10000))throw Error('Invalid note: '+k);
+      out.items[k]={qty:x.qty==null?null:x.qty,note:x.note||''};
+    });
+    if(d.review){
+      if(typeof d.review!=='object'||Array.isArray(d.review))throw Error('Invalid review metadata.');
+      if(d.review.pending!=null&&(!Array.isArray(d.review.pending)||d.review.pending.some(function(k){return typeof k!=='string'||!Object.prototype.hasOwnProperty.call(out.fields,k);})))throw Error('Invalid pending field list.');
+      if(d.review.notes!=null&&(typeof d.review.notes!=='string'||d.review.notes.length>20000))throw Error('Invalid review notes.');
+      out.review.pending=d.review.pending||[];out.review.notes=d.review.notes||'';
+    }
+    ['pm','jt','customer','phone','address','roofsystem','shinglecolor','dripedge','jobtype','layers','decking','accrane','fascia','pitch','stories','access','complex','equipment','occupied'].forEach(function(k){if(!out.fields[k] && out.review.pending.indexOf(k)<0)out.review.pending.push(k);});
+    return out;
+  }
+  document.getElementById('opendraft').addEventListener('click',function(){document.getElementById('draftfile').click();});
+  document.getElementById('draftfile').addEventListener('change',function(){
+    var f=this.files[0];this.value='';if(!f)return;if(f.size>200000){alert('Draft file too large (maximum 200 KB).');return;}
+    f.text().then(function(raw){
+      var d=validateDraft(JSON.parse(raw));
+      if(!confirm('Replace the current answers on THIS DEVICE with this review draft? Nothing will be sent or uploaded. Pending quantities stay blank, never zero.'))return;
+      clearTimeout(saveTimer);localStorage.setItem(KEY,JSON.stringify(d));location.reload();
+    }).catch(function(e){alert('Draft not opened: '+e.message);});
+  });
+
   function restore(){
     var raw; try{ raw = localStorage.getItem(KEY); }catch(e){ return; }
     if(!raw) return;
     try{
-      var d = JSON.parse(raw);
+      var d = JSON.parse(raw); if(d.review) state.review=d.review;
       if(d.items){ Object.keys(d.items).forEach(function(k){ if(state.items[k]) state.items[k]=d.items[k]; }); }
       if(d.fields){ Object.keys(d.fields).forEach(function(k){
         var el = document.querySelector('[data-f="'+k+'"]');
@@ -364,10 +421,10 @@
         else if(!el.hasAttribute('data-nosave')) el.value = d.fields[k];
       }); }
       Object.keys(state.items).forEach(function(k){
-        var inp = wi.querySelector('input[data-item="'+k+'"]'); if(inp) inp.value = state.items[k].qty;
+        var inp = wi.querySelector('input[data-item="'+k+'"]'); if(inp) inp.value = state.items[k].qty==null?'':state.items[k].qty; inp.placeholder='Pending';
         var ta = wi.querySelector('textarea[data-notefor="'+k+'"]'); if(ta && state.items[k].note){ ta.value = state.items[k].note; ta.style.display='block'; }
       });
-      updateCounts();
+      updateCounts(); refreshDraftNotice();
     }catch(e){}
   }
 
@@ -381,6 +438,7 @@
   function buildOutput(){
     var today = new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'});
     var h = '<div class="wohead"><img src="heirloom-logo-white.png" alt="" style="background:#0161A8;border-radius:10px;padding:6px 10px"><div class="wt">PRODUCTION WORK ORDER</div><div class="wd">Heirloom Roofing LLC &bull; '+today+'</div></div>';
+    if(state.review) h += '<div style="border:2px solid #b57800;padding:12px;margin:16px 0;color:#704800"><b>DRAFT - REVIEW BEFORE PRODUCTION</b><br>'+esc(pendingMessage()).replace(/\n/g,'<br>')+'</div>';
     h += '<h3>Project Manager</h3><table>'+ rowKV('Heirloom Project Manager', val('pm')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')) +'</table>';
     h += '<h3>Job Info</h3><table>'+ rowKV('Customer', val('customer')) + rowKV('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', val('gate')) +'</table>';
     h += '<h3>Roof Details</h3><table>'+ rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off', val('tearoff')) + rowKV('Approx. Install', val('install')) +'</table>';
@@ -395,8 +453,8 @@
       var rows='';
       g.items.forEach(function(it,ii){
         var st = state.items[gi+'-'+ii];
-        if(st.qty>0 || (st.note && st.note.trim())){
-          rows += '<tr><td>'+esc(it[0])+'</td><td class="qty">'+(st.qty>0?st.qty:'')+'</td><td class="un">'+esc(it[1])+'</td></tr>';
+        if(st.qty==null || st.qty>0 || (st.note && st.note.trim())){
+          rows += '<tr><td>'+esc(it[0])+'</td><td class="qty">'+(st.qty==null?'PENDING':(st.qty>0?st.qty:''))+'</td><td class="un">'+esc(it[1])+'</td></tr>';
           if(st.note && st.note.trim()) rows += '<tr><td colspan="3" class="inote">'+esc(st.note)+'</td></tr>';
         }
       });
@@ -409,7 +467,7 @@
   }
 
   function summaryText(){
-    var L=[]; var p=function(k,v){ if(v) L.push(k+': '+v); };
+    var L=[]; if(state.review) L.push('DRAFT - REVIEW BEFORE PRODUCTION',pendingMessage(),''); var p=function(k,v){ if(v) L.push(k+': '+v); };
     L.push('HEIRLOOM ROOFING - PRODUCTION WORK ORDER');
     L.push(new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'})); L.push('');
     p('PM', val('pm')); p('Request JT PM', val('jt')); if(val('pmnotes')) p('PM Notes', val('pmnotes'));
@@ -429,7 +487,7 @@
     WORK.forEach(function(g,gi){
       var lines=[];
       g.items.forEach(function(it,ii){ var st=state.items[gi+'-'+ii];
-        if(st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+it[0]+(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):'')+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
+        if(st.qty==null || st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+it[0]+(st.qty==null?': PENDING quantity / scope':(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):''))+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
       if(lines.length){ L.push(g.g+':'); lines.forEach(function(x){L.push(x);}); }
     });
     if(val('addnotes')){ L.push(''); L.push('NOTES: '+val('addnotes')); }
@@ -484,6 +542,7 @@
     else { var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); ok(); }catch(e){} document.body.removeChild(ta); }
   }
   document.getElementById('emailbtn').addEventListener('click', function(e){
+    if(state.review){ if(typeof e!=='undefined') e.preventDefault(); alert('This is a review draft. Printing or copying keeps its draft warning. Resolve the pending choices and review the order before sending.'); return; }
     if(!getRcpts()){
       e.preventDefault();
       document.getElementById('rcptsetup').style.display='block';
@@ -514,6 +573,7 @@
     function fallback(){ var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); done(); }catch(e){ toast('Copy failed - use Print / Save as PDF instead'); } document.body.removeChild(ta); }
   });
   document.getElementById('sharebtn').addEventListener('click', function(){
+    if(state.review){ if(typeof e!=='undefined') e.preventDefault(); alert('This is a review draft. Printing or copying keeps its draft warning. Resolve the pending choices and review the order before sending.'); return; }
     var txt = summaryText();
     if(navigator.share){ navigator.share({title:'Production Work Order - '+(val('customer')||'Heirloom Roofing'), text:txt}).catch(function(){}); }
     else { document.getElementById('copybtn').click(); }
