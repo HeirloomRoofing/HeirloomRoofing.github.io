@@ -236,7 +236,7 @@
     <div class="wo" id="wopaper"></div>
     <div class="outbtns no-print">
       <div id="longwarn" style="display:none;background:#fff4e5;border:1.5px solid #e0a030;border-radius:12px;padding:12px 14px;font-size:13.5px;font-weight:600;color:#7a5410;line-height:1.45">
-        LONG ORDER - the email will contain a SUMMARY only. Tapping Email Work Order copies the FULL order to your clipboard: paste it into the email body before sending. Safer option for a long order: use Print / Save as PDF below and attach the PDF instead.
+        LONG ORDER - the email will contain a SUMMARY only. Tapping Email Work Order copies the FULL order to your clipboard: paste it into the email body before sending. Safer option for a long order: use Download PDF below and attach the PDF instead.
       </div>
       <a class="btn primary" id="emailbtn" href="#" style="text-decoration:none;text-align:center">Email Work Order</a>
       <div id="rcptsetup" style="display:none;background:#fff;border:1.5px solid var(--brand);border-radius:12px;padding:12px">
@@ -245,7 +245,8 @@
         <div class="hint">Saved on this device only - nothing is published or shared. Ask once, then every order is addressed automatically.</div>
         <button class="btn primary" id="rcptsave" style="width:100%;margin-top:8px">Save Recipients</button>
       </div>
-      <button class="btn ghost" id="printbtn">Print / Save as PDF</button>
+      <button class="btn ghost" id="pdfbtn">Download PDF</button>
+      <button class="btn ghost" id="printbtn">Print</button>
       <button class="btn ghost" id="sharebtn">Share (text / email / Drive)</button>
       <button class="btn ghost" id="copybtn">Copy as Text</button>
       <button class="btn ghost" id="editbtn">Back to Edit</button>
@@ -260,6 +261,8 @@
 </div>
 <div class="toast" id="toast"></div>
 
+<script src="jspdf.umd.min.js"></script>
+<script src="html2canvas.min.js"></script>
 <script>
 (function(){
   var WORK = [
@@ -567,12 +570,39 @@
     eb.textContent = m.copied ? 'Email Work Order (summary - full order copied to paste in)' : 'Email Work Order';
     toast('Recipients saved on this device');
   });
+
+  async function downloadPDF(){
+    if(!window.jspdf||!window.html2canvas){ toast('PDF library did not load - use Print'); return; }
+    var wasOpen=[];document.querySelectorAll('#form details.group').forEach(function(d,i){wasOpen[i]=d.open;d.open=true;});
+    document.getElementById('output').style.display='block';
+    document.getElementById('form').style.display='none';
+    document.getElementById('savebar').style.display='none';
+    document.getElementById('wopaper').innerHTML=buildOutput();
+    var w=document.getElementById('wopaper');
+    w.style.width='680px';w.style.maxWidth='none';
+    try{
+      var cv=await html2canvas(w,{backgroundColor:'#ffffff',scale:2,useCORS:true,logging:false});
+      var pdf=new window.jspdf.jsPDF({unit:'pt',format:'letter'});
+      var pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight(),m=28;
+      var imgw=pw-2*m,imgh=cv.height*imgw/cv.width,left=imgh,pos=0;
+      while(left>0){
+        pdf.addImage(cv.toDataURL('image/jpeg',0.92),'JPEG',m,pos,imgw,imgh);
+        left-=ph-2*m;pos-=ph-2*m;if(left>0)pdf.addPage();
+      }
+      var name=(val('customer')||'Work Order').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'Work-Order';
+      pdf.save('Heirloom-Work-Order-'+name+'.pdf');
+    }catch(e){toast('Could not create PDF - use Print');}
+    w.style.width='';w.style.maxWidth='';
+    wasOpen.forEach(function(x,i){document.querySelectorAll('#form details.group')[i].open=x;});
+  }
+  document.getElementById('pdfbtn').addEventListener('click',downloadPDF);
+
   document.getElementById('printbtn').addEventListener('click', function(){ window.print(); });
   document.getElementById('copybtn').addEventListener('click', function(){
     var txt = summaryText();
     function done(){ toast('Copied - paste it into a text, email or Drive doc'); }
     if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done, function(){ fallback(); }); } else fallback();
-    function fallback(){ var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); done(); }catch(e){ toast('Copy failed - use Print / Save as PDF instead'); } document.body.removeChild(ta); }
+    function fallback(){ var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); done(); }catch(e){ toast('Copy failed - use Download PDF instead'); } document.body.removeChild(ta); }
   });
   document.getElementById('sharebtn').addEventListener('click', function(){
     if(state.review){ if(typeof e!=='undefined') e.preventDefault(); alert('This is a review draft. Printing or copying keeps its draft warning. Resolve the pending choices and review the order before sending.'); return; }
