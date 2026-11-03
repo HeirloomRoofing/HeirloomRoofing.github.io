@@ -62,6 +62,11 @@
   .btn.ghost { background:#fff; color:var(--brand); border:1.5px solid var(--brand); }
   .btn.danger { background:#fff; color:#b3261e; border:1.5px solid #e3b6b3; }
   .privacy { text-align:center; color:var(--muted); font-size:12px; line-height:1.5; margin-top:16px; padding:0 10px; }
+  .miss { outline:2.5px solid #c0392b !important; outline-offset:1px; border-radius:12px; }
+  #reqerrors { display:none; background:#fdeceb; border:1.5px solid #c0392b; color:#8f2b21; border-radius:12px; padding:12px 14px; font-size:13.5px; font-weight:600; line-height:1.55; margin-top:14px; }
+  .nagate { display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--muted); margin-top:8px; cursor:pointer; }
+  .nagate input { width:auto; }
+  input:disabled { opacity:.45; }
   /* Output view */
   #output { display:none; }
   .wo { background:#fff; border:1px solid var(--line); border-radius:18px; padding:22px 18px; margin-top:14px; }
@@ -95,6 +100,7 @@
 </div>
 <main>
   <div id="form">
+    <div id="reqerrors" role="alert"></div>
     <div class="card">
       <button type="button" class="btn ghost" id="opendraft">Open Draft File</button>
       <input type="file" id="draftfile" accept=".json,application/json" hidden>
@@ -108,7 +114,7 @@
       <label class="f">Request JT Project Manager</label>
       <div class="chips" data-f="jt"><button class="chip" data-v="Yes">Yes</button><button class="chip on" data-v="No">No</button></div>
       <label class="f" for="pmnotes">Notes</label>
-      <input type="text" id="pmnotes" data-f="pmnotes">
+      <input type="text" id="pmnotes" data-f="pmnotes" placeholder='Required - enter "None" if no notes'>
     </div>
 
     <div class="card">
@@ -120,7 +126,8 @@
       <label class="f" for="address">Address</label>
       <input type="text" id="address" data-f="address">
       <label class="f" for="gate">Gate Code</label>
-      <input type="text" id="gate" data-f="gate" data-nosave="1">
+      <input type="text" id="gate" data-f="gate" data-nosave="1" placeholder="Code, or check the box below">
+      <label class="nagate"><input type="checkbox" id="gatena" data-f="gatena">No gate code needed</label>
       <div class="hint">Gate code is never saved on this device - re-enter it if you come back later.</div>
     </div>
 
@@ -145,7 +152,7 @@
       </div>
       <label class="f">Flat Roof Color</label>
       <div class="chips" data-f="flatcolor">
-        <button class="chip" data-v="White">White</button><button class="chip" data-v="Tan">Tan</button><button class="chip" data-v="Gray">Gray</button><button class="chip" data-v="Black">Black</button><button class="chip" data-v="Other">Other</button>
+        <button class="chip" data-v="White">White</button><button class="chip" data-v="Tan">Tan</button><button class="chip" data-v="Gray">Gray</button><button class="chip" data-v="Black">Black</button><button class="chip" data-v="Other">Other</button><button class="chip" data-v="N/A - No Flat Roof">N/A - No Flat Roof</button>
       </div>
       <label class="f">Job Type</label>
       <div class="chips" data-f="jobtype">
@@ -214,7 +221,7 @@
         <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - HOA Restrictions">HOA Restrictions</button><button class="chip" data-v="Yes - Limited Work Hours">Limited Work Hours</button><button class="chip" data-v="Yes - Sensitive Landscape / Hardscape">Sensitive Landscape</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
       </div>
       <label class="f" for="otherinstr">Other / Special Instructions</label>
-      <textarea id="otherinstr" data-f="otherinstr"></textarea>
+      <textarea id="otherinstr" data-f="otherinstr" placeholder='Required - enter "None" if no other instructions'></textarea>
     </div>
 
     <div class="card">
@@ -225,7 +232,7 @@
 
     <div class="card">
       <h2>Additional Notes</h2>
-      <textarea id="addnotes" data-f="addnotes" placeholder="Anything else production should know"></textarea>
+      <textarea id="addnotes" data-f="addnotes" placeholder='Required - enter "None" if nothing else'></textarea>
       <div class="hint">Any unexpected conditions or additional work must be reported to the PM before proceeding.</div>
     </div>
 
@@ -256,7 +263,7 @@
 </main>
 
 <div class="savebar no-print" id="savebar">
-  <span class="status" id="savestatus">Draft saves on this device</span>
+  <span class="status" id="savestatus">Draft saves on this device - all fields required</span>
   <button class="btn primary" id="genbtn">Generate Work Order</button>
 </div>
 <div class="toast" id="toast"></div>
@@ -319,6 +326,13 @@
     if(!v) c.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
   }
 
+  // Gate code N/A toggle
+  document.getElementById('gatena').addEventListener('change', function(){
+    var g=document.getElementById('gate');
+    g.disabled=this.checked; if(this.checked) g.value='';
+    save();
+  });
+
   // Field listeners
   document.querySelectorAll('[data-f]').forEach(function(el){
     if(el.classList.contains('chips')) return;
@@ -352,6 +366,7 @@
       var f={};
       document.querySelectorAll('[data-f]').forEach(function(el){
         if(el.classList.contains('chips')){ f[el.getAttribute('data-f')] = chipVal(el.getAttribute('data-f')); }
+        else if(el.type==='checkbox'){ f[el.getAttribute('data-f')] = el.checked ? 'Yes' : ''; }
         else if(!el.hasAttribute('data-nosave')){ f[el.getAttribute('data-f')] = el.value; }
       });
       state.fields = f; refreshDraftNotice();
@@ -361,7 +376,7 @@
   }
 
 
-  var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approximate Tear-Off Date", "install": "Approximate Install Date", "layers": "Layers", "decking": "Decking / Redeck", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
+  var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "gate": "Gate Code", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approximate Tear-Off Date", "install": "Approximate Install Date", "layers": "Layers", "decking": "Decking / Redeck", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
   function pendingMessage(){
     if(!state.review) return '';
     var a=[];
@@ -422,6 +437,7 @@
         var el = document.querySelector('[data-f="'+k+'"]');
         if(!el) return;
         if(el.classList.contains('chips')) setChip(k, d.fields[k]);
+        else if(el.type==='checkbox'){ el.checked = d.fields[k]==='Yes'; el.dispatchEvent(new Event('change')); }
         else if(!el.hasAttribute('data-nosave')) el.value = d.fields[k];
       }); }
       Object.keys(state.items).forEach(function(k){
@@ -439,12 +455,73 @@
 
   function rowKV(k,v){ return v ? '<tr><td class="k">'+esc(k)+'</td><td>'+esc(v)+'</td></tr>' : ''; }
 
+  function gateNA(){ var c=document.getElementById('gatena'); return c && c.checked; }
+  function gateVal(){ return val('gate') || (gateNA() ? 'None' : ''); }
+
+  // Every field needs a real answer before a finished order is generated.
+  // Conditional rules keep answers honest: not-applicable is chosen explicitly
+  // (No gate code box, N/A flat color, To Be Determined decking), never faked.
+  var REQUIRED = [
+    ['pm'],['jt'],['pmnotes'],
+    ['customer'],['phone'],['address'],
+    ['gate', function(){ return !gateNA(); }],
+    ['roofsystem'],['malarkey'],['shinglecolor'],['dripedge'],['flatcolor'],['jobtype'],
+    ['tearoff'],['install'],
+    ['layers'],['decking'],
+    ['deckqty', function(){ var d=chipVal('decking'); return d && d.indexOf('To Be Determined')<0; }],
+    ['deckthick', function(){ var d=chipVal('decking'); return d && d.indexOf('To Be Determined')<0 && (parseInt(val('deckqty'),10)||0)>0; }],
+    ['accrane'],['fascia'],
+    ['fasciasize', function(){ var f=chipVal('fascia'); return f==='Partial Fascia Replacement'||f==='Full Fascia Replacement'; }],
+    ['special'],
+    ['pitch'],['stories'],['access'],['complex'],['equipment'],['occupied'],
+    ['otherinstr'],['addnotes']
+  ];
+  function missingRequired(){
+    var miss=[];
+    REQUIRED.forEach(function(r){
+      if(r[1] && !r[1]()) return;
+      if(!val(r[0])) miss.push(r[0]);
+    });
+    var roofOK=false;
+    WORK[1].items.forEach(function(it,ii){ var st=state.items['1-'+ii]; if(st && (st.qty>0 || (st.note && st.note.trim()))) roofOK=true; });
+    if(!roofOK) miss.push('__roofing');
+    return miss;
+  }
+  function showReqErrors(miss){
+    var box=document.getElementById('reqerrors');
+    var names=miss.map(function(k){
+      if(k==='__roofing') return 'Work Items - Roofing: set at least one quantity or note';
+      return FIELD_LABELS[k]||k;
+    });
+    box.innerHTML='<b>Fill in everything before generating the work order:</b><br>'+names.join('<br>');
+    box.style.display='block';
+    document.querySelectorAll('.miss').forEach(function(e){ e.classList.remove('miss'); });
+    miss.forEach(function(k){
+      if(k==='__roofing'){ var det=document.querySelectorAll('#workitems details.group')[1]; if(det){ det.open=true; det.classList.add('miss'); } return; }
+      var el=document.querySelector('[data-f="'+k+'"]'); if(el) el.classList.add('miss');
+    });
+    var first=miss[0]==='__roofing' ? document.querySelectorAll('#workitems details.group')[1] : document.querySelector('[data-f="'+miss[0]+'"]');
+    if(first && first.scrollIntoView) first.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+  function hideReqErrors(){
+    var box=document.getElementById('reqerrors'); box.style.display='none';
+    document.querySelectorAll('.miss').forEach(function(e){ e.classList.remove('miss'); });
+  }
+  document.getElementById('form').addEventListener('input', function(e){
+    var t=e.target.closest('.miss'); if(t) t.classList.remove('miss');
+    var box=document.getElementById('reqerrors'); if(box.style.display==='block') box.style.display='none';
+  });
+  document.getElementById('form').addEventListener('click', function(e){
+    var c=e.target.closest('.chips.miss'); if(c) c.classList.remove('miss');
+    var d=e.target.closest('details.group.miss'); if(d && e.target.closest('.step, .notebtn')) d.classList.remove('miss');
+  });
+
   function buildOutput(){
     var today = new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'});
     var h = '<div class="wohead"><img src="heirloom-logo-white.png" alt="" style="background:#0161A8;border-radius:10px;padding:6px 10px"><div class="wt">PRODUCTION WORK ORDER</div><div class="wd">Heirloom Roofing LLC &bull; '+today+'</div></div>';
     if(state.review) h += '<div style="border:2px solid #b57800;padding:12px;margin:16px 0;color:#704800"><b>DRAFT - REVIEW BEFORE PRODUCTION</b><br>'+(pendingMessage().match(/PENDING/g)||[]).length+' pending choices or quantities. Full review list is after the order below.</div>';
     h += '<h3>Project Manager</h3><table>'+ rowKV('Heirloom Project Manager', val('pm')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')) +'</table>';
-    h += '<h3>Job Info</h3><table>'+ rowKV('Customer', val('customer')) + rowKV('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', val('gate')) +'</table>';
+    h += '<h3>Job Info</h3><table>'+ rowKV('Customer', val('customer')) + rowKV('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', gateVal()) +'</table>';
     h += '<h3>Roof Details</h3><table>'+ rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off', val('tearoff')) + rowKV('Approx. Install', val('install')) +'</table>';
     h += '<h3>The Big 5</h3><table>'+ rowKV('1. Layers', val('layers'))
       + rowKV('2. Decking / Redeck', val('decking') + (val('deckqty')? ' - '+val('deckqty')+' sheets':'') + (val('deckthick')? ' - '+val('deckthick'):''))
@@ -476,7 +553,7 @@
     L.push('HEIRLOOM ROOFING - PRODUCTION WORK ORDER');
     L.push(new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'})); L.push('');
     p('PM', val('pm')); p('Request JT PM', val('jt')); if(val('pmnotes')) p('PM Notes', val('pmnotes'));
-    p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', val('gate'));
+    p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', gateVal());
     L.push('');
     p('Roof System', val('roofsystem')); p('Malarkey Product', val('malarkey')); p('Shingle Color', val('shinglecolor')); p('Drip Edge', val('dripedge')); p('Flat Roof Color', val('flatcolor')); p('Job Type', val('jobtype')); p('Approx. Tear-Off', val('tearoff')); p('Approx. Install', val('install'));
     L.push(''); L.push('BIG 5:');
@@ -503,6 +580,11 @@
   function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; setTimeout(function(){ t.style.display='none'; }, 2400); }
 
   document.getElementById('genbtn').addEventListener('click', function(){
+    if(!state.review){
+      var miss=missingRequired();
+      if(miss.length){ showReqErrors(miss); return; }
+    }
+    hideReqErrors();
     document.getElementById('wopaper').innerHTML = buildOutput();
     var eb = document.getElementById('emailbtn');
     var m = buildMailto();
