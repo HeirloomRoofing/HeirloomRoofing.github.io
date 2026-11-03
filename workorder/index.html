@@ -229,7 +229,7 @@
   <div id="output">
     <div class="wo" id="wopaper"></div>
     <div class="outbtns no-print">
-      <button class="btn primary" id="emailbtn">Email to Nick &amp; Erik</button>
+      <a class="btn primary" id="emailbtn" href="#" style="text-decoration:none;text-align:center">Email to Nick &amp; Erik</a>
       <button class="btn ghost" id="printbtn">Print / Save as PDF</button>
       <button class="btn ghost" id="sharebtn">Share (text / email / Drive)</button>
       <button class="btn ghost" id="copybtn">Copy as Text</button>
@@ -432,6 +432,7 @@
 
   document.getElementById('genbtn').addEventListener('click', function(){
     document.getElementById('wopaper').innerHTML = buildOutput();
+    document.getElementById('emailbtn').href = buildMailto();
     document.getElementById('form').style.display='none';
     document.getElementById('savebar').style.display='none';
     document.getElementById('output').style.display='block';
@@ -447,7 +448,6 @@
     var s = 'Work Order - ' + (val('customer')||'New job') + (val('address')? ' - '+val('address') : '');
     return 'mailto:nick@heirloomroofing.com,erik@heirloomroofing.com?subject='+encodeURIComponent(s)+'&body='+encodeURIComponent(summaryText());
   }
-  document.getElementById('emailbtn').addEventListener('click', function(){ window.location.href = buildMailto(); });
   document.getElementById('printbtn').addEventListener('click', function(){ window.print(); });
   document.getElementById('copybtn').addEventListener('click', function(){
     var txt = summaryText();
