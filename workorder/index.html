@@ -583,11 +583,16 @@
     try{
       var cv=await html2canvas(w,{backgroundColor:'#ffffff',scale:2,useCORS:true,logging:false});
       var pdf=new window.jspdf.jsPDF({unit:'pt',format:'letter'});
-      var pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight(),m=28;
-      var imgw=pw-2*m,imgh=cv.height*imgw/cv.width,left=imgh,pos=0;
-      while(left>0.5){
-        pdf.addImage(cv.toDataURL('image/jpeg',0.92),'JPEG',m,pos,imgw,imgh);
-        left-=ph-2*m;pos-=ph-2*m;if(left>0.5)pdf.addPage();
+      var pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight(),m=28,imgw=pw-2*m;
+      var pageCanvasHeight=Math.floor(cv.width*(ph-2*m)/imgw);
+      var stride=pageCanvasHeight,start=0,last=false;
+      while(!last){
+        var h=Math.min(pageCanvasHeight,cv.height-start);
+        var piece=document.createElement('canvas');piece.width=cv.width;piece.height=h;
+        var ctx=piece.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,piece.width,piece.height);
+        ctx.drawImage(cv,0,start,cv.width,h,0,0,cv.width,h);
+        pdf.addImage(piece.toDataURL('image/jpeg',0.92),'JPEG',m,m,imgw,h*imgw/cv.width);
+        if(start+h>=cv.height)last=true;else{pdf.addPage();start+=stride;}
       }
       var name=(val('customer')||'Work Order').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'Work-Order';
       pdf.save('Heirloom-Work-Order-'+name+'.pdf');
