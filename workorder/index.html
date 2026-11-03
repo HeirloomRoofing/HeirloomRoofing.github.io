@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heirloom Roofing - Production Work Order</title>
+<meta name="description" content="Fill out a Heirloom Roofing production work order from any device.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Heirloom Roofing - Production Work Order">
+<meta property="og:description" content="Tap through the work order on your phone, then print, save or share it.">
+<meta property="og:url" content="https://heirloomroofing.github.io/workorder/">
+<meta property="og:image" content="https://heirloomroofing.github.io/heirloom-logo.png">
+<style>
+  :root { --brand:#0161A8; --brand-dark:#014e85; --ink:#1c2b36; --muted:#5a6b78; --paper:#f7f5f0; --line:#e3e8ec; }
+  * { box-sizing:border-box; }
+  @font-face { font-family:'Space Grotesk'; font-style:normal; font-weight:300 700; font-display:swap;
+    src:url('fonts/sg-vietnamese.woff2') format('woff2');
+    unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB; }
+  @font-face { font-family:'Space Grotesk'; font-style:normal; font-weight:300 700; font-display:swap;
+    src:url('fonts/sg-latin-ext.woff2') format('woff2');
+    unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+  @font-face { font-family:'Space Grotesk'; font-style:normal; font-weight:300 700; font-display:swap;
+    src:url('fonts/sg-latin.woff2') format('woff2');
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2215,U+FEFF,U+FFFD; }
+  body { margin:0; background:var(--paper); color:var(--ink); font-family:'Space Grotesk',-apple-system,Helvetica,Arial,sans-serif; font-weight:500; }
+  .band { background:var(--brand); padding:22px 20px 58px; text-align:center; }
+  .band img { width:150px; height:76px; object-fit:contain; }
+  .band .t { color:#fff; font-weight:700; font-size:22px; margin-top:2px; letter-spacing:.01em; }
+  main { max-width:560px; margin:-38px auto 0; padding:0 16px 120px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:18px; padding:18px 16px; margin-top:14px; box-shadow:0 10px 28px rgba(1,97,168,.08); }
+  .card h2 { margin:0 0 4px; font-size:17px; color:var(--brand); font-weight:700; }
+  .card .sub { color:var(--muted); font-size:12.5px; margin-bottom:6px; }
+  label.f { display:block; font-size:11px; font-weight:700; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; margin:14px 0 6px; }
+  input[type=text], input[type=tel], input[type=number], textarea, select {
+    width:100%; padding:13px 14px; font-size:16px; font-family:inherit; font-weight:500; border:1.5px solid #cfd9e0; border-radius:12px; background:#fbfaf7; color:var(--ink); }
+  textarea { min-height:76px; resize:vertical; }
+  select { appearance:none; background:#fbfaf7 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230161A8' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 14px center; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { border:1.5px solid #cfd9e0; background:#fbfaf7; color:var(--ink); border-radius:999px; padding:10px 16px; font-size:15px; font-weight:600; font-family:inherit; cursor:pointer; transition:.15s; }
+  .chip.on { background:var(--brand); border-color:var(--brand); color:#fff; }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .hint { font-size:12px; color:var(--muted); margin-top:5px; }
+  details.group { border-top:1px solid var(--line); }
+  details.group:first-of-type { border-top:none; }
+  details.group summary { cursor:pointer; list-style:none; padding:13px 2px; font-weight:700; font-size:14.5px; color:var(--ink); display:flex; justify-content:space-between; align-items:center; }
+  details.group summary::-webkit-details-marker { display:none; }
+  details.group summary .count { font-size:12px; color:var(--brand); font-weight:700; }
+  details.group summary .chev { color:var(--muted); font-size:12px; margin-left:8px; }
+  .item { display:flex; align-items:center; gap:10px; padding:9px 0; border-top:1px dashed var(--line); flex-wrap:wrap; }
+  .item .nm { flex:1 1 55%; font-size:14.5px; }
+  .item .unit { font-size:11px; font-weight:700; color:var(--muted); background:#eef3f7; border-radius:6px; padding:2px 7px; }
+  .step { display:flex; align-items:center; gap:2px; }
+  .step button { width:38px; height:38px; border-radius:10px; border:1.5px solid #cfd9e0; background:#fff; font-size:20px; font-weight:700; color:var(--brand); cursor:pointer; font-family:inherit; }
+  .step input { width:56px; text-align:center; padding:8px 4px; font-size:16px; border:1.5px solid #cfd9e0; border-radius:10px; font-family:inherit; }
+  .notebtn { font-size:12px; color:var(--brand); background:none; border:none; font-weight:700; cursor:pointer; font-family:inherit; padding:4px 0; }
+  .item textarea { margin-top:6px; min-height:44px; font-size:14px; }
+  .savebar { position:fixed; left:0; right:0; bottom:0; background:rgba(255,255,255,.97); border-top:1px solid var(--line); padding:10px 16px; display:flex; gap:10px; align-items:center; justify-content:center; z-index:10; }
+  .savebar .status { font-size:12px; color:var(--muted); flex:0 1 auto; white-space:nowrap; }
+  .btn { border:none; border-radius:12px; padding:14px 18px; font-size:16px; font-weight:700; font-family:inherit; cursor:pointer; }
+  .btn.primary { background:var(--brand); color:#fff; flex:1; max-width:330px; }
+  .btn.primary:hover { background:var(--brand-dark); }
+  .btn.ghost { background:#fff; color:var(--brand); border:1.5px solid var(--brand); }
+  .btn.danger { background:#fff; color:#b3261e; border:1.5px solid #e3b6b3; }
+  .privacy { text-align:center; color:var(--muted); font-size:12px; line-height:1.5; margin-top:16px; padding:0 10px; }
+  /* Output view */
+  #output { display:none; }
+  .wo { background:#fff; border:1px solid var(--line); border-radius:18px; padding:22px 18px; margin-top:14px; }
+  .wo .wohead { text-align:center; border-bottom:2.5px solid var(--brand); padding-bottom:12px; margin-bottom:12px; }
+  .wo .wohead img { width:120px; }
+  .wo .wohead .wt { font-size:19px; font-weight:700; color:var(--brand); margin-top:6px; }
+  .wo .wohead .wd { font-size:12.5px; color:var(--muted); margin-top:2px; }
+  .wo h3 { font-size:13px; color:var(--brand); text-transform:uppercase; letter-spacing:.06em; margin:16px 0 6px; border-bottom:1px solid var(--line); padding-bottom:4px; }
+  .wo table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  .wo td { padding:5px 4px; vertical-align:top; }
+  .wo td.k { color:var(--muted); font-weight:700; width:42%; }
+  .wo td.qty { text-align:right; font-weight:700; width:52px; }
+  .wo td.un { color:var(--muted); width:44px; }
+  .wo .inote { font-size:12px; color:var(--muted); padding:0 4px 6px; }
+  .wo .foot { margin-top:18px; font-size:12px; color:var(--muted); border-top:1px solid var(--line); padding-top:10px; font-style:italic; }
+  .outbtns { display:grid; gap:10px; margin-top:14px; }
+  .toast { position:fixed; bottom:76px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:10px 18px; border-radius:999px; font-size:13.5px; font-weight:600; display:none; z-index:20; }
+  @media print {
+    body { background:#fff; }
+    .band, #form, .savebar, .outbtns, .privacy, .toast, .no-print { display:none !important; }
+    main { margin:0; padding:0; max-width:none; }
+    #output { display:block !important; }
+    .wo { border:none; border-radius:0; box-shadow:none; margin:0; padding:0; }
+  }
+</style>
+</head>
+<body>
+<div class="band no-print">
+  <img src="heirloom-logo-white.png" alt="Heirloom Roofing logo">
+  <div class="t">Production Work Order</div>
+</div>
+<main>
+  <div id="form">
+    <div class="card">
+      <h2>Project Manager</h2>
+      <label class="f" for="pm">Heirloom Project Manager</label>
+      <input type="text" id="pm" data-f="pm" placeholder="Name">
+      <label class="f">Request JT Project Manager</label>
+      <div class="chips" data-f="jt"><button class="chip" data-v="Yes">Yes</button><button class="chip on" data-v="No">No</button></div>
+      <label class="f" for="pmnotes">Notes</label>
+      <input type="text" id="pmnotes" data-f="pmnotes">
+    </div>
+
+    <div class="card">
+      <h2>Job Info</h2>
+      <label class="f" for="customer">Customer</label>
+      <input type="text" id="customer" data-f="customer">
+      <label class="f" for="phone">Customer Phone Number</label>
+      <input type="tel" id="phone" data-f="phone">
+      <label class="f" for="address">Address</label>
+      <input type="text" id="address" data-f="address">
+      <label class="f" for="gate">Gate Code</label>
+      <input type="text" id="gate" data-f="gate" data-nosave="1">
+      <div class="hint">Gate code is never saved on this device - re-enter it if you come back later.</div>
+    </div>
+
+    <div class="card">
+      <h2>Roof Details</h2>
+      <label class="f">Roof System</label>
+      <div class="chips" data-f="roofsystem">
+        <button class="chip" data-v="Architectural Shingle">Architectural Shingle</button><button class="chip" data-v="3-Tab Shingle">3-Tab Shingle</button><button class="chip" data-v="Tile">Tile</button><button class="chip" data-v="Modified Bitumen">Modified Bitumen</button><button class="chip" data-v="SPF / Coating">SPF / Coating</button><button class="chip" data-v="Slate">Slate</button><button class="chip" data-v="Other">Other</button>
+      </div>
+      <label class="f">Malarkey Product</label>
+      <div class="chips" data-f="malarkey">
+        <button class="chip" data-v="Highlander AR">Highlander AR</button><button class="chip" data-v="Vista AR">Vista AR</button><button class="chip" data-v="Legacy Scotchgard">Legacy Scotchgard</button>
+      </div>
+      <label class="f" for="shinglecolor">Shingle Color</label>
+      <select id="shinglecolor" data-f="shinglecolor">
+        <option value="">Choose</option>
+        <option>Antique Brown</option><option>Black Oak</option><option>Brilliant Black</option><option>Burlwood</option><option>Golden Amber</option><option>Heather</option><option>Ivory Mist</option><option>Midnight Black</option><option>Moonlit Black</option><option>Natural Wood</option><option>Riverstone Grey</option><option>Sienna Blend</option><option>Silverwood</option><option>Storm Grey</option><option>Weathered Wood</option><option>Weathered Wood Plus</option><option>Willow Wood</option><option>Other / Special Order</option>
+      </select>
+      <label class="f">Drip Edge Color</label>
+      <div class="chips" data-f="dripedge">
+        <button class="chip" data-v="White">White</button><button class="chip" data-v="Black">Black</button><button class="chip" data-v="Brown">Brown</button><button class="chip" data-v="Bronze">Bronze</button><button class="chip" data-v="Almond">Almond</button><button class="chip" data-v="Clay">Clay</button><button class="chip" data-v="Gray">Gray</button><button class="chip" data-v="Galvanized">Galvanized</button><button class="chip" data-v="Other">Other</button>
+      </div>
+      <label class="f">Flat Roof Color</label>
+      <div class="chips" data-f="flatcolor">
+        <button class="chip" data-v="White">White</button><button class="chip" data-v="Tan">Tan</button><button class="chip" data-v="Gray">Gray</button><button class="chip" data-v="Black">Black</button><button class="chip" data-v="Other">Other</button>
+      </div>
+      <label class="f">Job Type</label>
+      <div class="chips" data-f="jobtype">
+        <button class="chip" data-v="Retail">Retail</button><button class="chip" data-v="Insurance">Insurance</button>
+      </div>
+      <div class="row2">
+        <div><label class="f" for="tearoff">Approx. Tear-Off</label><input type="number" id="tearoff" data-f="tearoff" min="0" max="100" inputmode="numeric"></div>
+        <div><label class="f" for="install">Approx. Install</label><input type="number" id="install" data-f="install" min="0" max="100" inputmode="numeric"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>The Big 5</h2>
+      <label class="f">1. Layers</label>
+      <div class="chips" data-f="layers">
+        <button class="chip" data-v="1 Layer">1 Layer</button><button class="chip" data-v="2 Layers">2 Layers</button><button class="chip" data-v="3 Layers">3 Layers</button><button class="chip" data-v="Other / Verify">Other / Verify</button>
+      </div>
+      <label class="f">2. Decking / Redeck / Space Decking</label>
+      <div class="chips" data-f="decking">
+        <button class="chip" data-v="Solid Decking / Backup Sheets Only">Solid / Backup Sheets Only</button><button class="chip" data-v="Solid Decking / Full Redeck">Solid / Full Redeck</button><button class="chip" data-v="Space Decking / Overlay OSB">Space / Overlay OSB</button><button class="chip" data-v="Space Decking / Full Redeck">Space / Full Redeck</button><button class="chip" data-v="Decking To Be Determined">To Be Determined</button>
+      </div>
+      <div class="row2">
+        <div><label class="f" for="deckqty">Decking Sheets (Qty)</label><input type="number" id="deckqty" data-f="deckqty" min="0" max="60" inputmode="numeric"></div>
+        <div><label class="f" for="deckthick">Decking Thickness</label><select id="deckthick" data-f="deckthick"><option value="">Choose</option><option>3/8"</option><option>7/16"</option><option>1/2"</option><option>5/8"</option><option>3/4"</option><option>Other / Verify</option></select></div>
+      </div>
+      <label class="f">3. A/C / Crane</label>
+      <div class="chips" data-f="accrane">
+        <button class="chip" data-v="Work Around A/C / No Crane">Work Around A/C / No Crane</button><button class="chip" data-v="A/C Detach &amp; Reset / No Crane">A/C Detach &amp; Reset / No Crane</button><button class="chip" data-v="A/C Detach &amp; Reset / Crane Required">A/C Detach &amp; Reset / Crane</button><button class="chip" data-v="Crane Required">Crane Required</button><button class="chip" data-v="No Rooftop A/C">No Rooftop A/C</button>
+      </div>
+      <label class="f">4. Fascia Replacement</label>
+      <div class="chips" data-f="fascia">
+        <button class="chip" data-v="None Expected">None Expected</button><button class="chip" data-v="Partial Fascia Replacement">Partial</button><button class="chip" data-v="Full Fascia Replacement">Full</button><button class="chip" data-v="Determine During Tear-Off">Determine During Tear-Off</button>
+      </div>
+      <label class="f" for="fasciasize">Fascia Board Size</label>
+      <select id="fasciasize" data-f="fasciasize"><option value="">Choose</option><option>1x4</option><option>1x6</option><option>1x8</option><option>2x4</option><option>2x6</option><option>2x8</option><option>2x10</option><option>Other / Verify</option></select>
+      <label class="f">5. Job Complexity / Special Conditions</label>
+      <div class="chips" data-f="special">
+        <button class="chip" data-v="Pitched-to-Flat Transition">Pitched-to-Flat Transition</button><button class="chip" data-v="Wall / Stucco Flashing">Wall / Stucco Flashing</button><button class="chip" data-v="Skylights / Penetrations">Skylights / Penetrations</button><button class="chip" data-v="Restricted Access / HOA">Restricted Access / HOA</button><button class="chip" data-v="Sensitive Landscaping / Property Protection">Sensitive Landscaping</button><button class="chip" data-v="Multiple Special Conditions">Multiple</button><button class="chip" data-v="None Expected">None Expected</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Property Conditions</h2>
+      <label class="f">Steep Pitch</label>
+      <div class="chips" data-f="pitch">
+        <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - 7/12 to 9/12">7/12 to 9/12</button><button class="chip" data-v="Yes - 10/12 to 12/12">10/12 to 12/12</button><button class="chip" data-v="Yes - Over 12/12">Over 12/12</button>
+      </div>
+      <label class="f">Stories / Roof Height</label>
+      <div class="chips" data-f="stories">
+        <button class="chip" data-v="1 Story">1 Story</button><button class="chip" data-v="2 Stories">2 Stories</button><button class="chip" data-v="3+ Stories">3+ Stories</button>
+      </div>
+      <label class="f">Limited Access</label>
+      <div class="chips" data-f="access">
+        <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Tight Driveway">Tight Driveway</button><button class="chip" data-v="Yes - Restricted Equipment Access">Restricted Equipment</button><button class="chip" data-v="Yes - Long Material Carry">Long Material Carry</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
+      </div>
+      <label class="f">Complex Roof Design</label>
+      <div class="chips" data-f="complex">
+        <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Multiple Elevations">Multiple Elevations</button><button class="chip" data-v="Yes - Cut-Up Roof">Cut-Up Roof</button><button class="chip" data-v="Yes - Dormers / Transitions">Dormers / Transitions</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
+      </div>
+      <label class="f">Special Equipment</label>
+      <div class="chips" data-f="equipment">
+        <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Lift">Lift</button><button class="chip" data-v="Yes - Scaffolding">Scaffolding</button><button class="chip" data-v="Yes - Additional Fall Protection">Additional Fall Protection</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
+      </div>
+      <label class="f">Occupied / Restricted Property</label>
+      <div class="chips" data-f="occupied">
+        <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - HOA Restrictions">HOA Restrictions</button><button class="chip" data-v="Yes - Limited Work Hours">Limited Work Hours</button><button class="chip" data-v="Yes - Sensitive Landscape / Hardscape">Sensitive Landscape</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
+      </div>
+      <label class="f" for="otherinstr">Other / Special Instructions</label>
+      <textarea id="otherinstr" data-f="otherinstr"></textarea>
+    </div>
+
+    <div class="card">
+      <h2>Work Items</h2>
+      <div class="sub">Set quantities with the + / - buttons. Add a note to any line if needed.</div>
+      <div id="workitems"></div>
+    </div>
+
+    <div class="card">
+      <h2>Additional Notes</h2>
+      <textarea id="addnotes" data-f="addnotes" placeholder="Anything else production should know"></textarea>
+      <div class="hint">Any unexpected conditions or additional work must be reported to the PM before proceeding.</div>
+    </div>
+
+    <div class="privacy">Your answers save automatically <b>on this device only</b> (gate code is never saved). Nothing is sent anywhere until you print, save or share the finished work order yourself.</div>
+  </div>
+
+  <div id="output">
+    <div class="wo" id="wopaper"></div>
+    <div class="outbtns no-print">
+      <button class="btn primary" id="printbtn">Print / Save as PDF</button>
+      <button class="btn ghost" id="sharebtn">Share (text / email / Drive)</button>
+      <button class="btn ghost" id="copybtn">Copy as Text</button>
+      <button class="btn ghost" id="editbtn">Back to Edit</button>
+      <button class="btn danger" id="newbtn">Start New Work Order</button>
+    </div>
+  </div>
+</main>
+
+<div class="savebar no-print" id="savebar">
+  <span class="status" id="savestatus">Draft saves on this device</span>
+  <button class="btn primary" id="genbtn">Generate Work Order</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var WORK = [
+    {g:"SITE PROTECTION", items:[["Protect landscaping / plants / trees","LS",1],["Protect windows / walls / driveway / hardscape","LS",1]]},
+    {g:"ROOFING", items:[["Tear off & dispose existing roofing","SQ",0],["Install architectural shingles","SQ",0],["Install underlayment","SQ",0],["Ice & water barrier at valley","LF",0],["Install drip edge","LF",0],["Install ridge cap","LF",0],["Flat roof restoration","SQ",0]]},
+    {g:"ACCESSORIES", items:[["Replace pipe jacks","EA",0],["Replace turbine vents","EA",0],["Satellite realignment after roof completion","EA",0],["Straighten A/C condenser fins","EA",0],["Replace T-top vents","EA",0],["Replace B-vent flashing","EA",0],["Replace split pipe boots","EA",0],["Replace dormer vents","EA",0]]},
+    {g:"DECKING", items:[["Backup 4' x 8' decking sheets","EA",0]]},
+    {g:"SPECIAL CONDITIONS", items:[["rooftop HVAC","LS",0],["Take extra care at pitched / flat roof transition","LS",0],["Shingle moulding","LF",0],["Fascia replacement","LF",0],["Do not disturb patio flat roof or shed roofs","LS",0],["Dispose of Swamp Cooler and Patch Deck","EA",0],["SOLAR DnR will be needed.","",0]]},
+    {g:"CLOSEOUT", items:[["Remove all debris","EA",1],["Final magnetic sweep","EA",1],["Final roof inspection","EA",1],["Completion photos","EA",1]]}
+  ];
+  var KEY = 'hr-workorder-draft-v1';
+  var state = { fields:{}, items:{} };
+  WORK.forEach(function(g,gi){ g.items.forEach(function(it,ii){ state.items[gi+'-'+ii] = {qty:it[2], note:''}; }); });
+
+  // Build work item UI
+  var wi = document.getElementById('workitems');
+  WORK.forEach(function(g,gi){
+    var det = document.createElement('details'); det.className='group'; if(gi<2) det.open=true;
+    var sum = document.createElement('summary');
+    sum.innerHTML = '<span>'+g.g+'</span><span><span class="count" id="cnt-'+gi+'"></span><span class="chev">&#9662;</span></span>';
+    det.appendChild(sum);
+    g.items.forEach(function(it,ii){
+      var id = gi+'-'+ii;
+      var row = document.createElement('div'); row.className='item';
+      row.innerHTML = '<span class="nm">'+it[0]+(it[1]?' <span class="unit">'+it[1]+'</span>':'')+'</span>'+
+        '<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
+        '<input type="number" min="0" inputmode="numeric" data-item="'+id+'" value="'+it[2]+'">'+
+        '<button type="button" data-d="1" aria-label="increase">+</button></span>'+
+        '<button type="button" class="notebtn" data-notebtn="'+id+'">+ note</button>'+
+        '<textarea data-notefor="'+id+'" placeholder="Note for this line" style="display:none;flex-basis:100%"></textarea>';
+      det.appendChild(row);
+    });
+    wi.appendChild(det);
+  });
+
+  function updateCounts(){
+    WORK.forEach(function(g,gi){
+      var n=0; g.items.forEach(function(it,ii){ if(state.items[gi+'-'+ii].qty>0) n++; });
+      var el=document.getElementById('cnt-'+gi); el.textContent = n? n+' set' : '';
+    });
+  }
+
+  // Chips (single select)
+  document.querySelectorAll('.chips').forEach(function(c){
+    c.addEventListener('click', function(e){
+      var b = e.target.closest('.chip'); if(!b) return;
+      c.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on'); save();
+    });
+  });
+  function chipVal(f){ var on = document.querySelector('.chips[data-f="'+f+'"] .chip.on'); return on ? on.getAttribute('data-v') : ''; }
+  function setChip(f,v){ var c=document.querySelector('.chips[data-f="'+f+'"]'); if(!c) return; var hit=false;
+    c.querySelectorAll('.chip').forEach(function(x){ var m = x.getAttribute('data-v')===v; x.classList.toggle('on', m); if(m) hit=true; });
+    if(!v) c.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
+  }
+
+  // Field listeners
+  document.querySelectorAll('[data-f]').forEach(function(el){
+    if(el.classList.contains('chips')) return;
+    el.addEventListener('input', save);
+    el.addEventListener('change', save);
+  });
+
+  // Steppers
+  wi.addEventListener('click', function(e){
+    var b = e.target.closest('.step button');
+    if(b){
+      var inp = b.parentElement.querySelector('input');
+      var v = Math.max(0, (parseInt(inp.value,10)||0) + parseInt(b.getAttribute('data-d'),10));
+      inp.value = v; state.items[inp.getAttribute('data-item')].qty = v; updateCounts(); save(); return;
+    }
+    var nb = e.target.closest('.notebtn');
+    if(nb){ var ta = wi.querySelector('textarea[data-notefor="'+nb.getAttribute('data-notebtn')+'"]');
+      ta.style.display = ta.style.display==='none' ? 'block' : 'none'; if(ta.style.display==='block') ta.focus(); }
+  });
+  wi.addEventListener('input', function(e){
+    var inp = e.target.closest('input[data-item]');
+    if(inp){ inp.value = Math.max(0, parseInt(inp.value,10)||0); state.items[inp.getAttribute('data-item')].qty = parseInt(inp.value,10)||0; updateCounts(); save(); return; }
+    var ta = e.target.closest('textarea[data-notefor]');
+    if(ta){ state.items[ta.getAttribute('data-notefor')].note = ta.value; save(); }
+  });
+
+  var saveTimer=null;
+  function save(){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){
+      var f={};
+      document.querySelectorAll('[data-f]').forEach(function(el){
+        if(el.classList.contains('chips')){ f[el.getAttribute('data-f')] = chipVal(el.getAttribute('data-f')); }
+        else if(!el.hasAttribute('data-nosave')){ f[el.getAttribute('data-f')] = el.value; }
+      });
+      state.fields = f;
+      try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+      var s=document.getElementById('savestatus'); s.textContent='Draft saved on this device '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+    }, 350);
+  }
+
+  function restore(){
+    var raw; try{ raw = localStorage.getItem(KEY); }catch(e){ return; }
+    if(!raw) return;
+    try{
+      var d = JSON.parse(raw);
+      if(d.items){ Object.keys(d.items).forEach(function(k){ if(state.items[k]) state.items[k]=d.items[k]; }); }
+      if(d.fields){ Object.keys(d.fields).forEach(function(k){
+        var el = document.querySelector('[data-f="'+k+'"]');
+        if(!el) return;
+        if(el.classList.contains('chips')) setChip(k, d.fields[k]);
+        else if(!el.hasAttribute('data-nosave')) el.value = d.fields[k];
+      }); }
+      Object.keys(state.items).forEach(function(k){
+        var inp = wi.querySelector('input[data-item="'+k+'"]'); if(inp) inp.value = state.items[k].qty;
+        var ta = wi.querySelector('textarea[data-notefor="'+k+'"]'); if(ta && state.items[k].note){ ta.value = state.items[k].note; ta.style.display='block'; }
+      });
+      updateCounts();
+    }catch(e){}
+  }
+
+  function val(f){ var el=document.querySelector('[data-f="'+f+'"]'); if(!el) return '';
+    if(el.classList.contains('chips')) return chipVal(f); return el.value.trim(); }
+
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function rowKV(k,v){ return v ? '<tr><td class="k">'+esc(k)+'</td><td>'+esc(v)+'</td></tr>' : ''; }
+
+  function buildOutput(){
+    var today = new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'});
+    var h = '<div class="wohead"><img src="heirloom-logo-white.png" alt="" style="background:#0161A8;border-radius:10px;padding:6px 10px"><div class="wt">PRODUCTION WORK ORDER</div><div class="wd">Heirloom Roofing LLC &bull; '+today+'</div></div>';
+    h += '<h3>Project Manager</h3><table>'+ rowKV('Heirloom Project Manager', val('pm')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')) +'</table>';
+    h += '<h3>Job Info</h3><table>'+ rowKV('Customer', val('customer')) + rowKV('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', val('gate')) +'</table>';
+    h += '<h3>Roof Details</h3><table>'+ rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off', val('tearoff')) + rowKV('Approx. Install', val('install')) +'</table>';
+    h += '<h3>The Big 5</h3><table>'+ rowKV('1. Layers', val('layers'))
+      + rowKV('2. Decking / Redeck', val('decking') + (val('deckqty')? ' - '+val('deckqty')+' sheets':'') + (val('deckthick')? ' - '+val('deckthick'):''))
+      + rowKV('3. A/C / Crane', val('accrane'))
+      + rowKV('4. Fascia Replacement', val('fascia') + (val('fasciasize')? ' - '+val('fasciasize'):''))
+      + rowKV('5. Special Conditions', val('special')) +'</table>';
+    h += '<h3>Property Conditions</h3><table>'+ rowKV('Steep Pitch', val('pitch')) + rowKV('Stories / Roof Height', val('stories')) + rowKV('Limited Access', val('access')) + rowKV('Complex Roof Design', val('complex')) + rowKV('Special Equipment', val('equipment')) + rowKV('Occupied / Restricted', val('occupied')) + rowKV('Other / Special Instructions', val('otherinstr')) +'</table>';
+    var any=false, wh='';
+    WORK.forEach(function(g,gi){
+      var rows='';
+      g.items.forEach(function(it,ii){
+        var st = state.items[gi+'-'+ii];
+        if(st.qty>0 || (st.note && st.note.trim())){
+          rows += '<tr><td>'+esc(it[0])+'</td><td class="qty">'+(st.qty>0?st.qty:'')+'</td><td class="un">'+esc(it[1])+'</td></tr>';
+          if(st.note && st.note.trim()) rows += '<tr><td colspan="3" class="inote">'+esc(st.note)+'</td></tr>';
+        }
+      });
+      if(rows){ any=true; wh += '<h3>'+g.g+'</h3><table>'+rows+'</table>'; }
+    });
+    h += '<h3>Work Items</h3>' + (any ? wh : '<table><tr><td class="k">No quantities set</td></tr></table>');
+    if(val('addnotes')) h += '<h3>Additional Notes</h3><table><tr><td>'+esc(val('addnotes')).replace(/\n/g,'<br>')+'</td></tr></table>';
+    h += '<div class="foot">Any unexpected conditions or additional work must be reported to the PM before proceeding.</div>';
+    return h;
+  }
+
+  function summaryText(){
+    var L=[]; var p=function(k,v){ if(v) L.push(k+': '+v); };
+    L.push('HEIRLOOM ROOFING - PRODUCTION WORK ORDER');
+    L.push(new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'})); L.push('');
+    p('PM', val('pm')); p('Request JT PM', val('jt')); if(val('pmnotes')) p('PM Notes', val('pmnotes'));
+    p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', val('gate'));
+    L.push('');
+    p('Roof System', val('roofsystem')); p('Malarkey Product', val('malarkey')); p('Shingle Color', val('shinglecolor')); p('Drip Edge', val('dripedge')); p('Flat Roof Color', val('flatcolor')); p('Job Type', val('jobtype')); p('Approx. Tear-Off', val('tearoff')); p('Approx. Install', val('install'));
+    L.push(''); L.push('BIG 5:');
+    p('Layers', val('layers'));
+    var d = val('decking'); if(val('deckqty')) d += ' - '+val('deckqty')+' sheets'; if(val('deckthick')) d += ' - '+val('deckthick'); p('Decking', d);
+    p('A/C / Crane', val('accrane'));
+    var fa = val('fascia'); if(val('fasciasize')) fa += ' - '+val('fasciasize'); p('Fascia', fa);
+    p('Special Conditions', val('special'));
+    L.push(''); L.push('CONDITIONS:');
+    p('Steep Pitch', val('pitch')); p('Stories', val('stories')); p('Limited Access', val('access')); p('Complex Design', val('complex')); p('Special Equipment', val('equipment')); p('Occupied/Restricted', val('occupied'));
+    if(val('otherinstr')) p('Other Instructions', val('otherinstr'));
+    L.push(''); L.push('WORK ITEMS:');
+    WORK.forEach(function(g,gi){
+      var lines=[];
+      g.items.forEach(function(it,ii){ var st=state.items[gi+'-'+ii];
+        if(st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+it[0]+(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):'')+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
+      if(lines.length){ L.push(g.g+':'); lines.forEach(function(x){L.push(x);}); }
+    });
+    if(val('addnotes')){ L.push(''); L.push('NOTES: '+val('addnotes')); }
+    L.push(''); L.push('Any unexpected conditions or additional work must be reported to the PM before proceeding.');
+    return L.join('\n');
+  }
+
+  function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; setTimeout(function(){ t.style.display='none'; }, 2400); }
+
+  document.getElementById('genbtn').addEventListener('click', function(){
+    document.getElementById('wopaper').innerHTML = buildOutput();
+    document.getElementById('form').style.display='none';
+    document.getElementById('savebar').style.display='none';
+    document.getElementById('output').style.display='block';
+    window.scrollTo(0,0);
+  });
+  document.getElementById('editbtn').addEventListener('click', function(){
+    document.getElementById('output').style.display='none';
+    document.getElementById('form').style.display='block';
+    document.getElementById('savebar').style.display='flex';
+    window.scrollTo(0,0);
+  });
+  document.getElementById('printbtn').addEventListener('click', function(){ window.print(); });
+  document.getElementById('copybtn').addEventListener('click', function(){
+    var txt = summaryText();
+    function done(){ toast('Copied - paste it into a text, email or Drive doc'); }
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done, function(){ fallback(); }); } else fallback();
+    function fallback(){ var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); done(); }catch(e){ toast('Copy failed - use Print / Save as PDF instead'); } document.body.removeChild(ta); }
+  });
+  document.getElementById('sharebtn').addEventListener('click', function(){
+    var txt = summaryText();
+    if(navigator.share){ navigator.share({title:'Production Work Order - '+(val('customer')||'Heirloom Roofing'), text:txt}).catch(function(){}); }
+    else { document.getElementById('copybtn').click(); }
+  });
+  document.getElementById('newbtn').addEventListener('click', function(){
+    if(!confirm('Start a new work order? This clears the saved draft on this device.')) return;
+    try{ localStorage.removeItem(KEY); }catch(e){}
+    location.reload();
+  });
+
+  restore();
+  updateCounts();
+})();
+</script>
+</body>
+</html>
