@@ -358,14 +358,15 @@
   }
 
 
+  var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approximate Tear-Off Date", "install": "Approximate Install Date", "layers": "Layers", "decking": "Decking / Redeck", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
   function pendingMessage(){
     if(!state.review) return '';
     var a=[];
-    (state.review.pending||[]).forEach(function(k){var el=document.querySelector('[data-f="'+k+'"]'); if(el && !val(k)){var label=document.querySelector('label[for="'+k+'"]');a.push((label?label.textContent:k)+': PENDING');}});
+    (state.review.pending||[]).forEach(function(k){var el=document.querySelector('[data-f="'+k+'"]'); if(el && !val(k)){var label=document.querySelector('label[for="'+k+'"]');a.push((FIELD_LABELS[k]||(label?label.textContent:k))+': PENDING');}});
     Object.keys(state.items).forEach(function(k){if(state.items[k].qty==null){var x=k.split('-');a.push(WORK[+x[0]].items[+x[1]][0]+': PENDING quantity / scope');}});
     return (a.length?a.join('\n'):'All listed choices entered. Still a draft for review.')+(state.review.notes?'\nReview notes: '+state.review.notes:'');
   }
-  function refreshDraftNotice(){var n=document.getElementById('draftnotice'); if(!n)return; n.style.display=state.review?'block':'none';n.textContent=state.review?'DRAFT - not ready to send. '+pendingMessage():'';}
+  function refreshDraftNotice(){var n=document.getElementById('draftnotice'); if(!n)return; n.style.display=state.review?'block':'none';if(state.review){var msg=pendingMessage();var count=(msg.match(/PENDING/g)||[]).length;n.innerHTML='<b>DRAFT - review before sending</b><br>'+count+' pending choices or quantities. Confirmed answers are below.<details style="margin-top:8px"><summary>Review all pending choices and notes</summary><div style="white-space:pre-line;margin-top:8px">'+esc(msg)+'</div></details>';}}
   function validateDraft(d){
     if(!d||typeof d!=='object'||Array.isArray(d))throw Error('Expected a draft object.');
     Object.keys(d).forEach(function(k){if(['fields','items','review','version'].indexOf(k)<0)throw Error('Unexpected draft key: '+k);});
@@ -438,7 +439,7 @@
   function buildOutput(){
     var today = new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'});
     var h = '<div class="wohead"><img src="heirloom-logo-white.png" alt="" style="background:#0161A8;border-radius:10px;padding:6px 10px"><div class="wt">PRODUCTION WORK ORDER</div><div class="wd">Heirloom Roofing LLC &bull; '+today+'</div></div>';
-    if(state.review) h += '<div style="border:2px solid #b57800;padding:12px;margin:16px 0;color:#704800"><b>DRAFT - REVIEW BEFORE PRODUCTION</b><br>'+esc(pendingMessage()).replace(/\n/g,'<br>')+'</div>';
+    if(state.review) h += '<div style="border:2px solid #b57800;padding:12px;margin:16px 0;color:#704800"><b>DRAFT - REVIEW BEFORE PRODUCTION</b><br>'+(pendingMessage().match(/PENDING/g)||[]).length+' pending choices or quantities. Full review list is after the order below.</div>';
     h += '<h3>Project Manager</h3><table>'+ rowKV('Heirloom Project Manager', val('pm')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')) +'</table>';
     h += '<h3>Job Info</h3><table>'+ rowKV('Customer', val('customer')) + rowKV('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', val('gate')) +'</table>';
     h += '<h3>Roof Details</h3><table>'+ rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off', val('tearoff')) + rowKV('Approx. Install', val('install')) +'</table>';
@@ -462,6 +463,7 @@
     });
     h += '<h3>Work Items</h3>' + (any ? wh : '<table><tr><td class="k">No quantities set</td></tr></table>');
     if(val('addnotes')) h += '<h3>Additional Notes</h3><table><tr><td>'+esc(val('addnotes')).replace(/\n/g,'<br>')+'</td></tr></table>';
+    if(state.review) h += '<h3>Pending Choices and Review Notes</h3><div style="white-space:pre-line;border:1px solid #b57800;padding:12px">'+esc(pendingMessage())+'</div>';
     h += '<div class="foot">Any unexpected conditions or additional work must be reported to the PM before proceeding.</div>';
     return h;
   }
