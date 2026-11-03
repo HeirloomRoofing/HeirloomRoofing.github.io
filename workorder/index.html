@@ -112,7 +112,7 @@
       <label class="f" for="pm">Heirloom Project Manager</label>
       <input type="text" id="pm" data-f="pm" placeholder="Name">
       <label class="f">Request JT Project Manager</label>
-      <div class="chips" data-f="jt"><button class="chip" data-v="Yes">Yes</button><button class="chip on" data-v="No">No</button></div>
+      <div class="chips" data-f="jt"><button class="chip" data-v="Yes">Yes</button><button class="chip" data-v="No">No</button></div>
       <label class="f" for="pmnotes">Notes</label>
       <input type="text" id="pmnotes" data-f="pmnotes" placeholder='Required - enter "None" if no notes'>
     </div>
@@ -226,7 +226,7 @@
 
     <div class="card">
       <h2>Work Items</h2>
-      <div class="sub">Set quantities with the + / - buttons. Add a note to any line if needed.</div>
+      <div class="sub">Every line needs an answer - set 0 for not needed, add a note to any line if helpful.</div>
       <div id="workitems"></div>
     </div>
 
@@ -282,7 +282,7 @@
   ];
   var KEY = 'hr-workorder-draft-v1';
   var state = { fields:{}, items:{} };
-  WORK.forEach(function(g,gi){ g.items.forEach(function(it,ii){ state.items[gi+'-'+ii] = {qty:it[2], note:''}; }); });
+  WORK.forEach(function(g,gi){ g.items.forEach(function(it,ii){ state.items[gi+'-'+ii] = {qty:null, note:''}; }); });
 
   // Build work item UI
   var wi = document.getElementById('workitems');
@@ -296,7 +296,7 @@
       var row = document.createElement('div'); row.className='item';
       row.innerHTML = '<span class="nm">'+it[0]+(it[1]?' <span class="unit">'+it[1]+'</span>':'')+'</span>'+
         '<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
-        '<input type="number" min="0" inputmode="numeric" data-item="'+id+'" value="'+it[2]+'">'+
+        '<input type="number" min="0" inputmode="numeric" data-item="'+id+'" value="" placeholder="-">'+
         '<button type="button" data-d="1" aria-label="increase">+</button></span>'+
         '<button type="button" class="notebtn" data-notebtn="'+id+'">+ note</button>'+
         '<textarea data-notefor="'+id+'" placeholder="Note for this line" style="display:none;flex-basis:100%"></textarea>';
@@ -307,8 +307,8 @@
 
   function updateCounts(){
     WORK.forEach(function(g,gi){
-      var n=0; g.items.forEach(function(it,ii){ if(state.items[gi+'-'+ii].qty>0) n++; });
-      var el=document.getElementById('cnt-'+gi); el.textContent = n? n+' set' : '';
+      var n=0; g.items.forEach(function(it,ii){ if(state.items[gi+'-'+ii].qty!=null) n++; });
+      var el=document.getElementById('cnt-'+gi); el.textContent = n? n+' answered' : '';
     });
   }
 
@@ -441,7 +441,7 @@
         else if(!el.hasAttribute('data-nosave')) el.value = d.fields[k];
       }); }
       Object.keys(state.items).forEach(function(k){
-        var inp = wi.querySelector('input[data-item="'+k+'"]'); if(inp) inp.value = state.items[k].qty==null?'':state.items[k].qty; inp.placeholder='Pending';
+        var inp = wi.querySelector('input[data-item="'+k+'"]'); if(inp){ inp.value = state.items[k].qty==null?'':state.items[k].qty; if(state.review) inp.placeholder='Pending'; }
         var ta = wi.querySelector('textarea[data-notefor="'+k+'"]'); if(ta && state.items[k].note){ ta.value = state.items[k].note; ta.style.display='block'; }
       });
       updateCounts(); refreshDraftNotice();
@@ -482,25 +482,36 @@
       if(r[1] && !r[1]()) return;
       if(!val(r[0])) miss.push(r[0]);
     });
-    var roofOK=false;
-    WORK[1].items.forEach(function(it,ii){ var st=state.items['1-'+ii]; if(st && (st.qty>0 || (st.note && st.note.trim()))) roofOK=true; });
-    if(!roofOK) miss.push('__roofing');
+    WORK.forEach(function(g,gi){
+      var n=0;
+      g.items.forEach(function(it,ii){ var st=state.items[gi+'-'+ii]; if(!st || st.qty==null) n++; });
+      if(n) miss.push('__wi'+gi+':'+n);
+    });
     return miss;
   }
   function showReqErrors(miss){
     var box=document.getElementById('reqerrors');
     var names=miss.map(function(k){
-      if(k==='__roofing') return 'Work Items - Roofing: set at least one quantity or note';
+      if(k.indexOf('__wi')===0){ var p=k.slice(4).split(':'); return 'Work Items - '+WORK[+p[0]].g+': '+p[1]+' line'+(p[1]==='1'?'':'s')+' unanswered (set 0 for not needed)'; }
       return FIELD_LABELS[k]||k;
     });
     box.innerHTML='<b>Fill in everything before generating the work order:</b><br>'+names.join('<br>');
     box.style.display='block';
     document.querySelectorAll('.miss').forEach(function(e){ e.classList.remove('miss'); });
     miss.forEach(function(k){
-      if(k==='__roofing'){ var det=document.querySelectorAll('#workitems details.group')[1]; if(det){ det.open=true; det.classList.add('miss'); } return; }
+      if(k.indexOf('__wi')===0){
+        var gi=+k.slice(4).split(':')[0];
+        var det=document.querySelectorAll('#workitems details.group')[gi];
+        if(det){ det.open=true; det.classList.add('miss'); }
+        WORK[gi].items.forEach(function(it,ii){
+          var st=state.items[gi+'-'+ii];
+          if(!st || st.qty==null){ var inp=wi.querySelector('input[data-item="'+gi+'-'+ii+'"]'); if(inp && inp.closest('.item')) inp.closest('.item').classList.add('miss'); }
+        });
+        return;
+      }
       var el=document.querySelector('[data-f="'+k+'"]'); if(el) el.classList.add('miss');
     });
-    var first=miss[0]==='__roofing' ? document.querySelectorAll('#workitems details.group')[1] : document.querySelector('[data-f="'+miss[0]+'"]');
+    var first=miss[0].indexOf('__wi')===0 ? document.querySelectorAll('#workitems details.group')[+miss[0].slice(4).split(':')[0]] : document.querySelector('[data-f="'+miss[0]+'"]');
     if(first && first.scrollIntoView) first.scrollIntoView({behavior:'smooth', block:'center'});
   }
   function hideReqErrors(){
@@ -509,6 +520,7 @@
   }
   document.getElementById('form').addEventListener('input', function(e){
     var t=e.target.closest('.miss'); if(t) t.classList.remove('miss');
+    var d=e.target.closest('details.group.miss'); if(d) d.classList.remove('miss');
     var box=document.getElementById('reqerrors'); if(box.style.display==='block') box.style.display='none';
   });
   document.getElementById('form').addEventListener('click', function(e){
