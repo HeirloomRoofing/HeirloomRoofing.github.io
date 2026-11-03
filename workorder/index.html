@@ -159,8 +159,8 @@
         <button class="chip" data-v="Retail">Retail</button><button class="chip" data-v="Insurance">Insurance</button>
       </div>
       <div class="row2">
-        <div><label class="f" for="tearoff">Approx. Tear-Off</label><input type="number" id="tearoff" data-f="tearoff" min="0" max="100" inputmode="numeric"></div>
-        <div><label class="f" for="install">Approx. Install</label><input type="number" id="install" data-f="install" min="0" max="100" inputmode="numeric"></div>
+        <div><label class="f" for="tearoff">Approx. Tear-Off (SQ)</label><input type="number" id="tearoff" data-f="tearoff" min="0" max="100" step="any" inputmode="decimal"></div>
+        <div><label class="f" for="install">Approx. Install (SQ)</label><input type="number" id="install" data-f="install" min="0" max="100" step="any" inputmode="decimal"></div>
       </div>
     </div>
 
@@ -296,7 +296,7 @@
       var row = document.createElement('div'); row.className='item';
       row.innerHTML = '<span class="nm">'+it[0]+(it[1]?' <span class="unit">'+it[1]+'</span>':'')+'</span>'+
         '<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
-        '<input type="number" min="0" inputmode="numeric" data-item="'+id+'" value="" placeholder="-">'+
+        '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="" placeholder="-">'+
         '<button type="button" data-d="1" aria-label="increase">+</button></span>'+
         '<button type="button" class="notebtn" data-notebtn="'+id+'">+ note</button>'+
         '<textarea data-notefor="'+id+'" placeholder="Note for this line" style="display:none;flex-basis:100%"></textarea>';
@@ -345,7 +345,7 @@
     var b = e.target.closest('.step button');
     if(b){
       var inp = b.parentElement.querySelector('input');
-      var v = Math.max(0, (parseInt(inp.value,10)||0) + parseInt(b.getAttribute('data-d'),10));
+      var v = Math.max(0, Math.round(((parseFloat(inp.value)||0) + parseInt(b.getAttribute('data-d'),10))*100)/100);
       inp.value = v; state.items[inp.getAttribute('data-item')].qty = v; updateCounts(); save(); return;
     }
     var nb = e.target.closest('.notebtn');
@@ -354,7 +354,7 @@
   });
   wi.addEventListener('input', function(e){
     var inp = e.target.closest('input[data-item]');
-    if(inp){ state.items[inp.getAttribute('data-item')].qty = inp.value.trim()===''?null:Math.max(0,parseInt(inp.value,10)||0); updateCounts(); save(); return; }
+    if(inp){ var n=parseFloat(inp.value); state.items[inp.getAttribute('data-item')].qty = (inp.value.trim()===''||isNaN(n))?null:Math.max(0,Math.round(n*100)/100); updateCounts(); save(); return; }
     var ta = e.target.closest('textarea[data-notefor]');
     if(ta){ state.items[ta.getAttribute('data-notefor')].note = ta.value; save(); }
   });
@@ -376,7 +376,7 @@
   }
 
 
-  var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "gate": "Gate Code", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approximate Tear-Off Date", "install": "Approximate Install Date", "layers": "Layers", "decking": "Decking / Redeck", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
+  var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "gate": "Gate Code", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approx. Tear-Off (SQ)", "install": "Approx. Install (SQ)", "layers": "Layers", "decking": "Decking / Redeck", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
   function pendingMessage(){
     if(!state.review) return '';
     var a=[];
@@ -404,7 +404,7 @@
       if(!Object.prototype.hasOwnProperty.call(out.items,k))throw Error('Unknown work item: '+k);
       var x=d.items[k];if(!x||typeof x!=='object'||Array.isArray(x))throw Error('Invalid item: '+k);
       Object.keys(x).forEach(function(a){if(['qty','note'].indexOf(a)<0)throw Error('Unexpected item field.');});
-      if(x.qty!=null&&(typeof x.qty!=='number'||!Number.isFinite(x.qty)||x.qty<0||x.qty>100000||!Number.isInteger(x.qty)))throw Error('Invalid quantity: '+k);
+      if(x.qty!=null&&(typeof x.qty!=='number'||!Number.isFinite(x.qty)||x.qty<0||x.qty>100000))throw Error('Invalid quantity: '+k);
       if(x.note!=null&&(typeof x.note!=='string'||x.note.length>10000))throw Error('Invalid note: '+k);
       out.items[k]={qty:x.qty==null?null:x.qty,note:x.note||''};
     });
@@ -534,7 +534,7 @@
     if(state.review) h += '<div style="border:2px solid #b57800;padding:12px;margin:16px 0;color:#704800"><b>DRAFT - REVIEW BEFORE PRODUCTION</b><br>'+(pendingMessage().match(/PENDING/g)||[]).length+' pending choices or quantities. Full review list is after the order below.</div>';
     h += '<h3>Project Manager</h3><table>'+ rowKV('Heirloom Project Manager', val('pm')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')) +'</table>';
     h += '<h3>Job Info</h3><table>'+ rowKV('Customer', val('customer')) + rowKV('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', gateVal()) +'</table>';
-    h += '<h3>Roof Details</h3><table>'+ rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off', val('tearoff')) + rowKV('Approx. Install', val('install')) +'</table>';
+    h += '<h3>Roof Details</h3><table>'+ rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off (SQ)', val('tearoff')) + rowKV('Approx. Install (SQ)', val('install')) +'</table>';
     h += '<h3>The Big 5</h3><table>'+ rowKV('1. Layers', val('layers'))
       + rowKV('2. Decking / Redeck', val('decking') + (val('deckqty')? ' - '+val('deckqty')+' sheets':'') + (val('deckthick')? ' - '+val('deckthick'):''))
       + rowKV('3. A/C / Crane', val('accrane'))
@@ -567,7 +567,7 @@
     p('PM', val('pm')); p('Request JT PM', val('jt')); if(val('pmnotes')) p('PM Notes', val('pmnotes'));
     p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', gateVal());
     L.push('');
-    p('Roof System', val('roofsystem')); p('Malarkey Product', val('malarkey')); p('Shingle Color', val('shinglecolor')); p('Drip Edge', val('dripedge')); p('Flat Roof Color', val('flatcolor')); p('Job Type', val('jobtype')); p('Approx. Tear-Off', val('tearoff')); p('Approx. Install', val('install'));
+    p('Roof System', val('roofsystem')); p('Malarkey Product', val('malarkey')); p('Shingle Color', val('shinglecolor')); p('Drip Edge', val('dripedge')); p('Flat Roof Color', val('flatcolor')); p('Job Type', val('jobtype')); p('Approx. Tear-Off (SQ)', val('tearoff')); p('Approx. Install (SQ)', val('install'));
     L.push(''); L.push('BIG 5:');
     p('Layers', val('layers'));
     var d = val('decking'); if(val('deckqty')) d += ' - '+val('deckqty')+' sheets'; if(val('deckthick')) d += ' - '+val('deckthick'); p('Decking', d);
