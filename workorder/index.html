@@ -152,7 +152,7 @@
       </div>
       <label class="f">Flat Roof Color</label>
       <div class="chips" data-f="flatcolor">
-        <button class="chip" data-v="White">White</button><button class="chip" data-v="Tan">Tan</button><button class="chip" data-v="Gray">Gray</button><button class="chip" data-v="Black">Black</button><button class="chip" data-v="Other">Other</button><button class="chip" data-v="N/A - No Flat Roof">N/A - No Flat Roof</button>
+        <button class="chip" data-v="White">White</button><button class="chip" data-v="Tan">Tan</button><button class="chip" data-v="Gray">Gray</button><button class="chip" data-v="Black">Black</button><button class="chip" data-v="Other">Other</button><button class="chip" data-v="N/A - No Flat Roof">N/A - No Flat Roof</button><button class="chip" data-v="Not Included in This Job">Not Included in This Job</button>
       </div>
       <label class="f">Job Type</label>
       <div class="chips" data-f="jobtype">
@@ -384,7 +384,7 @@
     Object.keys(state.items).forEach(function(k){if(state.items[k].qty==null){var x=k.split('-');a.push(WORK[+x[0]].items[+x[1]][0]+': PENDING quantity / scope');}});
     return (a.length?a.join('\n'):'All listed choices entered. Still a draft for review.')+(state.review.notes?'\nReview notes: '+state.review.notes:'');
   }
-  function refreshDraftNotice(){var n=document.getElementById('draftnotice'); if(!n)return; n.style.display=state.review?'block':'none';if(state.review){var msg=pendingMessage();var count=(msg.match(/PENDING/g)||[]).length;n.innerHTML='<b>DRAFT - review before sending</b><br>'+count+' pending choices or quantities. Confirmed answers are below.<details style="margin-top:8px"><summary>Review all pending choices and notes</summary><div style="white-space:pre-line;margin-top:8px">'+esc(msg)+'</div></details>';}}
+  function refreshDraftNotice(){var n=document.getElementById('draftnotice'); if(!n)return; n.style.display=state.review?'block':'none';if(state.review){var msg=pendingMessage();var count=(msg.match(/PENDING/g)||[]).length;n.innerHTML='<b>DRAFT - review before sending</b><br>'+count+' pending choices or quantities. Confirmed answers are below.<details style="margin-top:8px"><summary>Review all pending choices and notes</summary><div style="white-space:pre-line;margin-top:8px">'+esc(msg)+'</div></details><button type="button" class="btn ghost" id="finishreview" style="width:100%;margin-top:10px">Finish review - everything is filled in</button>';}}
   function validateDraft(d){
     if(!d||typeof d!=='object'||Array.isArray(d))throw Error('Expected a draft object.');
     Object.keys(d).forEach(function(k){if(['fields','items','review','version'].indexOf(k)<0)throw Error('Unexpected draft key: '+k);});
@@ -518,6 +518,15 @@
     var box=document.getElementById('reqerrors'); box.style.display='none';
     document.querySelectorAll('.miss').forEach(function(e){ e.classList.remove('miss'); });
   }
+  document.getElementById('draftnotice').addEventListener('click', function(e){
+    if(e.target.id!=='finishreview') return;
+    var miss=missingRequired();
+    if(miss.length){ showReqErrors(miss); return; }
+    if(!confirm('Finish the review? The draft warning comes off and this becomes a finished work order on this device.')) return;
+    state.review=null; hideReqErrors(); save(); refreshDraftNotice();
+    toast('Review finished - you can now generate and email the work order');
+  });
+
   document.getElementById('form').addEventListener('input', function(e){
     var t=e.target.closest('.miss'); if(t) t.classList.remove('miss');
     var d=e.target.closest('details.group.miss'); if(d) d.classList.remove('miss');
