@@ -21,8 +21,9 @@
   html, body { margin:0; }
   body { background:#0161A8; font-family:'Space Grotesk',-apple-system,Helvetica,Arial,sans-serif; font-weight:500; }
   a { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; text-decoration:none; padding:24px; font-size:clamp(28px,8vw,44px); font-weight:700; -webkit-tap-highlight-color:transparent; }
-  a img { width:190px; height:110px; object-fit:contain; margin-bottom:22px; }
-  a.one { height:50vh; height:50dvh; background:#0161A8; color:#fff; padding-top:max(24px,env(safe-area-inset-top)); }
+  a img { width:190px; height:110px; object-fit:contain; }
+  a.one img { position:absolute; top:max(16px,env(safe-area-inset-top)); left:50%; transform:translateX(-50%); }
+  a.one { height:50vh; height:50dvh; background:#0161A8; color:#fff; position:relative; padding-top:130px; }
   a.two { height:50vh; height:50dvh; background:#fff; color:#0161A8; }
   a.three { height:25vh; height:25dvh; min-height:140px; background:#f0f7fc; color:#0161A8; border-top:1.5px solid #0161A8; padding-bottom:max(24px,env(safe-area-inset-bottom)); }
   a:active { filter:brightness(.94); }
