@@ -184,7 +184,7 @@
 </div>
 <label class="f" for="otherinstr">Other / Special Instructions</label>
 <textarea data-f="otherinstr" id="otherinstr" placeholder='Required - enter "None" if no other instructions'></textarea>
-</div><div class="card">
+</div><div class="no-print" style="margin:14px 0 2px;text-align:center"><button class="btn primary" id="genbtn2" type="button" style="width:min(340px,100%)">Generate PDF</button></div><div class="card">
 <h2>Job Info</h2>
 <label class="f" for="customer">Customer</label>
 <input data-f="customer" id="customer" type="text"/>
@@ -577,7 +577,7 @@
 
   function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; setTimeout(function(){ t.style.display='none'; }, 2400); }
 
-  document.getElementById('genbtn').addEventListener('click', function(){
+  function generateOrder(){
     if(!state.review){
       var miss=missingRequired();
       if(miss.length){ showReqErrors(miss); return; }
@@ -594,7 +594,9 @@
     document.getElementById('savebar').style.display='none';
     document.getElementById('output').style.display='block';
     window.scrollTo(0,0);
-  });
+  }
+  document.getElementById('genbtn').addEventListener('click', generateOrder);
+  document.getElementById('genbtn2').addEventListener('click', generateOrder);
   document.getElementById('editbtn').addEventListener('click', function(){
     document.getElementById('output').style.display='none';
     document.getElementById('form').style.display='block';
