@@ -251,8 +251,9 @@
     <div class="wo" id="wopaper"></div>
     <div class="outbtns no-print">
       <div id="longwarn" style="display:none;background:#fff4e5;border:1.5px solid #e0a030;border-radius:12px;padding:12px 14px;font-size:13.5px;font-weight:600;color:#7a5410;line-height:1.45">
-        LONG ORDER - the email will contain a SUMMARY only. Tapping the email button copies the FULL order to your clipboard: paste it into the email body before sending. Safer option for a long order: use Download PDF below and attach the PDF instead.
+        LONG ORDER - the email will contain a SUMMARY only. Tapping the email button copies the FULL order to your clipboard: paste it into the email body before sending. Safer option for a long order: use Share PDF and attach the PDF instead.
       </div>
+      <button class="btn primary" id="sharepdfbtn">Share PDF</button>
       <a class="btn primary" id="emailbtn" href="#" style="text-decoration:none;text-align:center">Send email to Nick and Erik</a>
       <div id="rcptsetup" style="display:none;background:#fff;border:1.5px solid var(--brand);border-radius:12px;padding:12px">
         <label class="f" for="rcpts" style="margin-top:0">Email work orders to</label>
@@ -260,12 +261,10 @@
         <div class="hint">Saved on this device only - nothing is published or shared. Ask once, then every order is addressed automatically.</div>
         <button class="btn primary" id="rcptsave" style="width:100%;margin-top:8px">Save Recipients</button>
       </div>
-      <button class="btn ghost" id="pdfbtn">Download PDF</button>
-      <button class="btn ghost" id="printbtn">Print</button>
-      <button class="btn ghost" id="sharebtn">Share (text / email / Drive)</button>
-      <button class="btn ghost" id="copybtn">Copy as Text</button>
-      <button class="btn ghost" id="editbtn">Back to Edit</button>
-      <button class="btn danger" id="newbtn">Start New Work Order</button>
+      <div style="display:flex;gap:10px;margin-top:6px">
+        <button class="btn ghost" id="editbtn" style="flex:1">Back to Edit</button>
+        <button class="btn ghost" id="newbtn" style="flex:1;color:#b3261e">Start New</button>
+      </div>
     </div>
   </div>
 </main>
@@ -692,8 +691,8 @@
     toast('Recipients saved on this device');
   });
 
-  async function downloadPDF(){
-    if(!window.jspdf||!window.html2canvas){ toast('PDF library did not load - use Print'); return; }
+  async function buildPDF(){
+    if(!window.jspdf||!window.html2canvas){ toast('PDF library did not load - try again'); return null; }
     var wasOpen=[];document.querySelectorAll('#form details.group').forEach(function(d,i){wasOpen[i]=d.open;d.open=true;});
     document.getElementById('output').style.display='block';
     document.getElementById('form').style.display='none';
@@ -763,25 +762,23 @@
         pdf.addImage(piece.toDataURL('image/jpeg',0.92),'JPEG',m,m,imgw,h*imgw/cv.width);
       }
       var name=(val('customer')||'Work Order').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'Work-Order';
-      pdf.save('Heirloom-Work-Order-'+name+'.pdf');
-    }catch(e){toast('Could not create PDF - use Print');}
-    w.style.width='';w.style.maxWidth='';
-    wasOpen.forEach(function(x,i){document.querySelectorAll('#form details.group')[i].open=x;});
+      return {pdf:pdf, name:'Heirloom-Work-Order-'+name+'.pdf'};
+    }catch(e){toast('Could not create PDF - try again'); return null;}
+    finally{
+      w.style.width='';w.style.maxWidth='';
+      wasOpen.forEach(function(x,i){document.querySelectorAll('#form details.group')[i].open=x;});
+    }
   }
-  document.getElementById('pdfbtn').addEventListener('click',downloadPDF);
-
-  document.getElementById('printbtn').addEventListener('click', function(){ window.print(); });
-  document.getElementById('copybtn').addEventListener('click', function(){
-    var txt = summaryText();
-    function done(){ toast('Copied - paste it into a text, email or Drive doc'); }
-    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done, function(){ fallback(); }); } else fallback();
-    function fallback(){ var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); done(); }catch(e){ toast('Copy failed - use Download PDF instead'); } document.body.removeChild(ta); }
-  });
-  document.getElementById('sharebtn').addEventListener('click', function(){
-    if(state.review){ if(typeof e!=='undefined') e.preventDefault(); alert('This is a review draft. Printing or copying keeps its draft warning. Resolve the pending choices and review the order before sending.'); return; }
-    var txt = summaryText();
-    if(navigator.share){ navigator.share({title:'Production Work Order - '+(val('customer')||'Heirloom Roofing'), text:txt}).catch(function(){}); }
-    else { document.getElementById('copybtn').click(); }
+  document.getElementById('sharepdfbtn').addEventListener('click', async function(){
+    var r = await buildPDF(); if(!r) return;
+    var blob = r.pdf.output('blob');
+    var file = new File([blob], r.name, {type:'application/pdf'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({files:[file], title:'Production Work Order'}).catch(function(){});
+    } else {
+      r.pdf.save(r.name);
+      toast('PDF saved - attach it from your Files');
+    }
   });
   document.getElementById('newbtn').addEventListener('click', function(){
     if(!confirm('Start a new work order? This clears the saved draft on this device.')) return;
