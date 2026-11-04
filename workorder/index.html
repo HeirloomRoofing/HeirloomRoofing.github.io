@@ -91,6 +91,7 @@
   .wo td.un2 { color:var(--muted); width:40px; text-align:left; }
   .wo .foot { margin-top:18px; font-size:12px; color:var(--muted); border-top:1px solid var(--line); padding-top:10px; font-style:italic; }
   .outbtns { display:grid; gap:10px; margin-top:14px; }
+  .outbtns > .btn.primary { width:min(340px,92%); margin:0 auto; text-align:center; }
   .toast { position:fixed; bottom:76px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:10px 18px; border-radius:999px; font-size:13.5px; font-weight:600; display:none; z-index:20; }
   @media print {
     body { background:#fff; }
@@ -250,17 +251,8 @@
   <div id="output">
     <div class="wo" id="wopaper"></div>
     <div class="outbtns no-print">
-      <div id="longwarn" style="display:none;background:#fff4e5;border:1.5px solid #e0a030;border-radius:12px;padding:12px 14px;font-size:13.5px;font-weight:600;color:#7a5410;line-height:1.45">
-        LONG ORDER - the email will contain a SUMMARY only. Tapping the email button copies the FULL order to your clipboard: paste it into the email body before sending. Safer option for a long order: use Share PDF and attach the PDF instead.
-      </div>
       <button class="btn primary" id="sharepdfbtn">Share PDF</button>
       <a class="btn primary" id="emailbtn" href="#" style="text-decoration:none;text-align:center">Send email to Nick and Erik</a>
-      <div id="rcptsetup" style="display:none;background:#fff;border:1.5px solid var(--brand);border-radius:12px;padding:12px">
-        <label class="f" for="rcpts" style="margin-top:0">Email work orders to</label>
-        <input type="text" id="rcpts" placeholder="Emails, separated by commas" autocomplete="off">
-        <div class="hint">Saved on this device only - nothing is published or shared. Ask once, then every order is addressed automatically.</div>
-        <button class="btn primary" id="rcptsave" style="width:100%;margin-top:8px">Save Recipients</button>
-      </div>
       <div style="display:flex;gap:10px;margin-top:6px">
         <button class="btn ghost" id="editbtn" style="flex:1">Back to Edit</button>
         <button class="btn ghost" id="newbtn" style="flex:1;color:#b3261e">Start New</button>
@@ -623,11 +615,10 @@
     document.getElementById('wopaper').innerHTML = buildOutput();
     var eb = document.getElementById('emailbtn');
     var m = buildMailto();
-    eb.href = getRcpts() ? m.url : '#';
+    eb.href = m.url;
     eb.setAttribute('data-copied', m.copied ? '1' : '');
     eb.setAttribute('data-full', m.copied ? m.full : '');
-    document.getElementById('longwarn').style.display = m.copied ? 'block' : 'none';
-    eb.textContent = m.copied ? 'Send email to Nick and Erik (summary - full order copied to paste in)' : 'Send email to Nick and Erik';
+    eb.textContent = 'Send email to Nick and Erik';
     document.getElementById('form').style.display='none';
     document.getElementById('savebar').style.display='none';
     document.getElementById('output').style.display='block';
@@ -640,7 +631,8 @@
     window.scrollTo(0,0);
   });
   var RKEY = 'hr-workorder-recipients';
-  function getRcpts(){ try{ return (localStorage.getItem(RKEY)||'').trim(); }catch(e){ return ''; } }
+  var DEFAULT_RCPTS = 'nick@heirloomroofing.com,erik@heirloomroofing.com';
+  function getRcpts(){ var v=''; try{ v=(localStorage.getItem(RKEY)||'').trim(); }catch(e){} return v||DEFAULT_RCPTS; }
   function compactText(){
     var L=['HEIRLOOM ROOFING - PRODUCTION WORK ORDER', new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'}), ''];
     var p=function(k,v){ if(v) L.push(k+': '+v); };
@@ -665,30 +657,10 @@
   }
   document.getElementById('emailbtn').addEventListener('click', function(e){
     if(state.review){ if(typeof e!=='undefined') e.preventDefault(); alert('This is a review draft. Printing or copying keeps its draft warning. Resolve the pending choices and review the order before sending.'); return; }
-    if(!getRcpts()){
-      e.preventDefault();
-      document.getElementById('rcptsetup').style.display='block';
-      document.getElementById('rcpts').focus();
-      return;
-    }
     if(!confirm('Open your email app with this work order addressed and ready to send to Nick and Erik? Nothing sends by itself - you still review it and press Send in your email app.')){
       e.preventDefault(); return;
     }
-    if(this.getAttribute('data-copied')==='1'){ copyText(this.getAttribute('data-full'), function(){ toast('Long order - full text copied, paste it into the email'); }); }
-  });
-  document.getElementById('rcptsave').addEventListener('click', function(){
-    var v = document.getElementById('rcpts').value.trim();
-    if(!v || v.indexOf('@')<0){ toast('Enter at least one email address'); return; }
-    try{ localStorage.setItem(RKEY, v); }catch(e){}
-    document.getElementById('rcptsetup').style.display='none';
-    var m = buildMailto();
-    var eb = document.getElementById('emailbtn');
-    eb.href = m.url;
-    eb.setAttribute('data-copied', m.copied ? '1' : '');
-    eb.setAttribute('data-full', m.copied ? m.full : '');
-    document.getElementById('longwarn').style.display = m.copied ? 'block' : 'none';
-    eb.textContent = m.copied ? 'Send email to Nick and Erik (summary - full order copied to paste in)' : 'Send email to Nick and Erik';
-    toast('Recipients saved on this device');
+    if(this.getAttribute('data-copied')==='1'){ copyText(this.getAttribute('data-full'), function(){ toast('Full order copied - paste it into the email body'); }); }
   });
 
   async function buildPDF(){
