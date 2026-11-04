@@ -111,9 +111,8 @@
   <div id="form">
     <div id="reqerrors" role="alert"></div>
     <div class="card">
-      <button type="button" class="btn ghost" id="opendraft">Open Draft File</button>
-      <input type="file" id="draftfile" accept=".json,application/json" hidden>
-      <div class="hint">Private JSON drafts stay on this device. Opening a draft replaces this device's current answers only after confirmation. It never sends an order.</div>
+      <button type="button" class="btn ghost" id="resetbtn">Reset Form</button>
+      <div class="hint">Clears every answer saved on this device, after a confirmation. It never sends an order.</div>
       <div id="draftnotice" role="status" style="display:none;background:#fff4e5;color:#704800;padding:12px;border-radius:10px;margin-top:10px;white-space:pre-line;max-height:180px;overflow:auto"></div>
     </div>
     <div class="card">
@@ -416,15 +415,6 @@
     ['pm','jt','customer','phone','address','roofsystem','shinglecolor','dripedge','jobtype','layers','decking','accrane','fascia','pitch','stories','access','complex','equipment','occupied'].forEach(function(k){if(!out.fields[k] && out.review.pending.indexOf(k)<0)out.review.pending.push(k);});
     return out;
   }
-  document.getElementById('opendraft').addEventListener('click',function(){document.getElementById('draftfile').click();});
-  document.getElementById('draftfile').addEventListener('change',function(){
-    var f=this.files[0];this.value='';if(!f)return;if(f.size>200000){alert('Draft file too large (maximum 200 KB).');return;}
-    f.text().then(function(raw){
-      var d=validateDraft(JSON.parse(raw));
-      if(!confirm('Replace the current answers on THIS DEVICE with this review draft? Nothing will be sent or uploaded. Pending quantities stay blank, never zero.'))return;
-      clearTimeout(saveTimer);localStorage.setItem(KEY,JSON.stringify(d));location.reload();
-    }).catch(function(e){alert('Draft not opened: '+e.message);});
-  });
 
   function restore(){
     var raw; try{ raw = localStorage.getItem(KEY); }catch(e){ return; }
@@ -751,6 +741,11 @@
       r.pdf.save(r.name);
       toast('PDF saved - attach it from your Files');
     }
+  });
+  document.getElementById('resetbtn').addEventListener('click', function(){
+    if(!confirm('Reset the form? This clears every answer saved on this device and cannot be undone.')) return;
+    try{ localStorage.removeItem(KEY); }catch(e){}
+    location.reload();
   });
   document.getElementById('newbtn').addEventListener('click', function(){
     if(!confirm('Start a new work order? This clears the saved draft on this device.')) return;
