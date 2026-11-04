@@ -251,9 +251,9 @@
     <div class="wo" id="wopaper"></div>
     <div class="outbtns no-print">
       <div id="longwarn" style="display:none;background:#fff4e5;border:1.5px solid #e0a030;border-radius:12px;padding:12px 14px;font-size:13.5px;font-weight:600;color:#7a5410;line-height:1.45">
-        LONG ORDER - the email will contain a SUMMARY only. Tapping Email Work Order copies the FULL order to your clipboard: paste it into the email body before sending. Safer option for a long order: use Download PDF below and attach the PDF instead.
+        LONG ORDER - the email will contain a SUMMARY only. Tapping the email button copies the FULL order to your clipboard: paste it into the email body before sending. Safer option for a long order: use Download PDF below and attach the PDF instead.
       </div>
-      <a class="btn primary" id="emailbtn" href="#" style="text-decoration:none;text-align:center">Email Work Order</a>
+      <a class="btn primary" id="emailbtn" href="#" style="text-decoration:none;text-align:center">Send email to Nick and Erik</a>
       <div id="rcptsetup" style="display:none;background:#fff;border:1.5px solid var(--brand);border-radius:12px;padding:12px">
         <label class="f" for="rcpts" style="margin-top:0">Email work orders to</label>
         <input type="text" id="rcpts" placeholder="Emails, separated by commas" autocomplete="off">
@@ -628,7 +628,7 @@
     eb.setAttribute('data-copied', m.copied ? '1' : '');
     eb.setAttribute('data-full', m.copied ? m.full : '');
     document.getElementById('longwarn').style.display = m.copied ? 'block' : 'none';
-    eb.textContent = m.copied ? 'Email Work Order (summary - full order copied to paste in)' : 'Email Work Order';
+    eb.textContent = m.copied ? 'Send email to Nick and Erik (summary - full order copied to paste in)' : 'Send email to Nick and Erik';
     document.getElementById('form').style.display='none';
     document.getElementById('savebar').style.display='none';
     document.getElementById('output').style.display='block';
@@ -672,6 +672,9 @@
       document.getElementById('rcpts').focus();
       return;
     }
+    if(!confirm('Open your email app with this work order addressed and ready to send to Nick and Erik? Nothing sends by itself - you still review it and press Send in your email app.')){
+      e.preventDefault(); return;
+    }
     if(this.getAttribute('data-copied')==='1'){ copyText(this.getAttribute('data-full'), function(){ toast('Long order - full text copied, paste it into the email'); }); }
   });
   document.getElementById('rcptsave').addEventListener('click', function(){
@@ -685,7 +688,7 @@
     eb.setAttribute('data-copied', m.copied ? '1' : '');
     eb.setAttribute('data-full', m.copied ? m.full : '');
     document.getElementById('longwarn').style.display = m.copied ? 'block' : 'none';
-    eb.textContent = m.copied ? 'Email Work Order (summary - full order copied to paste in)' : 'Email Work Order';
+    eb.textContent = m.copied ? 'Send email to Nick and Erik (summary - full order copied to paste in)' : 'Send email to Nick and Erik';
     toast('Recipients saved on this device');
   });
 
