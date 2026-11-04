@@ -81,6 +81,14 @@
   .wo td.qty { text-align:right; font-weight:700; width:52px; }
   .wo td.un { color:var(--muted); width:44px; }
   .wo .inote { font-size:12px; color:var(--muted); padding:0 4px 6px; }
+  .wo .secbar { background:var(--brand); color:#fff; font-weight:800; font-size:14.5px; letter-spacing:.05em; text-transform:uppercase; padding:8px 12px; border-radius:9px; margin:20px 0 2px; }
+  .wo .secbar .sn { display:inline-block; background:#fff; color:var(--brand); border-radius:50%; width:19px; height:19px; line-height:19px; text-align:center; font-size:12px; font-weight:800; margin-right:8px; vertical-align:1px; }
+  .wo td.qbox { width:70px; padding:5px 2px 5px 4px; }
+  .wo .qpill { display:inline-block; min-width:46px; box-sizing:border-box; text-align:center; background:#eaf3fb; border:1.5px solid var(--brand); color:var(--brand); border-radius:8px; font-weight:800; font-size:14px; padding:2px 5px; }
+  .wo .qpill.pend { background:#fff4e5; border-color:#e0a030; color:#7a5410; font-size:10.5px; letter-spacing:.03em; }
+  .wo .qpill.zero { background:#f4f5f7; border-color:#c9ced6; color:#6b7280; }
+  .wo td.wname { font-weight:600; }
+  .wo td.un2 { color:var(--muted); width:40px; text-align:left; }
   .wo .foot { margin-top:18px; font-size:12px; color:var(--muted); border-top:1px solid var(--line); padding-top:10px; font-style:italic; }
   .outbtns { display:grid; gap:10px; margin-top:14px; }
   .toast { position:fixed; bottom:76px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:10px 18px; border-radius:999px; font-size:13.5px; font-weight:600; display:none; z-index:20; }
@@ -273,12 +281,12 @@
 <script>
 (function(){
   var WORK = [
-    {g:"SITE PROTECTION", items:[["Protect landscaping / plants / trees","LS",1],["Protect windows / walls / driveway / hardscape","LS",1]]},
-    {g:"ROOFING", items:[["Tear off & dispose existing roofing","SQ",0],["Install architectural shingles","SQ",0],["Install underlayment","SQ",0],["Ice & water barrier at valley","LF",0],["Install drip edge","LF",0],["Install ridge cap","LF",0],["Flat roof restoration","SQ",0]]},
-    {g:"ACCESSORIES", items:[["Replace pipe jacks","EA",0],["Replace turbine vents","EA",0],["Satellite realignment after roof completion","EA",0],["Straighten A/C condenser fins","EA",0],["Replace T-top vents","EA",0],["Replace B-vent flashing","EA",0],["Replace split pipe boots","EA",0],["Replace dormer vents","EA",0]]},
-    {g:"DECKING", items:[["Backup 4' x 8' decking sheets","EA",0]]},
-    {g:"SPECIAL CONDITIONS", items:[["rooftop HVAC","LS",0],["Take extra care at pitched / flat roof transition","LS",0],["Shingle moulding","LF",0],["Fascia replacement","LF",0],["Do not disturb patio flat roof or shed roofs","LS",0],["Dispose of Swamp Cooler and Patch Deck","EA",0],["SOLAR DnR will be needed.","",0]]},
-    {g:"CLOSEOUT", items:[["Remove all debris","EA",1],["Final magnetic sweep","EA",1],["Final roof inspection","EA",1],["Completion photos","EA",1]]}
+    {g:"SITE PROTECTION", items:[["Protect landscaping / plants / trees","LS",1,"w"],["Protect windows / walls / driveway / hardscape","LS",1,"w"]]},
+    {g:"ROOFING", items:[["Tear off & dispose existing roofing","SQ",0,"w"],["Install architectural shingles","SQ",0,"m"],["Install underlayment","SQ",0,"m"],["Ice & water barrier at valley","LF",0,"m"],["Install drip edge","LF",0,"m"],["Install ridge cap","LF",0,"m"],["Flat roof restoration","SQ",0,"m"]]},
+    {g:"ACCESSORIES", items:[["Replace pipe jacks","EA",0,"m"],["Replace turbine vents","EA",0,"m"],["Satellite realignment after roof completion","EA",0,"w"],["Straighten A/C condenser fins","EA",0,"w"],["Replace T-top vents","EA",0,"m"],["Replace B-vent flashing","EA",0,"m"],["Replace split pipe boots","EA",0,"m"],["Replace dormer vents","EA",0,"m"]]},
+    {g:"DECKING", items:[["Backup 4' x 8' decking sheets","EA",0,"m"]]},
+    {g:"SPECIAL CONDITIONS", items:[["rooftop HVAC","LS",0,"w"],["Take extra care at pitched / flat roof transition","LS",0,"w"],["Shingle moulding","LF",0,"m"],["Fascia replacement","LF",0,"m"],["Do not disturb patio flat roof or shed roofs","LS",0,"w"],["Dispose of Swamp Cooler and Patch Deck","EA",0,"w"],["SOLAR DnR will be needed.","",0,"w"]]},
+    {g:"CLOSEOUT", items:[["Remove all debris","EA",1,"w"],["Final magnetic sweep","EA",1,"w"],["Final roof inspection","EA",1,"w"],["Completion photos","EA",1,"w"]]}
   ];
   var KEY = 'hr-workorder-draft-v1';
   var state = { fields:{}, items:{} };
@@ -550,19 +558,26 @@
       + rowKV('4. Fascia Replacement', val('fascia') + (val('fasciasize')? ' - '+val('fasciasize'):''))
       + rowKV('5. Special Conditions', val('special')) +'</table>';
     h += '<h3>Property Conditions</h3><table>'+ rowKV('Steep Pitch', val('pitch')) + rowKV('Stories / Roof Height', val('stories')) + rowKV('Limited Access', val('access')) + rowKV('Complex Roof Design', val('complex')) + rowKV('Special Equipment', val('equipment')) + rowKV('Occupied / Restricted', val('occupied')) + rowKV('Other / Special Instructions', val('otherinstr')) +'</table>';
-    var any=false, wh='';
-    WORK.forEach(function(g,gi){
-      var rows='';
-      g.items.forEach(function(it,ii){
-        var st = state.items[gi+'-'+ii];
-        if(st.qty==null || st.qty>0 || (st.note && st.note.trim())){
-          rows += '<tr><td>'+esc(it[0])+'</td><td class="qty">'+(st.qty==null?'PENDING':(st.qty>0?st.qty:''))+'</td><td class="un">'+esc(it[1])+'</td></tr>';
-          if(st.note && st.note.trim()) rows += '<tr><td colspan="3" class="inote">'+esc(st.note)+'</td></tr>';
-        }
+    function itemRows(kind){
+      var out='';
+      WORK.forEach(function(g,gi){
+        var rows='';
+        g.items.forEach(function(it,ii){
+          if(it[3]!==kind) return;
+          var st = state.items[gi+'-'+ii];
+          if(st.qty==null || st.qty>0 || (st.note && st.note.trim())){
+            rows += '<tr class="wline"><td class="qbox">'+(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">'+st.qty+'</span>':'<span class="qpill zero">0</span>'))+'</td><td class="wname">'+esc(it[0])+'</td><td class="un2">'+esc(it[1])+'</td></tr>';
+            if(st.note && st.note.trim()) rows += '<tr><td></td><td colspan="2" class="inote">'+esc(st.note)+'</td></tr>';
+          }
+        });
+        if(rows) out += '<h3>'+g.g+'</h3><table>'+rows+'</table>';
       });
-      if(rows){ any=true; wh += '<h3>'+g.g+'</h3><table>'+rows+'</table>'; }
-    });
-    h += '<h3>Work Items</h3>' + (any ? wh : '<table><tr><td class="k">No quantities set</td></tr></table>');
+      return out;
+    }
+    var workRows = itemRows('w'), matRows = itemRows('m');
+    if(workRows) h += '<div class="secbar"><span class="sn">1</span>Work To Do On Site</div>' + workRows;
+    if(matRows) h += '<div class="secbar"><span class="sn">2</span>Materials To Order / Buy</div>' + matRows;
+    if(!workRows && !matRows) h += '<h3>Work Items</h3><table><tr><td class="k">No quantities set</td></tr></table>';
     if(val('addnotes')) h += '<h3>Additional Notes</h3><table><tr><td>'+esc(val('addnotes')).replace(/\n/g,'<br>')+'</td></tr></table>';
     if(state.review) h += '<h3>Pending Choices and Review Notes</h3><div style="white-space:pre-line;border:1px solid #b57800;padding:12px">'+esc(pendingMessage())+'</div>';
     h += '<div class="foot">Any unexpected conditions or additional work must be reported to the PM before proceeding.</div>';
@@ -697,12 +712,14 @@
       for(var i=0;i<w.children.length;i++){
         var el=w.children[i];
         if(el.classList.contains('foot')) continue; // footer must stay with preceding content
-        if(el.tagName==='TABLE'&&el.previousElementSibling&&el.previousElementSibling.tagName==='H3') continue; // keep heading with its table
+        var pv=el.previousElementSibling;
+        if(pv&&(pv.tagName==='H3'||pv.classList.contains('secbar'))) continue; // keep headings and section bars with what follows
         bounds.push({y:topOf(el),block:true});
       }
       w.querySelectorAll('table tr').forEach(function(tr){
-        var td=tr.querySelector('td');
-        if(td&&td.classList.contains('inote')) return; // keep a note row with its item row
+        if(tr.querySelector('td.inote')) return; // keep a note row with its item row
+        var t=tr.closest('table');
+        if(t&&tr===t.querySelector('tr')){ var pv=t.previousElementSibling; if(pv&&(pv.tagName==='H3'||pv.classList.contains('secbar'))) return; } // keep first row with its heading/bar
         bounds.push({y:topOf(tr),block:false});
       });
       // Line-box break points inside any tall cell or text block, so even a
