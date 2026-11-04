@@ -42,7 +42,7 @@
   .hint { font-size:12px; color:var(--muted); margin-top:5px; }
   details.group { border-top:1px solid var(--line); }
   details.group:first-of-type { border-top:none; }
-  details.group summary { cursor:pointer; list-style:none; padding:13px 2px; font-weight:700; font-size:14.5px; color:var(--ink); display:flex; justify-content:space-between; align-items:center; }
+  details.group summary { cursor:default; list-style:none; padding:15px 2px 13px; font-weight:700; font-size:17px; letter-spacing:.03em; color:var(--brand); display:flex; justify-content:space-between; align-items:center; }
   details.group summary::-webkit-details-marker { display:none; }
   details.group summary .count { font-size:12px; color:var(--brand); font-weight:700; }
   details.group summary .chev { color:var(--muted); font-size:12px; margin-left:8px; }
@@ -258,9 +258,10 @@
   // Build work item UI
   var wi = document.getElementById('workitems'); var wi2 = document.getElementById('workitems2');
   WORK.forEach(function(g,gi){
-    var det = document.createElement('details'); det.className='group'; det.setAttribute('data-gi',gi); if(gi===0||gi===2) det.open=true;
+    var det = document.createElement('details'); det.className='group'; det.setAttribute('data-gi',gi); det.open=true;
     var sum = document.createElement('summary');
-    sum.innerHTML = '<span>'+g.g+'</span><span><span class="count" id="cnt-'+gi+'"></span><span class="chev">&#9662;</span></span>';
+    sum.innerHTML = '<span>'+g.g+'</span><span><span class="count" id="cnt-'+gi+'"></span></span>';
+    sum.addEventListener('click', function(e){ e.preventDefault(); });
     det.appendChild(sum);
     g.items.forEach(function(it,ii){
       var id = gi+'-'+ii;
@@ -279,7 +280,7 @@
   function updateCounts(){
     WORK.forEach(function(g,gi){
       var n=0; g.items.forEach(function(it,ii){ if(state.items[gi+'-'+ii].qty!=null) n++; });
-      var el=document.getElementById('cnt-'+gi); el.textContent = n? n+' answered' : '';
+      var el=document.getElementById('cnt-'+gi); el.textContent = (g.items.length-n)+' unanswered';
     });
   }
 
