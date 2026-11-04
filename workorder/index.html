@@ -109,145 +109,137 @@
 </div>
 <main>
   <div id="form">
-    <div id="reqerrors" role="alert"></div>
-    <div class="card">
-      <button type="button" class="btn ghost" id="resetbtn">Reset Form</button>
-      <div class="hint">Clears every answer saved on this device, after a confirmation. It never sends an order.</div>
-      <div id="draftnotice" role="status" style="display:none;background:#fff4e5;color:#704800;padding:12px;border-radius:10px;margin-top:10px;white-space:pre-line;max-height:180px;overflow:auto"></div>
-    </div>
-    <div class="card">
-      <h2>Project Manager</h2>
-      <label class="f" for="pm">Heirloom Project Manager</label>
-      <input type="text" id="pm" data-f="pm" placeholder="Name">
-      <label class="f">Request JT Project Manager</label>
-      <div class="chips" data-f="jt"><button class="chip" data-v="Yes">Yes</button><button class="chip" data-v="No">No</button></div>
-      <label class="f" for="pmnotes">Notes</label>
-      <input type="text" id="pmnotes" data-f="pmnotes" placeholder='Required - enter "None" if no notes'>
-    </div>
+<div id="reqerrors" role="alert"></div>
 
-    <div class="card">
-      <h2>Job Info</h2>
-      <label class="f" for="customer">Customer</label>
-      <input type="text" id="customer" data-f="customer">
-      <label class="f" for="phone">Customer Phone Number</label>
-      <input type="tel" id="phone" data-f="phone">
-      <label class="f" for="address">Address</label>
-      <input type="text" id="address" data-f="address">
-      <label class="f" for="gate">Gate Code</label>
-      <input type="text" id="gate" data-f="gate" data-nosave="1" placeholder="Code, or check the box below">
-      <label class="nagate"><input type="checkbox" id="gatena" data-f="gatena">No gate code needed</label>
-      <div class="hint">Gate code is never saved on this device - re-enter it if you come back later.</div>
-    </div>
 
-    <div class="card">
-      <h2>Roof Details</h2>
-      <label class="f">Roof System</label>
-      <div class="chips" data-f="roofsystem">
-        <button class="chip" data-v="Architectural Shingle">Architectural Shingle</button><button class="chip" data-v="3-Tab Shingle">3-Tab Shingle</button><button class="chip" data-v="Tile">Tile</button><button class="chip" data-v="Modified Bitumen">Modified Bitumen</button><button class="chip" data-v="SPF / Coating">SPF / Coating</button><button class="chip" data-v="Slate">Slate</button><button class="chip" data-v="Other">Other</button>
-      </div>
-      <label class="f">Malarkey Product</label>
-      <div class="chips" data-f="malarkey">
-        <button class="chip" data-v="Highlander AR">Highlander AR</button><button class="chip" data-v="Vista AR">Vista AR</button><button class="chip" data-v="Legacy Scotchgard">Legacy Scotchgard</button>
-      </div>
-      <label class="f" for="shinglecolor">Shingle Color</label>
-      <select id="shinglecolor" data-f="shinglecolor">
-        <option value="">Choose</option>
-        <option>Antique Brown</option><option>Black Oak</option><option>Brilliant Black</option><option>Burlwood</option><option>Golden Amber</option><option>Heather</option><option>Ivory Mist</option><option>Midnight Black</option><option>Moonlit Black</option><option>Natural Wood</option><option>Riverstone Grey</option><option>Sienna Blend</option><option>Silverwood</option><option>Storm Grey</option><option>Weathered Wood</option><option>Weathered Wood Plus</option><option>Willow Wood</option><option>Other / Special Order</option>
-      </select>
-      <label class="f">Drip Edge Color</label>
-      <div class="chips" data-f="dripedge">
-        <button class="chip" data-v="White">White</button><button class="chip" data-v="Black">Black</button><button class="chip" data-v="Brown">Brown</button><button class="chip" data-v="Bronze">Bronze</button><button class="chip" data-v="Almond">Almond</button><button class="chip" data-v="Clay">Clay</button><button class="chip" data-v="Gray">Gray</button><button class="chip" data-v="Galvanized">Galvanized</button><button class="chip" data-v="Other">Other</button><button class="chip" data-v="Match shingles">Match Shingles</button><button class="chip" data-v="Match trim / fascia">Match Trim / Fascia</button>
-      </div>
-      <label class="f">Flat Roof Color</label>
-      <div class="chips" data-f="flatcolor">
-        <button class="chip" data-v="White">White</button><button class="chip" data-v="Tan">Tan</button><button class="chip" data-v="Gray">Gray</button><button class="chip" data-v="Black">Black</button><button class="chip" data-v="Other">Other</button><button class="chip" data-v="N/A - No Flat Roof">N/A - No Flat Roof</button><button class="chip" data-v="Not Included in This Job">Not Included in This Job</button>
-      </div>
-      <label class="f">Job Type</label>
-      <div class="chips" data-f="jobtype">
-        <button class="chip" data-v="Retail">Retail</button><button class="chip" data-v="Insurance">Insurance</button>
-      </div>
-      <div class="row2">
-        <div><label class="f" for="tearoff">Approx. Tear-Off (SQ)</label><input type="number" id="tearoff" data-f="tearoff" min="0" max="100" step="any" inputmode="decimal"></div>
-        <div><label class="f" for="install">Approx. Install (SQ)</label><input type="number" id="install" data-f="install" min="0" max="100" step="any" inputmode="decimal"></div>
-      </div>
-    </div>
 
-    <div class="card">
-      <h2>The Big 5</h2>
-      <label class="f">1. Layers</label>
-      <div class="chips" data-f="layers">
-        <button class="chip" data-v="1 Layer">1 Layer</button><button class="chip" data-v="2 Layers">2 Layers</button><button class="chip" data-v="3 Layers">3 Layers</button><button class="chip" data-v="Other / Verify">Other / Verify</button>
-      </div>
-      <label class="f">2. Decking / Redeck / Space Decking</label>
-      <div class="chips" data-f="decking">
-        <button class="chip" data-v="Solid Decking / Backup Sheets Only">Solid / Backup Sheets Only</button><button class="chip" data-v="Solid Decking / Full Redeck">Solid / Full Redeck</button><button class="chip" data-v="Space Decking / Overlay OSB">Space / Overlay OSB</button><button class="chip" data-v="Space Decking / Full Redeck">Space / Full Redeck</button><button class="chip" data-v="Decking To Be Determined">To Be Determined</button>
-      </div>
-      <div class="row2">
-        <div><label class="f" for="deckqty">Decking Sheets (Qty)</label><input type="number" id="deckqty" data-f="deckqty" min="0" max="60" inputmode="numeric"></div>
-        <div><label class="f" for="deckthick">Decking Thickness</label><select id="deckthick" data-f="deckthick"><option value="">Choose</option><option>3/8"</option><option>7/16"</option><option>1/2"</option><option>5/8"</option><option>3/4"</option><option>Other / Verify</option></select></div>
-      </div>
-      <label class="f">3. A/C / Crane</label>
-      <div class="chips" data-f="accrane">
-        <button class="chip" data-v="Work Around A/C / No Crane">Work Around A/C / No Crane</button><button class="chip" data-v="A/C Detach &amp; Reset / No Crane">A/C Detach &amp; Reset / No Crane</button><button class="chip" data-v="A/C Detach &amp; Reset / Crane Required">A/C Detach &amp; Reset / Crane</button><button class="chip" data-v="Crane Required">Crane Required</button><button class="chip" data-v="No Rooftop A/C">No Rooftop A/C</button>
-      </div>
-      <label class="f">4. Fascia Replacement</label>
-      <div class="chips" data-f="fascia">
-        <button class="chip" data-v="None Expected">None Expected</button><button class="chip" data-v="Partial Fascia Replacement">Partial</button><button class="chip" data-v="Full Fascia Replacement">Full</button><button class="chip" data-v="Determine During Tear-Off">Determine During Tear-Off</button>
-      </div>
-      <label class="f" for="fasciasize">Fascia Board Size</label>
-      <select id="fasciasize" data-f="fasciasize"><option value="">Choose</option><option>1x4</option><option>1x6</option><option>1x8</option><option>2x4</option><option>2x6</option><option>2x8</option><option>2x10</option><option>Other / Verify</option></select>
-      <label class="f">5. Job Complexity / Special Conditions</label>
-      <div class="chips" data-f="special">
-        <button class="chip" data-v="Pitched-to-Flat Transition">Pitched-to-Flat Transition</button><button class="chip" data-v="Wall / Stucco Flashing">Wall / Stucco Flashing</button><button class="chip" data-v="Skylights / Penetrations">Skylights / Penetrations</button><button class="chip" data-v="Restricted Access / HOA">Restricted Access / HOA</button><button class="chip" data-v="Sensitive Landscaping / Property Protection">Sensitive Landscaping</button><button class="chip" data-v="Multiple Special Conditions">Multiple</button><button class="chip" data-v="None Expected">None Expected</button>
-      </div>
-    </div>
 
-    <div class="card">
-      <h2>Property Conditions</h2>
-      <label class="f">Steep Pitch</label>
-      <div class="chips" data-f="pitch">
-        <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - 7/12 to 9/12">7/12 to 9/12</button><button class="chip" data-v="Yes - 10/12 to 12/12">10/12 to 12/12</button><button class="chip" data-v="Yes - Over 12/12">Over 12/12</button>
-      </div>
-      <label class="f">Stories / Roof Height</label>
-      <div class="chips" data-f="stories">
-        <button class="chip" data-v="1 Story">1 Story</button><button class="chip" data-v="2 Stories">2 Stories</button><button class="chip" data-v="3+ Stories">3+ Stories</button>
-      </div>
-      <label class="f">Limited Access</label>
-      <div class="chips" data-f="access">
-        <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Tight Driveway">Tight Driveway</button><button class="chip" data-v="Yes - Restricted Equipment Access">Restricted Equipment</button><button class="chip" data-v="Yes - Long Material Carry">Long Material Carry</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
-      </div>
-      <label class="f">Complex Roof Design</label>
-      <div class="chips" data-f="complex">
-        <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Multiple Elevations">Multiple Elevations</button><button class="chip" data-v="Yes - Cut-Up Roof">Cut-Up Roof</button><button class="chip" data-v="Yes - Dormers / Transitions">Dormers / Transitions</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
-      </div>
-      <label class="f">Special Equipment</label>
-      <div class="chips" data-f="equipment">
-        <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Lift">Lift</button><button class="chip" data-v="Yes - Scaffolding">Scaffolding</button><button class="chip" data-v="Yes - Additional Fall Protection">Additional Fall Protection</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
-      </div>
-      <label class="f">Occupied / Restricted Property</label>
-      <div class="chips" data-f="occupied">
-        <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - HOA Restrictions">HOA Restrictions</button><button class="chip" data-v="Yes - Limited Work Hours">Limited Work Hours</button><button class="chip" data-v="Yes - Sensitive Landscape / Hardscape">Sensitive Landscape</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
-      </div>
-      <label class="f" for="otherinstr">Other / Special Instructions</label>
-      <textarea id="otherinstr" data-f="otherinstr" placeholder='Required - enter "None" if no other instructions'></textarea>
-    </div>
 
-    <div class="card">
-      <h2>Work Items</h2>
-      <div class="sub">Every line needs an answer - set 0 for not needed, add a note to any line if helpful.</div>
-      <div id="workitems"></div>
-    </div>
 
-    <div class="card">
-      <h2>Additional Notes</h2>
-      <textarea id="addnotes" data-f="addnotes" placeholder='Required - enter "None" if nothing else'></textarea>
-      <div class="hint">Any unexpected conditions or additional work must be reported to the PM before proceeding.</div>
-    </div>
 
-    <div class="privacy">Your answers save automatically <b>on this device only</b> (gate code is never saved). Nothing is sent anywhere until you print, save or share the finished work order yourself.</div>
-  </div>
 
-  <div id="output">
+
+<div class="card">
+<button class="btn ghost" id="resetbtn" type="button">Reset Form</button>
+<div class="hint">Clears every answer saved on this device, after a confirmation. It never sends an order.</div>
+<div id="draftnotice" role="status" style="display:none;background:#fff4e5;color:#704800;padding:12px;border-radius:10px;margin-top:10px;white-space:pre-line;max-height:180px;overflow:auto"></div>
+</div><div class="card">
+<h2>Job Info</h2>
+<label class="f" for="customer">Customer</label>
+<input data-f="customer" id="customer" type="text"/>
+<label class="f" for="phone">Customer Phone Number</label>
+<input data-f="phone" id="phone" type="tel"/>
+<label class="f" for="address">Address</label>
+<input data-f="address" id="address" type="text"/>
+<label class="f" for="gate">Gate Code</label>
+<input data-f="gate" data-nosave="1" id="gate" placeholder="Code, or check the box below" type="text"/>
+<label class="nagate"><input data-f="gatena" id="gatena" type="checkbox"/>No gate code needed</label>
+<div class="hint">Gate code is never saved on this device - re-enter it if you come back later.</div>
+</div><div class="card">
+<h2>Roof Details</h2>
+<label class="f">Roof System</label>
+<div class="chips" data-f="roofsystem">
+<button class="chip" data-v="Architectural Shingle">Architectural Shingle</button><button class="chip" data-v="3-Tab Shingle">3-Tab Shingle</button><button class="chip" data-v="Tile">Tile</button><button class="chip" data-v="Modified Bitumen">Modified Bitumen</button><button class="chip" data-v="SPF / Coating">SPF / Coating</button><button class="chip" data-v="Slate">Slate</button><button class="chip" data-v="Other">Other</button>
+</div>
+
+
+
+
+
+
+
+
+<label class="f">Job Type</label>
+<div class="chips" data-f="jobtype">
+<button class="chip" data-v="Retail">Retail</button><button class="chip" data-v="Insurance">Insurance</button>
+</div>
+
+</div><div class="card">
+<h2>Work Items</h2>
+<div class="sub">Every line needs an answer - set 0 for not needed, add a note to any line if helpful.</div>
+<div id="workitems"></div>
+</div><div class="card">
+<h2>The Big 5</h2>
+<label class="f">1. Layers</label>
+<div class="chips" data-f="layers">
+<button class="chip" data-v="1 Layer">1 Layer</button><button class="chip" data-v="2 Layers">2 Layers</button><button class="chip" data-v="3 Layers">3 Layers</button><button class="chip" data-v="Other / Verify">Other / Verify</button>
+</div>
+<label class="f">2. Decking / Redeck / Space Decking</label>
+<div class="chips" data-f="decking">
+<button class="chip" data-v="Solid Decking / Backup Sheets Only">Solid / Backup Sheets Only</button><button class="chip" data-v="Solid Decking / Full Redeck">Solid / Full Redeck</button><button class="chip" data-v="Space Decking / Overlay OSB">Space / Overlay OSB</button><button class="chip" data-v="Space Decking / Full Redeck">Space / Full Redeck</button><button class="chip" data-v="Decking To Be Determined">To Be Determined</button>
+</div>
+<div class="row2">
+<div><label class="f" for="deckqty">Decking Sheets (Qty)</label><input data-f="deckqty" id="deckqty" inputmode="numeric" max="60" min="0" type="number"/></div>
+<div><label class="f" for="deckthick">Decking Thickness</label><select data-f="deckthick" id="deckthick"><option value="">Choose</option><option>3/8"</option><option>7/16"</option><option>1/2"</option><option>5/8"</option><option>3/4"</option><option>Other / Verify</option></select></div>
+</div>
+<label class="f">3. A/C / Crane</label>
+<div class="chips" data-f="accrane">
+<button class="chip" data-v="Work Around A/C / No Crane">Work Around A/C / No Crane</button><button class="chip" data-v="A/C Detach &amp; Reset / No Crane">A/C Detach &amp; Reset / No Crane</button><button class="chip" data-v="A/C Detach &amp; Reset / Crane Required">A/C Detach &amp; Reset / Crane</button><button class="chip" data-v="Crane Required">Crane Required</button><button class="chip" data-v="No Rooftop A/C">No Rooftop A/C</button>
+</div>
+<label class="f">4. Fascia Replacement</label>
+<div class="chips" data-f="fascia">
+<button class="chip" data-v="None Expected">None Expected</button><button class="chip" data-v="Partial Fascia Replacement">Partial</button><button class="chip" data-v="Full Fascia Replacement">Full</button><button class="chip" data-v="Determine During Tear-Off">Determine During Tear-Off</button>
+</div>
+<label class="f" for="fasciasize">Fascia Board Size</label>
+<select data-f="fasciasize" id="fasciasize"><option value="">Choose</option><option>1x4</option><option>1x6</option><option>1x8</option><option>2x4</option><option>2x6</option><option>2x8</option><option>2x10</option><option>Other / Verify</option></select>
+<label class="f">5. Job Complexity / Special Conditions</label>
+<div class="chips" data-f="special">
+<button class="chip" data-v="Pitched-to-Flat Transition">Pitched-to-Flat Transition</button><button class="chip" data-v="Wall / Stucco Flashing">Wall / Stucco Flashing</button><button class="chip" data-v="Skylights / Penetrations">Skylights / Penetrations</button><button class="chip" data-v="Restricted Access / HOA">Restricted Access / HOA</button><button class="chip" data-v="Sensitive Landscaping / Property Protection">Sensitive Landscaping</button><button class="chip" data-v="Multiple Special Conditions">Multiple</button><button class="chip" data-v="None Expected">None Expected</button>
+</div>
+</div><div class="card">
+<h2>Property Conditions</h2>
+<label class="f">Steep Pitch</label>
+<div class="chips" data-f="pitch">
+<button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - 7/12 to 9/12">7/12 to 9/12</button><button class="chip" data-v="Yes - 10/12 to 12/12">10/12 to 12/12</button><button class="chip" data-v="Yes - Over 12/12">Over 12/12</button>
+</div>
+<label class="f">Stories / Roof Height</label>
+<div class="chips" data-f="stories">
+<button class="chip" data-v="1 Story">1 Story</button><button class="chip" data-v="2 Stories">2 Stories</button><button class="chip" data-v="3+ Stories">3+ Stories</button>
+</div>
+<label class="f">Limited Access</label>
+<div class="chips" data-f="access">
+<button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Tight Driveway">Tight Driveway</button><button class="chip" data-v="Yes - Restricted Equipment Access">Restricted Equipment</button><button class="chip" data-v="Yes - Long Material Carry">Long Material Carry</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
+</div>
+<label class="f">Complex Roof Design</label>
+<div class="chips" data-f="complex">
+<button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Multiple Elevations">Multiple Elevations</button><button class="chip" data-v="Yes - Cut-Up Roof">Cut-Up Roof</button><button class="chip" data-v="Yes - Dormers / Transitions">Dormers / Transitions</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
+</div>
+<label class="f">Special Equipment</label>
+<div class="chips" data-f="equipment">
+<button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Lift">Lift</button><button class="chip" data-v="Yes - Scaffolding">Scaffolding</button><button class="chip" data-v="Yes - Additional Fall Protection">Additional Fall Protection</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
+</div>
+<label class="f">Occupied / Restricted Property</label>
+<div class="chips" data-f="occupied">
+<button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - HOA Restrictions">HOA Restrictions</button><button class="chip" data-v="Yes - Limited Work Hours">Limited Work Hours</button><button class="chip" data-v="Yes - Sensitive Landscape / Hardscape">Sensitive Landscape</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
+</div>
+<label class="f" for="otherinstr">Other / Special Instructions</label>
+<textarea data-f="otherinstr" id="otherinstr" placeholder='Required - enter "None" if no other instructions'></textarea>
+</div><div class="card"><button class="btn primary" id="earlybtn" style="display:block;width:100%;max-width:none" type="button">Generate Draft Work Order</button></div><div class="card">
+<h2>Project Manager</h2>
+<label class="f" for="pm">Heirloom Project Manager</label>
+<input data-f="pm" id="pm" placeholder="Name" type="text"/>
+<label class="f">Request JT Project Manager</label>
+<div class="chips" data-f="jt"><button class="chip" data-v="Yes">Yes</button><button class="chip" data-v="No">No</button></div>
+<label class="f" for="pmnotes">Notes</label>
+<input data-f="pmnotes" id="pmnotes" placeholder='Required - enter "None" if no notes' type="text"/>
+</div><div class="card"><h2>Roof Details</h2><label class="f">Malarkey Product</label><div class="chips" data-f="malarkey">
+<button class="chip" data-v="Highlander AR">Highlander AR</button><button class="chip" data-v="Vista AR">Vista AR</button><button class="chip" data-v="Legacy Scotchgard">Legacy Scotchgard</button>
+</div><label class="f" for="shinglecolor">Shingle Color</label><select data-f="shinglecolor" id="shinglecolor">
+<option value="">Choose</option>
+<option>Antique Brown</option><option>Black Oak</option><option>Brilliant Black</option><option>Burlwood</option><option>Golden Amber</option><option>Heather</option><option>Ivory Mist</option><option>Midnight Black</option><option>Moonlit Black</option><option>Natural Wood</option><option>Riverstone Grey</option><option>Sienna Blend</option><option>Silverwood</option><option>Storm Grey</option><option>Weathered Wood</option><option>Weathered Wood Plus</option><option>Willow Wood</option><option>Other / Special Order</option>
+</select><label class="f">Drip Edge Color</label><div class="chips" data-f="dripedge">
+<button class="chip" data-v="White">White</button><button class="chip" data-v="Black">Black</button><button class="chip" data-v="Brown">Brown</button><button class="chip" data-v="Bronze">Bronze</button><button class="chip" data-v="Almond">Almond</button><button class="chip" data-v="Clay">Clay</button><button class="chip" data-v="Gray">Gray</button><button class="chip" data-v="Galvanized">Galvanized</button><button class="chip" data-v="Other">Other</button><button class="chip" data-v="Match shingles">Match Shingles</button><button class="chip" data-v="Match trim / fascia">Match Trim / Fascia</button>
+</div><label class="f">Flat Roof Color</label><div class="chips" data-f="flatcolor">
+<button class="chip" data-v="White">White</button><button class="chip" data-v="Tan">Tan</button><button class="chip" data-v="Gray">Gray</button><button class="chip" data-v="Black">Black</button><button class="chip" data-v="Other">Other</button><button class="chip" data-v="N/A - No Flat Roof">N/A - No Flat Roof</button><button class="chip" data-v="Not Included in This Job">Not Included in This Job</button>
+</div><div class="row2">
+<div><label class="f" for="tearoff">Approx. Tear-Off (SQ)</label><input data-f="tearoff" id="tearoff" inputmode="decimal" max="100" min="0" step="any" type="number"/></div>
+<div><label class="f" for="install">Approx. Install (SQ)</label><input data-f="install" id="install" inputmode="decimal" max="100" min="0" step="any" type="number"/></div>
+</div></div><div class="card"><h2>Work Items</h2><div id="workitems2"></div></div><div class="card">
+<h2>Additional Notes</h2>
+<textarea data-f="addnotes" id="addnotes" placeholder='Required - enter "None" if nothing else'></textarea>
+<div class="hint">Any unexpected conditions or additional work must be reported to the PM before proceeding.</div>
+</div><div class="privacy">Your answers save automatically <b>on this device only</b> (gate code is never saved). Nothing is sent anywhere until you print, save or share the finished work order yourself.</div></div>
+<div id="output">
     <div class="wo" id="wopaper"></div>
     <div class="outbtns no-print">
       <button class="btn primary" id="sharepdfbtn">Share PDF</button>
@@ -283,9 +275,9 @@
   WORK.forEach(function(g,gi){ g.items.forEach(function(it,ii){ state.items[gi+'-'+ii] = {qty:null, note:''}; }); });
 
   // Build work item UI
-  var wi = document.getElementById('workitems');
+  var wi = document.getElementById('workitems'); var wi2 = document.getElementById('workitems2');
   WORK.forEach(function(g,gi){
-    var det = document.createElement('details'); det.className='group'; if(gi<2) det.open=true;
+    var det = document.createElement('details'); det.className='group'; det.setAttribute('data-gi',gi); if(gi===0||gi===2) det.open=true;
     var sum = document.createElement('summary');
     sum.innerHTML = '<span>'+g.g+'</span><span><span class="count" id="cnt-'+gi+'"></span><span class="chev">&#9662;</span></span>';
     det.appendChild(sum);
@@ -300,7 +292,7 @@
         '<textarea data-notefor="'+id+'" placeholder="Note for this line" style="display:none;flex-basis:100%"></textarea>';
       det.appendChild(row);
     });
-    wi.appendChild(det);
+    (gi===0||gi===1||gi===5?wi2:wi).appendChild(det);
   });
 
   function updateCounts(){
@@ -339,7 +331,7 @@
   });
 
   // Steppers
-  wi.addEventListener('click', function(e){
+  document.getElementById('form').addEventListener('click', function(e){
     var b = e.target.closest('.step button');
     if(b){
       var inp = b.parentElement.querySelector('input');
@@ -347,17 +339,17 @@
       inp.value = v; state.items[inp.getAttribute('data-item')].qty = v; updateCounts(); save(); return;
     }
     var nb = e.target.closest('.notebtn');
-    if(nb){ var ta = wi.querySelector('textarea[data-notefor="'+nb.getAttribute('data-notebtn')+'"]');
+    if(nb){ var ta = document.querySelector('textarea[data-notefor="'+nb.getAttribute('data-notebtn')+'"]');
       ta.style.display = ta.style.display==='none' ? 'block' : 'none'; if(ta.style.display==='block') ta.focus(); }
   });
-  wi.addEventListener('input', function(e){
+  document.getElementById('form').addEventListener('input', function(e){
     var inp = e.target.closest('input[data-item]');
     if(inp){ var n=parseFloat(inp.value); state.items[inp.getAttribute('data-item')].qty = (inp.value.trim()===''||isNaN(n))?null:Math.max(0,Math.round(n*100)/100); updateCounts(); save(); return; }
     var ta = e.target.closest('textarea[data-notefor]');
     if(ta){ state.items[ta.getAttribute('data-notefor')].note = ta.value; save(); }
   });
 
-  var saveTimer=null;
+  var saveTimer=null; var earlyOn=false, earlyPrev=null;
   function save(){
     clearTimeout(saveTimer);
     saveTimer = setTimeout(function(){
@@ -368,7 +360,7 @@
         else if(!el.hasAttribute('data-nosave')){ f[el.getAttribute('data-f')] = el.value; }
       });
       state.fields = f; refreshDraftNotice();
-      try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+      try{ localStorage.setItem(KEY, JSON.stringify(earlyOn?Object.assign({},state,{review:earlyPrev}):state)); }catch(e){}
       var s=document.getElementById('savestatus'); s.textContent='Draft saved on this device '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
     }, 350);
   }
@@ -430,8 +422,8 @@
         else if(!el.hasAttribute('data-nosave')) el.value = d.fields[k];
       }); }
       Object.keys(state.items).forEach(function(k){
-        var inp = wi.querySelector('input[data-item="'+k+'"]'); if(inp){ inp.value = state.items[k].qty==null?'':state.items[k].qty; if(state.review) inp.placeholder='Pending'; }
-        var ta = wi.querySelector('textarea[data-notefor="'+k+'"]'); if(ta && state.items[k].note){ ta.value = state.items[k].note; ta.style.display='block'; }
+        var inp = document.querySelector('input[data-item="'+k+'"]'); if(inp){ inp.value = state.items[k].qty==null?'':state.items[k].qty; if(state.review) inp.placeholder='Pending'; }
+        var ta = document.querySelector('textarea[data-notefor="'+k+'"]'); if(ta && state.items[k].note){ ta.value = state.items[k].note; ta.style.display='block'; }
       });
       updateCounts(); refreshDraftNotice();
     }catch(e){}
@@ -465,15 +457,19 @@
     ['pitch'],['stories'],['access'],['complex'],['equipment'],['occupied'],
     ['otherinstr'],['addnotes']
   ];
-  function missingRequired(){
+  var EARLY_KEYS=['customer','phone','address','gate','roofsystem','jobtype','layers','decking','deckqty','deckthick','accrane','fascia','fasciasize','special','pitch','stories','access','complex','equipment','occupied','otherinstr'];
+  var EARLY_PENDING=['pm','jt','pmnotes','malarkey','shinglecolor','dripedge','flatcolor','tearoff','install','addnotes'];
+  function missingRequired(early){
     var miss=[];
     REQUIRED.forEach(function(r){
+      if(early && EARLY_KEYS.indexOf(r[0])<0) return;
       if(r[1] && !r[1]()) return;
       if(!val(r[0])) miss.push(r[0]);
     });
     WORK.forEach(function(g,gi){
+      if(early && (gi===0||gi===1||gi===5)) return;
       var n=0;
-      g.items.forEach(function(it,ii){ var st=state.items[gi+'-'+ii]; if(!st || st.qty==null) n++; });
+      g.items.forEach(function(it,ii){ if(early && gi===4 && (ii===2||ii===3)) return; var st=state.items[gi+'-'+ii]; if(!st || st.qty==null) n++; });
       if(n) miss.push('__wi'+gi+':'+n);
     });
     return miss;
@@ -490,17 +486,17 @@
     miss.forEach(function(k){
       if(k.indexOf('__wi')===0){
         var gi=+k.slice(4).split(':')[0];
-        var det=document.querySelectorAll('#workitems details.group')[gi];
+        var det=document.querySelector('#form details.group[data-gi="'+gi+'"]');
         if(det){ det.open=true; det.classList.add('miss'); }
         WORK[gi].items.forEach(function(it,ii){
           var st=state.items[gi+'-'+ii];
-          if(!st || st.qty==null){ var inp=wi.querySelector('input[data-item="'+gi+'-'+ii+'"]'); if(inp && inp.closest('.item')) inp.closest('.item').classList.add('miss'); }
+          if(!st || st.qty==null){ var inp=document.querySelector('input[data-item="'+gi+'-'+ii+'"]'); if(inp && inp.closest('.item')) inp.closest('.item').classList.add('miss'); }
         });
         return;
       }
       var el=document.querySelector('[data-f="'+k+'"]'); if(el) el.classList.add('miss');
     });
-    var first=miss[0].indexOf('__wi')===0 ? document.querySelectorAll('#workitems details.group')[+miss[0].slice(4).split(':')[0]] : document.querySelector('[data-f="'+miss[0]+'"]');
+    var first=miss[0].indexOf('__wi')===0 ? document.querySelector('#form details.group[data-gi="'+miss[0].slice(4).split(':')[0]+'"]') : document.querySelector('[data-f="'+miss[0]+'"]');
     if(first && first.scrollIntoView) first.scrollIntoView({behavior:'smooth', block:'center'});
   }
   function hideReqErrors(){
@@ -614,7 +610,15 @@
     document.getElementById('output').style.display='block';
     window.scrollTo(0,0);
   });
+  document.getElementById('earlybtn').addEventListener('click', function(){
+    var miss=missingRequired(true);
+    if(miss.length){ showReqErrors(miss); return; }
+    earlyPrev=state.review||null; earlyOn=true;
+    state.review={pending:EARLY_PENDING.slice(),notes:''};
+    document.getElementById('genbtn').click();
+  });
   document.getElementById('editbtn').addEventListener('click', function(){
+    if(earlyOn){ state.review=earlyPrev; earlyOn=false; earlyPrev=null; }
     document.getElementById('output').style.display='none';
     document.getElementById('form').style.display='block';
     document.getElementById('savebar').style.display='flex';
