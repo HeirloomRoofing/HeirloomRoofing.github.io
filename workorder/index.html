@@ -162,7 +162,13 @@
 <button class="chip" data-v="Pitched-to-Flat Transition">Pitched-to-Flat Transition</button><button class="chip" data-v="Wall / Stucco Flashing">Wall / Stucco Flashing</button><button class="chip" data-v="Skylights / Penetrations">Skylights / Penetrations</button><button class="chip" data-v="Restricted Access / HOA">Restricted Access / HOA</button><button class="chip" data-v="Sensitive Landscaping / Property Protection">Sensitive Landscaping</button><button class="chip" data-v="None Expected">None Expected</button>
 </div>
 </div><div class="card">
-<h2>Roof Details</h2>
+<h2>Current Roof Details</h2>
+<label class="f">Roof System</label>
+<div class="chips" data-f="currentsystem">
+<button class="chip" data-v="Architectural Shingle">Architectural Shingle</button><button class="chip" data-v="3-Tab Shingle">3-Tab Shingle</button><button class="chip" data-v="Tile">Tile</button><button class="chip" data-v="Modified Bitumen">Modified Bitumen</button><button class="chip" data-v="SPF / Coating">SPF / Coating</button><button class="chip" data-v="Slate">Slate</button><button class="chip" data-v="Other">Other</button>
+</div>
+</div><div class="card">
+<h2>Roof System Being Installed</h2>
 <label class="f">Roof System</label>
 <div class="chips" data-f="roofsystem">
 <button class="chip" data-v="Architectural Shingle">Architectural Shingle</button><button class="chip" data-v="3-Tab Shingle">3-Tab Shingle</button><button class="chip" data-v="Tile">Tile</button><button class="chip" data-v="Modified Bitumen">Modified Bitumen</button><button class="chip" data-v="SPF / Coating">SPF / Coating</button><button class="chip" data-v="Slate">Slate</button><button class="chip" data-v="Other">Other</button>
@@ -361,7 +367,7 @@
   }
 
 
-  var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "gate": "Gate Code", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approx. Tear-Off (SQ)", "install": "Approx. Install (SQ)", "layers": "Layers", "decking": "Decking / Redeck", "layersother": "Layers (Other)", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
+  var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "gate": "Gate Code", "currentsystem": "Current Roof System", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approx. Tear-Off (SQ)", "install": "Approx. Install (SQ)", "layers": "Layers", "decking": "Decking / Redeck", "layersother": "Layers (Other)", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
   function pendingMessage(){
     if(!state.review) return '';
     var a=[];
@@ -399,7 +405,7 @@
       if(d.review.notes!=null&&(typeof d.review.notes!=='string'||d.review.notes.length>20000))throw Error('Invalid review notes.');
       out.review.pending=d.review.pending||[];out.review.notes=d.review.notes||'';
     }
-    ['pm','jt','customer','phone','address','roofsystem','shinglecolor','dripedge','jobtype','layers','decking','accrane','fascia','pitch','stories','access','complex','equipment','occupied'].forEach(function(k){if(!out.fields[k] && out.review.pending.indexOf(k)<0)out.review.pending.push(k);});
+    ['pm','jt','customer','phone','address','currentsystem','roofsystem','shinglecolor','dripedge','jobtype','layers','decking','accrane','fascia','pitch','stories','access','complex','equipment','occupied'].forEach(function(k){if(!out.fields[k] && out.review.pending.indexOf(k)<0)out.review.pending.push(k);});
     if(out.fields['layersother'] && !out.fields['layers']){ var li=out.review.pending.indexOf('layers'); if(li>=0) out.review.pending.splice(li,1); }
     return out;
   }
@@ -449,7 +455,7 @@
     ['accrane'],['fascia'],
     ['fasciasize', function(){ var f=chipVal('fascia'); return f==='Partial Fascia Replacement'||f==='Full Fascia Replacement'; }],
     ['special'],
-    ['roofsystem'],['jobtype'],
+    ['currentsystem'],['roofsystem'],['jobtype'],
     ['pitch'],['stories'],['access'],['complex'],['equipment'],['occupied'],
     ['otherinstr']
   ];
@@ -531,7 +537,8 @@
     function sec(title, rows){ return rows ? '<h3>'+title+'</h3><table>'+rows+'</table>' : ''; }
     h += sec('Project Manager', rowKV('Heirloom Project Manager', val('pm')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')));
     h += sec('Job Info', rowKV('Customer', val('customer')) + rowKV('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', gateVal()));
-    h += sec('Roof Details', rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off (SQ)', val('tearoff')) + rowKV('Approx. Install (SQ)', val('install')));
+    h += sec('Current Roof Details', rowKV('Roof System', val('currentsystem')));
+    h += sec('Roof System Being Installed', rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off (SQ)', val('tearoff')) + rowKV('Approx. Install (SQ)', val('install')));
     h += sec('The Big 5', rowKV('1. Layers', layersVal())
       + rowKV('2. Decking / Redeck', val('decking') + (val('deckqty')? ' - '+val('deckqty')+' sheets':'') + (val('deckthick')? ' - '+val('deckthick'):''))
       + rowKV('3. A/C / Crane', val('accrane'))
@@ -571,7 +578,7 @@
     p('PM', val('pm')); p('Request JT PM', val('jt')); if(val('pmnotes')) p('PM Notes', val('pmnotes'));
     p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', gateVal());
     L.push('');
-    p('Roof System', val('roofsystem')); p('Malarkey Product', val('malarkey')); p('Shingle Color', val('shinglecolor')); p('Drip Edge', val('dripedge')); p('Flat Roof Color', val('flatcolor')); p('Job Type', val('jobtype')); p('Approx. Tear-Off (SQ)', val('tearoff')); p('Approx. Install (SQ)', val('install'));
+    p('Current Roof System', val('currentsystem')); p('Roof System Being Installed', val('roofsystem')); p('Malarkey Product', val('malarkey')); p('Shingle Color', val('shinglecolor')); p('Drip Edge', val('dripedge')); p('Flat Roof Color', val('flatcolor')); p('Job Type', val('jobtype')); p('Approx. Tear-Off (SQ)', val('tearoff')); p('Approx. Install (SQ)', val('install'));
     L.push(''); L.push('BIG 5:');
     p('Layers', layersVal());
     var d = val('decking'); if(val('deckqty')) d += ' - '+val('deckqty')+' sheets'; if(val('deckthick')) d += ' - '+val('deckthick'); p('Decking', d);
@@ -628,7 +635,7 @@
     var L=['HEIRLOOM ROOFING - PRODUCTION WORK ORDER', new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'}), ''];
     var p=function(k,v){ if(v) L.push(k+': '+v); };
     p('PM', val('pm')); p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', val('gate'));
-    p('Roof System', val('roofsystem')); p('Malarkey', val('malarkey')); p('Shingle Color', val('shinglecolor')); p('Job Type', val('jobtype'));
+    p('Current Roof System', val('currentsystem')); p('Roof System Being Installed', val('roofsystem')); p('Malarkey', val('malarkey')); p('Shingle Color', val('shinglecolor')); p('Job Type', val('jobtype'));
     p('Layers', layersVal()); p('Decking', val('decking')); p('A/C / Crane', val('accrane')); p('Fascia', val('fascia')); p('Special Conditions', val('special'));
     L.push(''); L.push('Full work order with all quantities is copied to your clipboard - paste it below this line.'); L.push('');
     return L.join('\n');
