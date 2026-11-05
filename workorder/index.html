@@ -287,7 +287,7 @@
       if(it[5]) return;
       var id = gi+'-'+ii;
       var row = document.createElement('div'); row.className='item';
-      row.innerHTML = '<span class="nm">'+it[0]+(it[1]?' <span class="unit">'+it[1]+'</span>':'')+'</span>'+
+      row.innerHTML = '<span class="nm">'+wiName(gi,ii)+(it[1]?' <span class="unit">'+it[1]+'</span>':'')+'</span>'+
         (it[6]==='multi'?'':'<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
         '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="" placeholder="-">'+
         '<button type="button" data-d="1" aria-label="increase">+</button></span>')+
@@ -330,6 +330,16 @@
     if(!v) c.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
   }
 
+  // The "install" work line follows the roof system being installed
+  function wiName(gi,ii){
+    var it=WORK[gi].items[ii];
+    if(gi===1&&ii===1){
+      var m={'Architectural Shingle':'Install architectural shingles','3-Tab Shingle':'Install 3-tab shingles','Tile':'Install tile roofing','Modified Bitumen':'Install modified bitumen roofing','SPF / Coating':'Install SPF / coating','Slate':'Install slate roofing','Stone-Coated Steel':'Install stone-coated steel roofing','Composite / Synthetic':'Install composite roofing'};
+      return m[chipVal('roofsystem')]||'Install new roof system';
+    }
+    return it[0];
+  }
+
   // Current roof: Other chip reveals a text box for what the other is
   (function(){ var co=document.getElementById('currentsystemother'); if(!co) return;
     var cc=document.querySelector('.chips[data-f="currentsystem"]');
@@ -352,6 +362,8 @@
       show('tileprofilelabel',s==='Tile'); show('tileprofile',s==='Tile');
       show('steelprofilelabel',s==='Stone-Coated Steel'); show('steelprofile',s==='Stone-Coated Steel');
       show('compositeproductlabel',s==='Composite / Synthetic'); show('compositeproduct',s==='Composite / Synthetic');
+      var wi=document.querySelector('input[data-item="1-1"]');
+      if(wi){ var nm=wi.closest('.item').querySelector('.nm'); if(nm) nm.innerHTML=wiName(1,1)+' <span class="unit">SQ</span>'; }
     };
     rc.addEventListener('click', function(){ setTimeout(window.syncSystemProducts,0); });
     window.syncSystemProducts();
@@ -432,7 +444,7 @@
     if(!state.review) return '';
     var a=[];
     (state.review.pending||[]).forEach(function(k){var el=document.querySelector('[data-f="'+k+'"]'); if(el && !(k==='layers' ? layersVal() : val(k))){var label=document.querySelector('label[for="'+k+'"]');a.push((FIELD_LABELS[k]||(label?label.textContent:k))+': PENDING');}});
-    Object.keys(state.items).forEach(function(k){if(state.items[k].qty==null){var x=k.split('-');var g=WORK[+x[0]];if(!g||g.removed||g.items[+x[1]][5])return;a.push(g.items[+x[1]][0]+': PENDING quantity / scope');}});
+    Object.keys(state.items).forEach(function(k){if(state.items[k].qty==null){var x=k.split('-');var g=WORK[+x[0]];if(!g||g.removed||g.items[+x[1]][5])return;a.push(wiName(+x[0],+x[1])+': PENDING quantity / scope');}});
     return (a.length?a.join('\n'):'All listed choices entered. Still a draft for review.')+(state.review.notes?'\nReview notes: '+state.review.notes:'');
   }
   function refreshDraftNotice(){var n=document.getElementById('draftnotice'); if(!n)return; n.style.display=state.review?'block':'none';if(state.review){var msg=pendingMessage();var count=(msg.match(/PENDING/g)||[]).length;n.innerHTML='<b>DRAFT - review before sending</b><br>'+count+' pending choices or quantities. Confirmed answers are below.<details style="margin-top:8px"><summary>Review all pending choices and notes</summary><div style="white-space:pre-line;margin-top:8px">'+esc(msg)+'</div></details><button type="button" class="btn ghost" id="finishreview" style="width:100%;margin-top:10px">Finish review - everything is filled in</button>';}}
@@ -634,7 +646,7 @@
           if(it[3]!==kind) return;
           var st = state.items[gi+'-'+ii];
           if(st.qty==null || st.qty>0 || (st.note && st.note.trim())){
-            rows += '<tr class="wline"><td class="qbox">'+(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">'+st.qty+'</span>':'<span class="qpill zero">0</span>'))+'</td><td class="wname">'+esc(it[0])+(it[6]==='multi'?sizeBreakdown(st):(st.size?' <span class="unit">- '+esc(st.size)+'</span>':''))+(st.soldate?' <span class="unit">(reset scheduled '+esc(st.soldate)+')</span>':'')+'</td><td class="un2">'+esc(it[1])+'</td></tr>';
+            rows += '<tr class="wline"><td class="qbox">'+(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">'+st.qty+'</span>':'<span class="qpill zero">0</span>'))+'</td><td class="wname">'+esc(wiName(gi,ii))+(it[6]==='multi'?sizeBreakdown(st):(st.size?' <span class="unit">- '+esc(st.size)+'</span>':''))+(st.soldate?' <span class="unit">(reset scheduled '+esc(st.soldate)+')</span>':'')+'</td><td class="un2">'+esc(it[1])+'</td></tr>';
             if(st.note && st.note.trim()) rows += '<tr><td></td><td colspan="2" class="inote">'+esc(st.note)+'</td></tr>';
           }
         });
@@ -674,7 +686,7 @@
       if(g.removed) return;
       var lines=[];
       g.items.forEach(function(it,ii){ if(it[5]) return; var st=state.items[gi+'-'+ii];
-        if(st.qty==null || st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+it[0]+(st.qty==null?': PENDING quantity / scope':(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):''))+(it[6]==='multi'?sizeBreakdown(st):(st.size?' - '+st.size:''))+(st.soldate?' - reset scheduled '+st.soldate:'')+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
+        if(st.qty==null || st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+wiName(gi,ii)+(st.qty==null?': PENDING quantity / scope':(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):''))+(it[6]==='multi'?sizeBreakdown(st):(st.size?' - '+st.size:''))+(st.soldate?' - reset scheduled '+st.soldate:'')+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
       if(lines.length){ L.push(g.g+':'); lines.forEach(function(x){L.push(x);}); }
     });
     if(val('addnotes')){ L.push(''); L.push('NOTES: '+val('addnotes')); }
