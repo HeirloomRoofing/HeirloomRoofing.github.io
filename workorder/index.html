@@ -256,14 +256,14 @@
   var WORK = [
     {g:"SITE PROTECTION", items:[["Protect landscaping / plants / trees","LS",1,"w"],["Protect windows / walls / driveway / hardscape","LS",1,"w"]]},
     {g:"ROOFING", items:[["Tear off & dispose existing roofing","SQ",0,"w"],["Install architectural shingles","SQ",0,"m"],["Install underlayment","SQ",0,"m"],["Ice & water barrier at valley","LF",0,"m"],["Install drip edge","LF",0,"m"],["Install ridge cap","LF",0,"m"],["Flat roof restoration","SQ",0,"m"]]},
-    {g:"ACCESSORIES", items:[["Replace pipe jacks","EA",0,"m",["1\"","2\"","3\"","4\""]],["Replace turbine vents","EA",0,"m",["1\"","2\"","3\"","4\""]],["Replace T-top vents","EA",0,"m",["4\"","7\""]],["Replace B-vent flashing","EA",0,"m",["1\"","2\"","3\"","4\""]],["Replace split pipe boots","EA",0,"m",["1\"","2\"","3\"","4\""]],["Replace dormer vents","EA",0,"m",["1\"","2\"","3\"","4\""]],["Replace O'Hagin vents","EA",0,"m"],["Satellite realignment after roof completion","EA",0,"w"],["Straighten A/C condenser fins","EA",0,"w"]]},
+    {g:"ACCESSORIES", items:[["Replace pipe jacks","EA",0,"m",["1\"","2\"","3\"","4\""],null,"multi"],["Replace turbine vents","EA",0,"m"],["Replace T-top vents","EA",0,"m",["4\"","7\""]],["Replace B-vent flashing","EA",0,"m"],["Replace split pipe boots","EA",0,"m",["1\"","2\"","3\"","4\""]],["Replace dormer vents","EA",0,"m"],["Replace O'Hagin vents","EA",0,"m"],["Satellite realignment after roof completion","EA",0,"w"],["Straighten A/C condenser fins","EA",0,"w"]]},
     {g:"DECKING", removed:true, items:[["Backup 4' x 8' decking sheets","EA",0,"m"]]},
     {g:"SPECIAL CONDITIONS", items:[["rooftop HVAC","LS",0,"w"],["Take extra care at pitched / flat roof transition","LS",0,"w"],["Shingle moulding","LF",0,"m"],["Fascia replacement","LF",0,"m",null,true],["Do not disturb patio flat roof or shed roofs","LS",0,"w"],["Dispose of Swamp Cooler and Patch Deck","EA",0,"w"],["SOLAR DnR will be needed.","",0,"w"]]},
     {g:"CLOSEOUT", items:[["Remove all debris","EA",1,"w"],["Final magnetic sweep","EA",1,"w"],["Final roof inspection","EA",1,"w"],["Completion photos","EA",1,"w"]]}
   ];
   var KEY = 'hr-workorder-draft-v1';
   var state = { fields:{}, items:{} };
-  WORK.forEach(function(g,gi){ g.items.forEach(function(it,ii){ state.items[gi+'-'+ii] = {qty:null, note:'', size:''}; }); });
+  WORK.forEach(function(g,gi){ g.items.forEach(function(it,ii){ state.items[gi+'-'+ii] = {qty:null, note:'', size:'', sizeqty:{}}; }); });
 
   // Build work item UI
   var wi = document.getElementById('workitems'); var wi2 = document.getElementById('workitems2');
@@ -279,10 +279,11 @@
       var id = gi+'-'+ii;
       var row = document.createElement('div'); row.className='item';
       row.innerHTML = '<span class="nm">'+it[0]+(it[1]?' <span class="unit">'+it[1]+'</span>':'')+'</span>'+
-        '<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
+        (it[6]==='multi'?'':'<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
         '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="" placeholder="-">'+
-        '<button type="button" data-d="1" aria-label="increase">+</button></span>'+
-        (it[4]?'<select data-sizefor="'+id+'" aria-label="Size"><option value="">Size</option>'+it[4].map(function(z){return '<option>'+z+'</option>';}).join('')+'</select>':'')+
+        '<button type="button" data-d="1" aria-label="increase">+</button></span>')+
+        (it[4]&&it[6]==='multi'?'<span class="sizeqs">'+it[4].map(function(z){return '<label class="sizeq">'+z+' <input type="number" min="0" step="1" inputmode="numeric" data-sq="'+id+'" data-sz="'+z+'" value="" placeholder="-"></label>';}).join('')+'</span>':
+        it[4]?'<select data-sizefor="'+id+'" aria-label="Size"><option value="">Size</option>'+it[4].map(function(z){return '<option>'+z+'</option>';}).join('')+'</select>':'')+
         '<button type="button" class="notebtn" data-notebtn="'+id+'">+ measurement</button>'+
         '<textarea data-notefor="'+id+'" placeholder="Note for this line" style="display:none;flex-basis:100%"></textarea>';
       det.appendChild(row);
@@ -293,7 +294,7 @@
   function updateCounts(){
     WORK.forEach(function(g,gi){
       if(g.removed) return;
-      var n=0; g.items.forEach(function(it,ii){ if(it[5]){ n++; return; } var st=state.items[gi+'-'+ii]; if(st.qty!=null && (!it[4] || st.qty==0 || st.size)) n++; });
+      var n=0; g.items.forEach(function(it,ii){ if(it[5]){ n++; return; } var st=state.items[gi+'-'+ii]; if(st.qty!=null && (!it[4] || it[6]==='multi' || st.qty==0 || st.size)) n++; });
       var el=document.getElementById('cnt-'+gi); el.textContent = (g.items.length-n)+' unanswered';
     });
   }
@@ -356,6 +357,14 @@
     if(sel){ state.items[sel.getAttribute('data-sizefor')].size = sel.value; updateCounts(); save(); }
   });
   document.getElementById('form').addEventListener('input', function(e){
+    var sq = e.target.closest('input[data-sq]');
+    if(sq){
+      var st=state.items[sq.getAttribute('data-sq')];
+      var boxes=document.querySelectorAll('input[data-sq="'+sq.getAttribute('data-sq')+'"]');
+      var any=false, sum=0;
+      boxes.forEach(function(b){ var v=b.value.trim(); if(v===''){ delete st.sizeqty[b.getAttribute('data-sz')]; return; } var n=Math.max(0,parseInt(v,10)||0); st.sizeqty[b.getAttribute('data-sz')]=n; sum+=n; any=true; });
+      st.qty = any ? sum : null; updateCounts(); save(); return;
+    }
     var inp = e.target.closest('input[data-item]');
     if(inp){ var n=parseFloat(inp.value); state.items[inp.getAttribute('data-item')].qty = (inp.value.trim()===''||isNaN(n))?null:Math.max(0,Math.round(n*100)/100); updateCounts(); save(); return; }
     var ta = e.target.closest('textarea[data-notefor]');
@@ -406,11 +415,12 @@
     Object.keys(d.items).forEach(function(k){
       if(!Object.prototype.hasOwnProperty.call(out.items,k))throw Error('Unknown work item: '+k);
       var x=d.items[k];if(!x||typeof x!=='object'||Array.isArray(x))throw Error('Invalid item: '+k);
-      Object.keys(x).forEach(function(a){if(['qty','note','size'].indexOf(a)<0)throw Error('Unexpected item field.');});
+      Object.keys(x).forEach(function(a){if(['qty','note','size','sizeqty'].indexOf(a)<0)throw Error('Unexpected item field.');});
       if(x.qty!=null&&(typeof x.qty!=='number'||!Number.isFinite(x.qty)||x.qty<0||x.qty>100000))throw Error('Invalid quantity: '+k);
       if(x.note!=null&&(typeof x.note!=='string'||x.note.length>10000))throw Error('Invalid note: '+k);
       if(x.size!=null){ var xk=k.split('-'), xit=WORK[+xk[0]].items[+xk[1]]; if(typeof x.size!=='string'||!xit[4]||xit[4].indexOf(x.size)<0)throw Error('Invalid size: '+k); }
-      out.items[k]={qty:x.qty==null?null:x.qty,note:x.note||'',size:x.size||''};
+      if(x.sizeqty!=null){ var xk2=k.split('-'), xit2=WORK[+xk2[0]].items[+xk2[1]]; if(typeof x.sizeqty!=='object'||Array.isArray(x.sizeqty)||!xit2[4]||xit2[6]!=='multi'||Object.keys(x.sizeqty).some(function(z){return xit2[4].indexOf(z)<0||typeof x.sizeqty[z]!=='number'||x.sizeqty[z]<0||x.sizeqty[z]>100000;}))throw Error('Invalid size quantities: '+k); }
+      out.items[k]={qty:x.qty==null?null:x.qty,note:x.note||'',size:x.size||'',sizeqty:x.sizeqty||{}};
     });
     if(d.review){
       if(typeof d.review!=='object'||Array.isArray(d.review))throw Error('Invalid review metadata.');
@@ -440,6 +450,7 @@
         var inp = document.querySelector('input[data-item="'+k+'"]'); if(inp){ inp.value = state.items[k].qty==null?'':state.items[k].qty; if(state.review) inp.placeholder='Pending'; }
         var ta = document.querySelector('textarea[data-notefor="'+k+'"]'); if(ta && state.items[k].note){ ta.value = state.items[k].note; ta.style.display='block'; }
         var sz = document.querySelector('select[data-sizefor="'+k+'"]'); if(sz && state.items[k].size) sz.value = state.items[k].size;
+        document.querySelectorAll('input[data-sq="'+k+'"]').forEach(function(b){ var v=state.items[k].sizeqty&&state.items[k].sizeqty[b.getAttribute('data-sz')]; b.value=(v==null?'':v); });
       });
       updateCounts(); refreshDraftNotice();
     }catch(e){}
@@ -452,6 +463,7 @@
 
   function rowKV(k,v){ return v ? '<tr><td class="k">'+esc(k)+'</td><td>'+esc(v)+'</td></tr>' : ''; }
 
+  function sizeBreakdown(st){ var parts=Object.keys(st.sizeqty||{}).filter(function(z){return st.sizeqty[z]>0;}).map(function(z){return z+': '+st.sizeqty[z];}); return parts.length?' <span class="unit">('+parts.join(', ')+')</span>':''; }
   function layersVal(){ return chipVal('layers') || val('layersother'); }
   function gateNA(){ var c=document.getElementById('gatena'); return c && c.checked; }
   function gateVal(){ return val('gate') || (gateNA() ? 'None' : ''); }
@@ -492,7 +504,7 @@
       if(g.removed) return;
       if(scope==='top' && !document.querySelector('#workitems details.group[data-gi="'+gi+'"]')) return;
       var n=0;
-      g.items.forEach(function(it,ii){ if(it[5]) return; var st=state.items[gi+'-'+ii]; if(!st || st.qty==null || (it[4] && st.qty>0 && !st.size)) n++; });
+      g.items.forEach(function(it,ii){ if(it[5]) return; var st=state.items[gi+'-'+ii]; if(!st || st.qty==null || (it[4] && it[6]!=='multi' && st.qty>0 && !st.size)) n++; });
       if(n) miss.push('__wi'+gi+':'+n);
     });
     return miss;
@@ -610,7 +622,7 @@
       if(g.removed) return;
       var lines=[];
       g.items.forEach(function(it,ii){ if(it[5]) return; var st=state.items[gi+'-'+ii];
-        if(st.qty==null || st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+it[0]+(st.qty==null?': PENDING quantity / scope':(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):''))+(st.size?' - '+st.size:'')+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
+        if(st.qty==null || st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+it[0]+(st.qty==null?': PENDING quantity / scope':(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):''))+(it[6]==='multi'?sizeBreakdown(st):(st.size?' - '+st.size:''))+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
       if(lines.length){ L.push(g.g+':'); lines.forEach(function(x){L.push(x);}); }
     });
     if(val('addnotes')){ L.push(''); L.push('NOTES: '+val('addnotes')); }
