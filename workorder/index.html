@@ -334,6 +334,7 @@
   (function(){ var co=document.getElementById('currentsystemother'); if(!co) return;
     var cc=document.querySelector('.chips[data-f="currentsystem"]');
     function sync(){ co.style.display = chipVal('currentsystem')==='Other' ? 'block' : 'none'; }
+    window.syncCurrentOther=sync;
     if(cc) cc.addEventListener('click', function(){ setTimeout(sync,0); });
     co.addEventListener('input', function(){ if(co.value.trim()) setChip('currentsystem','Other'); });
     sync();
@@ -496,6 +497,8 @@
         var di = document.querySelector('input[data-datefor="'+k+'"]'); if(di && state.items[k].soldate) di.value = state.items[k].soldate;
       });
       updateCounts(); refreshDraftNotice();
+      if(window.syncCurrentOther) window.syncCurrentOther();
+      if(window.syncSystemProducts) window.syncSystemProducts();
     }catch(e){}
   }
 
