@@ -141,21 +141,21 @@
 <div class="chips" data-f="currentsystem">
 <button class="chip" data-v="Architectural Shingle">Architectural Shingle</button><button class="chip" data-v="3-Tab Shingle">3-Tab Shingle</button><button class="chip" data-v="Tile">Tile</button><button class="chip" data-v="Modified Bitumen">Modified Bitumen</button><button class="chip" data-v="SPF / Coating">SPF / Coating</button><button class="chip" data-v="Slate">Slate</button><button class="chip" data-v="Other">Other</button>
 </div>
-<input data-f="currentsystemother" id="currentsystemother" type="text" placeholder="Other - type what it is" style="margin-top:10px;display:none"/>
+<input data-f="currentsystemother" id="currentsystemother" type="text" placeholder="Other - type what it is" style="margin-top:10px;display:none"/></div><div class="card">
+<h2>Work Items</h2>
+<div class="sub">Every line needs an answer - set 0 for not needed, add a note to any line if helpful.</div>
+<div id="workitems"></div>
 </div><div class="card">
 <h2>Roof System Being Installed</h2>
 <label class="f">Roof System</label>
 <div class="chips" data-f="roofsystem">
-<button class="chip" data-v="Architectural Shingle">Architectural Shingle</button><button class="chip" data-v="3-Tab Shingle">3-Tab Shingle</button><button class="chip" data-v="Tile">Tile</button><button class="chip" data-v="Modified Bitumen">Modified Bitumen</button><button class="chip" data-v="SPF / Coating">SPF / Coating</button><button class="chip" data-v="Slate">Slate</button><button class="chip" data-v="Other">Other</button>
+<button class="chip" data-v="Architectural Shingle">Architectural Shingle</button><button class="chip" data-v="3-Tab Shingle">3-Tab Shingle</button><button class="chip" data-v="Tile">Tile</button><button class="chip" data-v="Modified Bitumen">Modified Bitumen</button><button class="chip" data-v="SPF / Coating">SPF / Coating</button><button class="chip" data-v="Slate">Slate</button><button class="chip" data-v="Stone-Coated Steel">Stone-Coated Steel</button><button class="chip" data-v="Composite / Synthetic">Composite / Synthetic</button><button class="chip" data-v="Other">Other</button>
 </div>
 <label class="f">Job Type</label>
 <div class="chips" data-f="jobtype">
 <button class="chip" data-v="Retail">Retail</button><button class="chip" data-v="Insurance">Insurance</button>
 </div>
-</div><div class="card">
-<h2>Work Items</h2>
-<div class="sub">Every line needs an answer - set 0 for not needed, add a note to any line if helpful.</div>
-<div id="workitems"></div>
+
 </div><div class="card">
 <h2>The Big 5</h2>
 <label class="f">1. Layers</label>
@@ -212,9 +212,18 @@
 </div>
 <label class="f" for="otherinstr">Other / Special Instructions</label>
 <textarea data-f="otherinstr" id="otherinstr" placeholder='Required - enter "None" if no other instructions'></textarea>
-</div><div class="no-print" style="margin:14px 0 2px;text-align:center"><button class="btn primary" id="genbtn2" type="button" style="width:min(340px,100%)">Generate PDF</button></div><div class="card"><h2>New Roof Details</h2><label class="f">Malarkey Product</label><div class="chips" data-f="malarkey">
+</div><div class="no-print" style="margin:14px 0 2px;text-align:center"><button class="btn primary" id="genbtn2" type="button" style="width:min(340px,100%)">Generate PDF</button></div><div class="card"><h2>New Roof Details</h2><label class="f" id="malarkeylabel">Malarkey Product</label><div class="chips" data-f="malarkey" id="malarkeychips">
 <button class="chip" data-v="Highlander AR">Highlander AR</button><button class="chip" data-v="Vista AR">Vista AR</button><button class="chip" data-v="Legacy Scotchgard">Legacy Scotchgard</button>
-</div><label class="f" for="shinglecolor">Shingle Color</label><select data-f="shinglecolor" id="shinglecolor">
+</div><label class="f" for="tileprofile" id="tileprofilelabel" style="display:none">Tile Profile (Eagle)</label><select data-f="tileprofile" id="tileprofile" style="display:none">
+<option value="">Choose</option>
+<option>Bel Air</option><option>Ponderosa</option><option>Tapered Slate</option><option>Malibu</option><option>Capistrano</option><option>Other / Special Order</option>
+</select><label class="f" for="steelprofile" id="steelprofilelabel" style="display:none">Stone-Coated Steel Profile (Unified Steel)</label><select data-f="steelprofile" id="steelprofile" style="display:none">
+<option value="">Choose</option>
+<option>PINE-CREST Shake</option><option>COTTAGE Shingle</option><option>GRANITE-RIDGE Shingle</option><option>BARREL-VAULT Tile</option><option>PACIFIC Tile</option><option>Other / Special Order</option>
+</select><label class="f" for="compositeproduct" id="compositeproductlabel" style="display:none">Composite Product (DaVinci)</label><select data-f="compositeproduct" id="compositeproduct" style="display:none">
+<option value="">Choose</option>
+<option>Multi-Width Slate</option><option>Single-Width Slate</option><option>Province Slate</option><option>Multi-Width Shake</option><option>Single-Width Shake</option><option>Select Shake</option><option>Other / Special Order</option>
+</select><label class="f" for="shinglecolor" id="shinglecolorlabel">Shingle Color</label><select data-f="shinglecolor" id="shinglecolor">
 <option value="">Choose</option>
 <option>Antique Brown</option><option>Black Oak</option><option>Brilliant Black</option><option>Burlwood</option><option>Golden Amber</option><option>Heather</option><option>Ivory Mist</option><option>Midnight Black</option><option>Moonlit Black</option><option>Natural Wood</option><option>Riverstone Grey</option><option>Sienna Blend</option><option>Silverwood</option><option>Storm Grey</option><option>Weathered Wood</option><option>Weathered Wood Plus</option><option>Willow Wood</option><option>Other / Special Order</option>
 </select><label class="f">Drip Edge Color</label><div class="chips" data-f="dripedge">
@@ -329,6 +338,23 @@
     sync();
   })();
 
+  // Roof system being installed: show the product choices that match the system
+  (function(){
+    var rc=document.querySelector('.chips[data-f="roofsystem"]'); if(!rc) return;
+    var SHINGLE=['Architectural Shingle','3-Tab Shingle'];
+    function show(id,on){ var el=document.getElementById(id); if(el) el.style.display=on?'':'none'; }
+    window.syncSystemProducts=function(){
+      var s=chipVal('roofsystem'), sh=SHINGLE.indexOf(s)>=0;
+      show('malarkeylabel',sh); show('malarkeychips',sh);
+      show('shinglecolorlabel',sh); show('shinglecolor',sh);
+      show('tileprofilelabel',s==='Tile'); show('tileprofile',s==='Tile');
+      show('steelprofilelabel',s==='Stone-Coated Steel'); show('steelprofile',s==='Stone-Coated Steel');
+      show('compositeproductlabel',s==='Composite / Synthetic'); show('compositeproduct',s==='Composite / Synthetic');
+    };
+    rc.addEventListener('click', function(){ setTimeout(window.syncSystemProducts,0); });
+    window.syncSystemProducts();
+  })();
+
   // Layers: typed Other clears the chips, picking a chip clears the Other box
   (function(){ var lo=document.getElementById('layersother'); if(!lo) return;
     lo.addEventListener('input', function(){ if(lo.value.trim()) setChip('layers',''); });
@@ -399,7 +425,7 @@
   }
 
 
-  var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmphone": "Project Manager Phone", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "gate": "Gate Code", "currentsystem": "Current Roof System", "currentsystemother": "Current Roof System (Other)", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approx. Tear-Off (SQ)", "install": "Approx. Install (SQ)", "layers": "Layers", "decking": "Decking / Redeck", "layersother": "Layers (Other)", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "acnotes": "A/C / Crane Notes", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
+  var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmphone": "Project Manager Phone", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "gate": "Gate Code", "currentsystem": "Current Roof System", "currentsystemother": "Current Roof System (Other)", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "tileprofile": "Tile Profile", "steelprofile": "Stone-Coated Steel Profile", "compositeproduct": "Composite Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approx. Tear-Off (SQ)", "install": "Approx. Install (SQ)", "layers": "Layers", "decking": "Decking / Redeck", "layersother": "Layers (Other)", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "acnotes": "A/C / Crane Notes", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
   function pendingMessage(){
     if(!state.review) return '';
     var a=[];
@@ -441,6 +467,9 @@
       out.review.pending=d.review.pending||[];out.review.notes=d.review.notes||'';
     }
     ['pm','jt','customer','phone','address','currentsystem','roofsystem','shinglecolor','dripedge','jobtype','layers','decking','accrane','fascia','pitch','stories','access','complex','equipment','occupied'].forEach(function(k){if(!out.fields[k] && out.review.pending.indexOf(k)<0)out.review.pending.push(k);});
+    var rsys=out.fields['roofsystem'];
+    if(rsys&&['Architectural Shingle','3-Tab Shingle'].indexOf(rsys)<0){ ['malarkey','shinglecolor'].forEach(function(k){var i=out.review.pending.indexOf(k); if(i>=0)out.review.pending.splice(i,1);}); }
+    [['tileprofile','Tile'],['steelprofile','Stone-Coated Steel'],['compositeproduct','Composite / Synthetic']].forEach(function(pr){ if(rsys===pr[1]&&!out.fields[pr[0]]&&out.review.pending.indexOf(pr[0])<0)out.review.pending.push(pr[0]); });
     if(out.fields['layersother'] && !out.fields['layers']){ var li=out.review.pending.indexOf('layers'); if(li>=0) out.review.pending.splice(li,1); }
     return out;
   }
@@ -503,7 +532,12 @@
     ['pm'],['jt'],['pmnotes'],
     ['address'],
     ['gate', function(){ return !gateNA(); }],
-    ['malarkey'],['shinglecolor'],['dripedge'],['flatcolor'],
+    ['malarkey', function(){ return ['Architectural Shingle','3-Tab Shingle'].indexOf(chipVal('roofsystem'))>=0; }],
+    ['shinglecolor', function(){ return ['Architectural Shingle','3-Tab Shingle'].indexOf(chipVal('roofsystem'))>=0; }],
+    ['tileprofile', function(){ return chipVal('roofsystem')==='Tile'; }],
+    ['steelprofile', function(){ return chipVal('roofsystem')==='Stone-Coated Steel'; }],
+    ['compositeproduct', function(){ return chipVal('roofsystem')==='Composite / Synthetic'; }],
+    ['dripedge'],['flatcolor'],
     ['tearoff'],['install'],
     ['addnotes']
   ];
@@ -579,7 +613,7 @@
     h += sec('Project Manager', rowKV('Heirloom Project Manager', val('pm')) + rowKV('Phone Number', val('pmphone')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')));
     h += sec('Job Info', rowKV('Customer', val('customer')) + rowKV('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', gateVal()));
     h += sec('Current Roof Details', rowKV('Roof System', currentSystemVal()));
-    h += sec('Roof System Being Installed', rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off (SQ)', val('tearoff')) + rowKV('Approx. Install (SQ)', val('install')));
+    h += sec('Roof System Being Installed', rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Tile Profile', val('tileprofile')) + rowKV('Stone-Coated Steel Profile', val('steelprofile')) + rowKV('Composite Product', val('compositeproduct')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off (SQ)', val('tearoff')) + rowKV('Approx. Install (SQ)', val('install')));
     h += sec('The Big 5', rowKV('1. Layers', layersVal())
       + rowKV('2. Decking / Redeck', val('decking') + (val('deckqty')? ' - '+val('deckqty')+' sheets':'') + (val('deckthick')? ' - '+val('deckthick'):''))
       + rowKV('3. A/C / Crane', val('accrane') + (val('acnotes')? ' - '+val('acnotes'):''))
@@ -621,7 +655,7 @@
     p('PM', val('pm')); p('PM Phone', val('pmphone')); p('Request JT PM', val('jt')); if(val('pmnotes')) p('PM Notes', val('pmnotes'));
     p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', gateVal());
     L.push('');
-    p('Current Roof System', currentSystemVal()); p('Roof System Being Installed', val('roofsystem')); p('Malarkey Product', val('malarkey')); p('Shingle Color', val('shinglecolor')); p('Drip Edge', val('dripedge')); p('Flat Roof Color', val('flatcolor')); p('Job Type', val('jobtype')); p('Approx. Tear-Off (SQ)', val('tearoff')); p('Approx. Install (SQ)', val('install'));
+    p('Current Roof System', currentSystemVal()); p('Roof System Being Installed', val('roofsystem')); p('Malarkey Product', val('malarkey')); p('Tile Profile', val('tileprofile')); p('Steel Profile', val('steelprofile')); p('Composite Product', val('compositeproduct')); p('Shingle Color', val('shinglecolor')); p('Drip Edge', val('dripedge')); p('Flat Roof Color', val('flatcolor')); p('Job Type', val('jobtype')); p('Approx. Tear-Off (SQ)', val('tearoff')); p('Approx. Install (SQ)', val('install'));
     L.push(''); L.push('BIG 5:');
     p('Layers', layersVal());
     var d = val('decking'); if(val('deckqty')) d += ' - '+val('deckqty')+' sheets'; if(val('deckthick')) d += ' - '+val('deckthick'); p('Decking', d);
@@ -679,7 +713,7 @@
     var L=['HEIRLOOM ROOFING - PRODUCTION WORK ORDER', new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'}), ''];
     var p=function(k,v){ if(v) L.push(k+': '+v); };
     p('PM', val('pm')); p('PM Phone', val('pmphone')); p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', val('gate'));
-    p('Current Roof System', currentSystemVal()); p('Roof System Being Installed', val('roofsystem')); p('Malarkey', val('malarkey')); p('Shingle Color', val('shinglecolor')); p('Job Type', val('jobtype'));
+    p('Current Roof System', currentSystemVal()); p('Roof System Being Installed', val('roofsystem')); p('Malarkey', val('malarkey')); p('Tile Profile', val('tileprofile')); p('Steel Profile', val('steelprofile')); p('Composite Product', val('compositeproduct')); p('Shingle Color', val('shinglecolor')); p('Job Type', val('jobtype'));
     p('Layers', layersVal()); p('Decking', val('decking')); p('A/C / Crane', val('accrane') + (val('acnotes')? ' - '+val('acnotes'):'')); p('Fascia', val('fascia')); p('Special Conditions', val('special'));
     L.push(''); L.push('Full work order with all quantities is copied to your clipboard - paste it below this line.'); L.push('');
     return L.join('\n');
