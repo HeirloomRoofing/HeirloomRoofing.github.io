@@ -115,26 +115,45 @@
 <div class="hint">Clears every answer saved on this device, after a confirmation. It never sends an order.</div>
 <div id="draftnotice" role="status" style="display:none;background:#fff4e5;color:#704800;padding:12px;border-radius:10px;margin-top:10px;white-space:pre-line;max-height:180px;overflow:auto"></div>
 </div><div class="card">
+<h2>Job Info</h2>
+<label class="f" for="customer">Customer</label>
+<input data-f="customer" id="customer" type="text"/>
+<label class="f" for="phone">Customer Phone Number</label>
+<input data-f="phone" id="phone" type="tel"/>
+<label class="f" for="address">Address</label>
+<input data-f="address" id="address" type="text"/>
+<label class="f" for="gate">Gate Code</label>
+<input data-f="gate" data-nosave="1" id="gate" placeholder="Code, or check the box below" type="text"/>
+<label class="nagate"><input data-f="gatena" id="gatena" type="checkbox"/>No gate code needed</label>
+</div><div class="card">
+<h2>Project Manager</h2>
+<label class="f" for="pm">Heirloom Project Manager</label>
+<input data-f="pm" id="pm" placeholder="Name" type="text"/>
+<label class="f">Request JT Project Manager</label>
+<div class="chips" data-f="jt"><button class="chip" data-v="Yes">Yes</button><button class="chip" data-v="No">No</button></div>
+<label class="f" for="pmnotes">Notes</label>
+<input data-f="pmnotes" id="pmnotes" placeholder='Required - enter "None" if no notes' type="text"/>
+</div><div class="card">
 <h2>The Big 5</h2>
 <label class="f">1. Layers</label>
 <div class="chips" data-f="layers">
-<button class="chip" data-v="1 Layer">1 Layer</button><button class="chip" data-v="2 Layers">2 Layers</button><button class="chip" data-v="3 Layers">3 Layers</button><button class="chip" data-v="Other / Verify">Other / Verify</button>
-</div>
+<button class="chip" data-v="1 Layer">1 Layer</button><button class="chip" data-v="2 Layers">2 Layers</button><button class="chip" data-v="3 Layers">3 Layers</button></div>
+<input data-f="layersother" id="layersother" type="text" placeholder="Other - type what it is" style="margin-top:10px"/>
 <label class="f">2. Decking / Redeck / Space Decking</label>
 <div class="chips" data-f="decking">
-<button class="chip" data-v="Solid Decking / Backup Sheets Only">Solid / Backup Sheets Only</button><button class="chip" data-v="Solid Decking / Full Redeck">Solid / Full Redeck</button><button class="chip" data-v="Space Decking / Overlay OSB">Space / Overlay OSB</button><button class="chip" data-v="Space Decking / Full Redeck">Space / Full Redeck</button><button class="chip" data-v="Decking To Be Determined">To Be Determined</button>
+<button class="chip" data-v="Solid Decking / Backup Sheets Only">Solid / Backup Sheets Only</button><button class="chip" data-v="Solid Decking / Full Redeck">Solid / Full Redeck</button><button class="chip" data-v="Space Decking / Overlay OSB">Space / Overlay OSB</button><button class="chip" data-v="Space Decking / Full Redeck">Space / Full Redeck</button>
 </div>
 <div class="row2">
 <div><label class="f" for="deckqty">Decking Sheets (Qty)</label><input data-f="deckqty" id="deckqty" inputmode="numeric" max="60" min="0" type="number"/></div>
 <div><label class="f" for="deckthick">Decking Thickness</label><select data-f="deckthick" id="deckthick"><option value="">Choose</option><option>3/8"</option><option>7/16"</option><option>1/2"</option><option>5/8"</option><option>3/4"</option><option>Other / Verify</option></select></div>
 </div>
 <label class="f">3. A/C / Crane</label>
-<div class="chips" data-f="accrane">
-<button class="chip" data-v="Work Around A/C / No Crane">Work Around A/C / No Crane</button><button class="chip" data-v="A/C Detach &amp; Reset / No Crane">A/C Detach &amp; Reset / No Crane</button><button class="chip" data-v="A/C Detach &amp; Reset / Crane Required">A/C Detach &amp; Reset / Crane</button><button class="chip" data-v="Crane Required">Crane Required</button><button class="chip" data-v="No Rooftop A/C">No Rooftop A/C</button>
+<div class="chips" data-f="accrane" data-multi="1">
+<button class="chip" data-v="Work Around A/C">Work Around A/C</button><button class="chip" data-v="Crane Will Be Required">Crane Will Be Required</button><button class="chip" data-v="Swamp Cooler">Swamp Cooler</button>
 </div>
 <label class="f">4. Fascia Replacement</label>
 <div class="chips" data-f="fascia">
-<button class="chip" data-v="None Expected">None Expected</button><button class="chip" data-v="Partial Fascia Replacement">Partial</button><button class="chip" data-v="Full Fascia Replacement">Full</button><button class="chip" data-v="Determine During Tear-Off">Determine During Tear-Off</button>
+<button class="chip" data-v="None Expected">None Expected</button><button class="chip" data-v="Partial Fascia Replacement">Partial</button><button class="chip" data-v="Full Fascia Replacement">Full</button>
 </div>
 <label class="f" for="fasciasize">Fascia Board Size</label>
 <select data-f="fasciasize" id="fasciasize"><option value="">Choose</option><option>1x4</option><option>1x6</option><option>1x8</option><option>2x4</option><option>2x6</option><option>2x8</option><option>2x10</option><option>Other / Verify</option></select>
@@ -184,26 +203,7 @@
 </div>
 <label class="f" for="otherinstr">Other / Special Instructions</label>
 <textarea data-f="otherinstr" id="otherinstr" placeholder='Required - enter "None" if no other instructions'></textarea>
-</div><div class="no-print" style="margin:14px 0 2px;text-align:center"><button class="btn primary" id="genbtn2" type="button" style="width:min(340px,100%)">Generate PDF</button></div><div class="card">
-<h2>Job Info</h2>
-<label class="f" for="customer">Customer</label>
-<input data-f="customer" id="customer" type="text"/>
-<label class="f" for="phone">Customer Phone Number</label>
-<input data-f="phone" id="phone" type="tel"/>
-<label class="f" for="address">Address</label>
-<input data-f="address" id="address" type="text"/>
-<label class="f" for="gate">Gate Code</label>
-<input data-f="gate" data-nosave="1" id="gate" placeholder="Code, or check the box below" type="text"/>
-<label class="nagate"><input data-f="gatena" id="gatena" type="checkbox"/>No gate code needed</label>
-</div><div class="card">
-<h2>Project Manager</h2>
-<label class="f" for="pm">Heirloom Project Manager</label>
-<input data-f="pm" id="pm" placeholder="Name" type="text"/>
-<label class="f">Request JT Project Manager</label>
-<div class="chips" data-f="jt"><button class="chip" data-v="Yes">Yes</button><button class="chip" data-v="No">No</button></div>
-<label class="f" for="pmnotes">Notes</label>
-<input data-f="pmnotes" id="pmnotes" placeholder='Required - enter "None" if no notes' type="text"/>
-</div><div class="card"><h2>New Roof Details</h2><label class="f">Malarkey Product</label><div class="chips" data-f="malarkey">
+</div><div class="no-print" style="margin:14px 0 2px;text-align:center"><button class="btn primary" id="genbtn2" type="button" style="width:min(340px,100%)">Generate PDF</button></div><div class="card"><h2>New Roof Details</h2><label class="f">Malarkey Product</label><div class="chips" data-f="malarkey">
 <button class="chip" data-v="Highlander AR">Highlander AR</button><button class="chip" data-v="Vista AR">Vista AR</button><button class="chip" data-v="Legacy Scotchgard">Legacy Scotchgard</button>
 </div><label class="f" for="shinglecolor">Shingle Color</label><select data-f="shinglecolor" id="shinglecolor">
 <option value="">Choose</option>
@@ -305,6 +305,12 @@
     if(!v) c.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
   }
 
+  // Layers: typed Other clears the chips, picking a chip clears the Other box
+  (function(){ var lo=document.getElementById('layersother'); if(!lo) return;
+    lo.addEventListener('input', function(){ if(lo.value.trim()) setChip('layers',''); });
+    var lc=document.querySelector('.chips[data-f="layers"]'); if(lc) lc.addEventListener('click', function(){ lo.value=''; });
+  })();
+
   // Gate code N/A toggle
   document.getElementById('gatena').addEventListener('change', function(){
     var g=document.getElementById('gate');
@@ -355,11 +361,11 @@
   }
 
 
-  var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "gate": "Gate Code", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approx. Tear-Off (SQ)", "install": "Approx. Install (SQ)", "layers": "Layers", "decking": "Decking / Redeck", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
+  var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "gate": "Gate Code", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approx. Tear-Off (SQ)", "install": "Approx. Install (SQ)", "layers": "Layers", "decking": "Decking / Redeck", "layersother": "Layers (Other)", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
   function pendingMessage(){
     if(!state.review) return '';
     var a=[];
-    (state.review.pending||[]).forEach(function(k){var el=document.querySelector('[data-f="'+k+'"]'); if(el && !val(k)){var label=document.querySelector('label[for="'+k+'"]');a.push((FIELD_LABELS[k]||(label?label.textContent:k))+': PENDING');}});
+    (state.review.pending||[]).forEach(function(k){var el=document.querySelector('[data-f="'+k+'"]'); if(el && !(k==='layers' ? layersVal() : val(k))){var label=document.querySelector('label[for="'+k+'"]');a.push((FIELD_LABELS[k]||(label?label.textContent:k))+': PENDING');}});
     Object.keys(state.items).forEach(function(k){if(state.items[k].qty==null){var x=k.split('-');a.push(WORK[+x[0]].items[+x[1]][0]+': PENDING quantity / scope');}});
     return (a.length?a.join('\n'):'All listed choices entered. Still a draft for review.')+(state.review.notes?'\nReview notes: '+state.review.notes:'');
   }
@@ -394,6 +400,7 @@
       out.review.pending=d.review.pending||[];out.review.notes=d.review.notes||'';
     }
     ['pm','jt','customer','phone','address','roofsystem','shinglecolor','dripedge','jobtype','layers','decking','accrane','fascia','pitch','stories','access','complex','equipment','occupied'].forEach(function(k){if(!out.fields[k] && out.review.pending.indexOf(k)<0)out.review.pending.push(k);});
+    if(out.fields['layersother'] && !out.fields['layers']){ var li=out.review.pending.indexOf('layers'); if(li>=0) out.review.pending.splice(li,1); }
     return out;
   }
 
@@ -425,19 +432,20 @@
 
   function rowKV(k,v){ return v ? '<tr><td class="k">'+esc(k)+'</td><td>'+esc(v)+'</td></tr>' : ''; }
 
+  function layersVal(){ return chipVal('layers') || val('layersother'); }
   function gateNA(){ var c=document.getElementById('gatena'); return c && c.checked; }
   function gateVal(){ return val('gate') || (gateNA() ? 'None' : ''); }
 
   // Every field needs a real answer before a finished order is generated.
   // Conditional rules keep answers honest: not-applicable is chosen explicitly
-  // (No gate code box, N/A flat color, To Be Determined decking), never faked.
+  // (No gate code box, N/A flat color), never faked.
   // The top Generate PDF button only needs the on-site checklist above it
   // (Big 5, Roof Details, its Work Items, Property Conditions). The bottom
   // Generate Work Order button still needs every field below filled in too.
   var REQUIRED_TOP = [
-    ['layers'],['decking'],
-    ['deckqty', function(){ var d=chipVal('decking'); return d && d.indexOf('To Be Determined')<0; }],
-    ['deckthick', function(){ var d=chipVal('decking'); return d && d.indexOf('To Be Determined')<0 && (parseInt(val('deckqty'),10)||0)>0; }],
+    ['layersother', function(){ return !chipVal('layers'); }],['decking'],
+    ['deckqty', function(){ return !!chipVal('decking'); }],
+    ['deckthick', function(){ return !!chipVal('decking') && (parseInt(val('deckqty'),10)||0)>0; }],
     ['accrane'],['fascia'],
     ['fasciasize', function(){ var f=chipVal('fascia'); return f==='Partial Fascia Replacement'||f==='Full Fascia Replacement'; }],
     ['special'],
@@ -524,7 +532,7 @@
     h += sec('Project Manager', rowKV('Heirloom Project Manager', val('pm')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')));
     h += sec('Job Info', rowKV('Customer', val('customer')) + rowKV('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', gateVal()));
     h += sec('Roof Details', rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off (SQ)', val('tearoff')) + rowKV('Approx. Install (SQ)', val('install')));
-    h += sec('The Big 5', rowKV('1. Layers', val('layers'))
+    h += sec('The Big 5', rowKV('1. Layers', layersVal())
       + rowKV('2. Decking / Redeck', val('decking') + (val('deckqty')? ' - '+val('deckqty')+' sheets':'') + (val('deckthick')? ' - '+val('deckthick'):''))
       + rowKV('3. A/C / Crane', val('accrane'))
       + rowKV('4. Fascia Replacement', val('fascia') + (val('fasciasize')? ' - '+val('fasciasize'):''))
@@ -565,7 +573,7 @@
     L.push('');
     p('Roof System', val('roofsystem')); p('Malarkey Product', val('malarkey')); p('Shingle Color', val('shinglecolor')); p('Drip Edge', val('dripedge')); p('Flat Roof Color', val('flatcolor')); p('Job Type', val('jobtype')); p('Approx. Tear-Off (SQ)', val('tearoff')); p('Approx. Install (SQ)', val('install'));
     L.push(''); L.push('BIG 5:');
-    p('Layers', val('layers'));
+    p('Layers', layersVal());
     var d = val('decking'); if(val('deckqty')) d += ' - '+val('deckqty')+' sheets'; if(val('deckthick')) d += ' - '+val('deckthick'); p('Decking', d);
     p('A/C / Crane', val('accrane'));
     var fa = val('fascia'); if(val('fasciasize')) fa += ' - '+val('fasciasize'); p('Fascia', fa);
@@ -621,7 +629,7 @@
     var p=function(k,v){ if(v) L.push(k+': '+v); };
     p('PM', val('pm')); p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', val('gate'));
     p('Roof System', val('roofsystem')); p('Malarkey', val('malarkey')); p('Shingle Color', val('shinglecolor')); p('Job Type', val('jobtype'));
-    p('Layers', val('layers')); p('Decking', val('decking')); p('A/C / Crane', val('accrane')); p('Fascia', val('fascia')); p('Special Conditions', val('special'));
+    p('Layers', layersVal()); p('Decking', val('decking')); p('A/C / Crane', val('accrane')); p('Fascia', val('fascia')); p('Special Conditions', val('special'));
     L.push(''); L.push('Full work order with all quantities is copied to your clipboard - paste it below this line.'); L.push('');
     return L.join('\n');
   }
