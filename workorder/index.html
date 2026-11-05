@@ -431,41 +431,50 @@
   // Every field needs a real answer before a finished order is generated.
   // Conditional rules keep answers honest: not-applicable is chosen explicitly
   // (No gate code box, N/A flat color, To Be Determined decking), never faked.
-  var REQUIRED = [
-    ['pm'],['jt'],['pmnotes'],
-    ['address'],
-    ['gate', function(){ return !gateNA(); }],
-    ['roofsystem'],['malarkey'],['shinglecolor'],['dripedge'],['flatcolor'],['jobtype'],
-    ['tearoff'],['install'],
+  // The top Generate PDF button only needs the on-site checklist above it
+  // (Big 5, Roof Details, its Work Items, Property Conditions). The bottom
+  // Generate Work Order button still needs every field below filled in too.
+  var REQUIRED_TOP = [
     ['layers'],['decking'],
     ['deckqty', function(){ var d=chipVal('decking'); return d && d.indexOf('To Be Determined')<0; }],
     ['deckthick', function(){ var d=chipVal('decking'); return d && d.indexOf('To Be Determined')<0 && (parseInt(val('deckqty'),10)||0)>0; }],
     ['accrane'],['fascia'],
     ['fasciasize', function(){ var f=chipVal('fascia'); return f==='Partial Fascia Replacement'||f==='Full Fascia Replacement'; }],
     ['special'],
+    ['roofsystem'],['jobtype'],
     ['pitch'],['stories'],['access'],['complex'],['equipment'],['occupied'],
-    ['otherinstr'],['addnotes']
+    ['otherinstr']
   ];
-  function missingRequired(){
+  var REQUIRED_BELOW = [
+    ['pm'],['jt'],['pmnotes'],
+    ['address'],
+    ['gate', function(){ return !gateNA(); }],
+    ['malarkey'],['shinglecolor'],['dripedge'],['flatcolor'],
+    ['tearoff'],['install'],
+    ['addnotes']
+  ];
+  var REQUIRED = REQUIRED_TOP.concat(REQUIRED_BELOW);
+  function missingRequired(scope){
     var miss=[];
-    REQUIRED.forEach(function(r){
+    (scope==='top' ? REQUIRED_TOP : REQUIRED).forEach(function(r){
       if(r[1] && !r[1]()) return;
       if(!val(r[0])) miss.push(r[0]);
     });
     WORK.forEach(function(g,gi){
+      if(scope==='top' && !document.querySelector('#workitems details.group[data-gi="'+gi+'"]')) return;
       var n=0;
       g.items.forEach(function(it,ii){ var st=state.items[gi+'-'+ii]; if(!st || st.qty==null) n++; });
       if(n) miss.push('__wi'+gi+':'+n);
     });
     return miss;
   }
-  function showReqErrors(miss){
+  function showReqErrors(miss, scope){
     var box=document.getElementById('reqerrors');
     var names=miss.map(function(k){
       if(k.indexOf('__wi')===0){ var p=k.slice(4).split(':'); return 'Work Items - '+WORK[+p[0]].g+': '+p[1]+' line'+(p[1]==='1'?'':'s')+' unanswered (set 0 for not needed)'; }
       return FIELD_LABELS[k]||k;
     });
-    box.innerHTML='<b>Fill in everything before generating the work order:</b><br>'+names.join('<br>');
+    box.innerHTML=(scope==='top'?'<b>Fill in everything above before generating the PDF:</b><br>':'<b>Fill in everything before generating the work order:</b><br>')+names.join('<br>');
     box.style.display='block';
     document.querySelectorAll('.miss').forEach(function(e){ e.classList.remove('miss'); });
     miss.forEach(function(k){
@@ -511,15 +520,16 @@
     var today = new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'});
     var h = '<div class="wohead"><img src="heirloom-logo-white.png" alt="" style="background:#0161A8;border-radius:10px;padding:6px 10px"><div class="wt">PRODUCTION WORK ORDER</div><div class="wd">Heirloom Roofing LLC &bull; '+today+'</div></div>';
     if(state.review) h += '<div style="border:2px solid #b57800;padding:12px;margin:16px 0;color:#704800"><b>DRAFT - REVIEW BEFORE PRODUCTION</b><br>'+(pendingMessage().match(/PENDING/g)||[]).length+' pending choices or quantities. Full review list is after the order below.</div>';
-    h += '<h3>Project Manager</h3><table>'+ rowKV('Heirloom Project Manager', val('pm')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')) +'</table>';
-    h += '<h3>Job Info</h3><table>'+ rowKV('Customer', val('customer')) + rowKV('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', gateVal()) +'</table>';
-    h += '<h3>Roof Details</h3><table>'+ rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off (SQ)', val('tearoff')) + rowKV('Approx. Install (SQ)', val('install')) +'</table>';
-    h += '<h3>The Big 5</h3><table>'+ rowKV('1. Layers', val('layers'))
+    function sec(title, rows){ return rows ? '<h3>'+title+'</h3><table>'+rows+'</table>' : ''; }
+    h += sec('Project Manager', rowKV('Heirloom Project Manager', val('pm')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')));
+    h += sec('Job Info', rowKV('Customer', val('customer')) + rowKV('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', gateVal()));
+    h += sec('Roof Details', rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off (SQ)', val('tearoff')) + rowKV('Approx. Install (SQ)', val('install')));
+    h += sec('The Big 5', rowKV('1. Layers', val('layers'))
       + rowKV('2. Decking / Redeck', val('decking') + (val('deckqty')? ' - '+val('deckqty')+' sheets':'') + (val('deckthick')? ' - '+val('deckthick'):''))
       + rowKV('3. A/C / Crane', val('accrane'))
       + rowKV('4. Fascia Replacement', val('fascia') + (val('fasciasize')? ' - '+val('fasciasize'):''))
-      + rowKV('5. Special Conditions', val('special')) +'</table>';
-    h += '<h3>Property Conditions</h3><table>'+ rowKV('Steep Pitch', val('pitch')) + rowKV('Stories / Roof Height', val('stories')) + rowKV('Limited Access', val('access')) + rowKV('Complex Roof Design', val('complex')) + rowKV('Special Equipment', val('equipment')) + rowKV('Occupied / Restricted', val('occupied')) + rowKV('Other / Special Instructions', val('otherinstr')) +'</table>';
+      + rowKV('5. Special Conditions', val('special')));
+    h += sec('Property Conditions', rowKV('Steep Pitch', val('pitch')) + rowKV('Stories / Roof Height', val('stories')) + rowKV('Limited Access', val('access')) + rowKV('Complex Roof Design', val('complex')) + rowKV('Special Equipment', val('equipment')) + rowKV('Occupied / Restricted', val('occupied')) + rowKV('Other / Special Instructions', val('otherinstr')));
     function itemRows(kind){
       var out='';
       WORK.forEach(function(g,gi){
@@ -577,10 +587,10 @@
 
   function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; setTimeout(function(){ t.style.display='none'; }, 2400); }
 
-  function generateOrder(){
+  function generateOrder(scope){
     if(!state.review){
-      var miss=missingRequired();
-      if(miss.length){ showReqErrors(miss); return; }
+      var miss=missingRequired(scope);
+      if(miss.length){ showReqErrors(miss, scope); return; }
     }
     hideReqErrors();
     document.getElementById('wopaper').innerHTML = buildOutput();
@@ -595,8 +605,8 @@
     document.getElementById('output').style.display='block';
     window.scrollTo(0,0);
   }
-  document.getElementById('genbtn').addEventListener('click', generateOrder);
-  document.getElementById('genbtn2').addEventListener('click', generateOrder);
+  document.getElementById('genbtn').addEventListener('click', function(){ generateOrder(); });
+  document.getElementById('genbtn2').addEventListener('click', function(){ generateOrder('top'); });
   document.getElementById('editbtn').addEventListener('click', function(){
     document.getElementById('output').style.display='none';
     document.getElementById('form').style.display='block';
