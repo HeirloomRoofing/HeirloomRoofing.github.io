@@ -432,7 +432,7 @@
     if(!state.review) return '';
     var a=[];
     (state.review.pending||[]).forEach(function(k){var el=document.querySelector('[data-f="'+k+'"]'); if(el && !(k==='layers' ? layersVal() : val(k))){var label=document.querySelector('label[for="'+k+'"]');a.push((FIELD_LABELS[k]||(label?label.textContent:k))+': PENDING');}});
-    Object.keys(state.items).forEach(function(k){if(state.items[k].qty==null){var x=k.split('-');a.push(WORK[+x[0]].items[+x[1]][0]+': PENDING quantity / scope');}});
+    Object.keys(state.items).forEach(function(k){if(state.items[k].qty==null){var x=k.split('-');var g=WORK[+x[0]];if(!g||g.removed||g.items[+x[1]][5])return;a.push(g.items[+x[1]][0]+': PENDING quantity / scope');}});
     return (a.length?a.join('\n'):'All listed choices entered. Still a draft for review.')+(state.review.notes?'\nReview notes: '+state.review.notes:'');
   }
   function refreshDraftNotice(){var n=document.getElementById('draftnotice'); if(!n)return; n.style.display=state.review?'block':'none';if(state.review){var msg=pendingMessage();var count=(msg.match(/PENDING/g)||[]).length;n.innerHTML='<b>DRAFT - review before sending</b><br>'+count+' pending choices or quantities. Confirmed answers are below.<details style="margin-top:8px"><summary>Review all pending choices and notes</summary><div style="white-space:pre-line;margin-top:8px">'+esc(msg)+'</div></details><button type="button" class="btn ghost" id="finishreview" style="width:100%;margin-top:10px">Finish review - everything is filled in</button>';}}
@@ -634,7 +634,7 @@
           if(it[3]!==kind) return;
           var st = state.items[gi+'-'+ii];
           if(st.qty==null || st.qty>0 || (st.note && st.note.trim())){
-            rows += '<tr class="wline"><td class="qbox">'+(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">'+st.qty+'</span>':'<span class="qpill zero">0</span>'))+'</td><td class="wname">'+esc(it[0])+'</td><td class="un2">'+esc(it[1])+'</td></tr>';
+            rows += '<tr class="wline"><td class="qbox">'+(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">'+st.qty+'</span>':'<span class="qpill zero">0</span>'))+'</td><td class="wname">'+esc(it[0])+(it[6]==='multi'?sizeBreakdown(st):(st.size?' <span class="unit">- '+esc(st.size)+'</span>':''))+(st.soldate?' <span class="unit">(reset scheduled '+esc(st.soldate)+')</span>':'')+'</td><td class="un2">'+esc(it[1])+'</td></tr>';
             if(st.note && st.note.trim()) rows += '<tr><td></td><td colspan="2" class="inote">'+esc(st.note)+'</td></tr>';
           }
         });
