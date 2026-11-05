@@ -129,6 +129,8 @@
 <h2>Project Manager</h2>
 <label class="f" for="pm">Heirloom Project Manager</label>
 <input data-f="pm" id="pm" placeholder="Name" type="text"/>
+<label class="f" for="pmphone">Phone Number</label>
+<input data-f="pmphone" id="pmphone" type="tel"/>
 <label class="f">Request JT Project Manager</label>
 <div class="chips" data-f="jt"><button class="chip" data-v="Yes">Yes</button><button class="chip" data-v="No">No</button></div>
 <label class="f" for="pmnotes">Notes</label>
@@ -151,6 +153,8 @@
 <div class="chips" data-f="accrane" data-multi="1">
 <button class="chip" data-v="Work Around A/C">Work Around A/C</button><button class="chip" data-v="Crane Will Be Required">Crane Will Be Required</button><button class="chip" data-v="Swamp Cooler">Swamp Cooler</button>
 </div>
+<label class="f" for="acnotes">Notes</label>
+<input data-f="acnotes" id="acnotes" type="text"/>
 <label class="f">4. Fascia Replacement</label>
 <div class="chips" data-f="fascia">
 <button class="chip" data-v="None Expected">None Expected</button><button class="chip" data-v="Partial Fascia Replacement">Partial</button><button class="chip" data-v="Full Fascia Replacement">Full</button>
@@ -375,7 +379,7 @@
   }
 
 
-  var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "gate": "Gate Code", "currentsystem": "Current Roof System", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approx. Tear-Off (SQ)", "install": "Approx. Install (SQ)", "layers": "Layers", "decking": "Decking / Redeck", "layersother": "Layers (Other)", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
+  var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmphone": "Project Manager Phone", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "gate": "Gate Code", "currentsystem": "Current Roof System", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approx. Tear-Off (SQ)", "install": "Approx. Install (SQ)", "layers": "Layers", "decking": "Decking / Redeck", "layersother": "Layers (Other)", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "acnotes": "A/C / Crane Notes", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
   function pendingMessage(){
     if(!state.review) return '';
     var a=[];
@@ -546,13 +550,13 @@
     var h = '<div class="wohead"><img src="heirloom-logo-white.png" alt="" style="background:#0161A8;border-radius:10px;padding:6px 10px"><div class="wt">PRODUCTION WORK ORDER</div><div class="wd">Heirloom Roofing LLC &bull; '+today+'</div></div>';
     if(state.review) h += '<div style="border:2px solid #b57800;padding:12px;margin:16px 0;color:#704800"><b>DRAFT - REVIEW BEFORE PRODUCTION</b><br>'+(pendingMessage().match(/PENDING/g)||[]).length+' pending choices or quantities. Full review list is after the order below.</div>';
     function sec(title, rows){ return rows ? '<h3>'+title+'</h3><table>'+rows+'</table>' : ''; }
-    h += sec('Project Manager', rowKV('Heirloom Project Manager', val('pm')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')));
+    h += sec('Project Manager', rowKV('Heirloom Project Manager', val('pm')) + rowKV('Phone Number', val('pmphone')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')));
     h += sec('Job Info', rowKV('Customer', val('customer')) + rowKV('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', gateVal()));
     h += sec('Current Roof Details', rowKV('Roof System', val('currentsystem')));
     h += sec('Roof System Being Installed', rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off (SQ)', val('tearoff')) + rowKV('Approx. Install (SQ)', val('install')));
     h += sec('The Big 5', rowKV('1. Layers', layersVal())
       + rowKV('2. Decking / Redeck', val('decking') + (val('deckqty')? ' - '+val('deckqty')+' sheets':'') + (val('deckthick')? ' - '+val('deckthick'):''))
-      + rowKV('3. A/C / Crane', val('accrane'))
+      + rowKV('3. A/C / Crane', val('accrane') + (val('acnotes')? ' - '+val('acnotes'):''))
       + rowKV('4. Fascia Replacement', val('fascia') + (val('fasciasize')? ' - '+val('fasciasize'):''))
       + rowKV('5. Special Conditions', val('special')));
     h += sec('Property Conditions', rowKV('Steep Pitch', val('pitch')) + rowKV('Stories / Roof Height', val('stories')) + rowKV('Limited Access', val('access')) + rowKV('Complex Roof Design', val('complex')) + rowKV('Special Equipment', val('equipment')) + rowKV('Occupied / Restricted', val('occupied')) + rowKV('Other / Special Instructions', val('otherinstr')));
@@ -588,14 +592,14 @@
     var L=[]; if(state.review) L.push('DRAFT - REVIEW BEFORE PRODUCTION',pendingMessage(),''); var p=function(k,v){ if(v) L.push(k+': '+v); };
     L.push('HEIRLOOM ROOFING - PRODUCTION WORK ORDER');
     L.push(new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'})); L.push('');
-    p('PM', val('pm')); p('Request JT PM', val('jt')); if(val('pmnotes')) p('PM Notes', val('pmnotes'));
+    p('PM', val('pm')); p('PM Phone', val('pmphone')); p('Request JT PM', val('jt')); if(val('pmnotes')) p('PM Notes', val('pmnotes'));
     p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', gateVal());
     L.push('');
     p('Current Roof System', val('currentsystem')); p('Roof System Being Installed', val('roofsystem')); p('Malarkey Product', val('malarkey')); p('Shingle Color', val('shinglecolor')); p('Drip Edge', val('dripedge')); p('Flat Roof Color', val('flatcolor')); p('Job Type', val('jobtype')); p('Approx. Tear-Off (SQ)', val('tearoff')); p('Approx. Install (SQ)', val('install'));
     L.push(''); L.push('BIG 5:');
     p('Layers', layersVal());
     var d = val('decking'); if(val('deckqty')) d += ' - '+val('deckqty')+' sheets'; if(val('deckthick')) d += ' - '+val('deckthick'); p('Decking', d);
-    p('A/C / Crane', val('accrane'));
+    p('A/C / Crane', val('accrane') + (val('acnotes')? ' - '+val('acnotes'):''));
     var fa = val('fascia'); if(val('fasciasize')) fa += ' - '+val('fasciasize'); p('Fascia', fa);
     p('Special Conditions', val('special'));
     L.push(''); L.push('CONDITIONS:');
@@ -648,9 +652,9 @@
   function compactText(){
     var L=['HEIRLOOM ROOFING - PRODUCTION WORK ORDER', new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'}), ''];
     var p=function(k,v){ if(v) L.push(k+': '+v); };
-    p('PM', val('pm')); p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', val('gate'));
+    p('PM', val('pm')); p('PM Phone', val('pmphone')); p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', val('gate'));
     p('Current Roof System', val('currentsystem')); p('Roof System Being Installed', val('roofsystem')); p('Malarkey', val('malarkey')); p('Shingle Color', val('shinglecolor')); p('Job Type', val('jobtype'));
-    p('Layers', layersVal()); p('Decking', val('decking')); p('A/C / Crane', val('accrane')); p('Fascia', val('fascia')); p('Special Conditions', val('special'));
+    p('Layers', layersVal()); p('Decking', val('decking')); p('A/C / Crane', val('accrane') + (val('acnotes')? ' - '+val('acnotes'):'')); p('Fascia', val('fascia')); p('Special Conditions', val('special'));
     L.push(''); L.push('Full work order with all quantities is copied to your clipboard - paste it below this line.'); L.push('');
     return L.join('\n');
   }
