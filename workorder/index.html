@@ -450,7 +450,7 @@
     if(!raw) return;
     try{
       var d = JSON.parse(raw); if(d.review) state.review=d.review;
-      if(d.items){ Object.keys(d.items).forEach(function(k){ if(state.items[k]) state.items[k]=d.items[k]; }); }
+      if(d.items){ Object.keys(d.items).forEach(function(k){ if(state.items[k]) state.items[k]=Object.assign({qty:null, note:'', size:'', sizeqty:{}, soldate:''}, d.items[k]); }); }
       if(d.fields){ Object.keys(d.fields).forEach(function(k){
         var el = document.querySelector('[data-f="'+k+'"]');
         if(!el) return;
