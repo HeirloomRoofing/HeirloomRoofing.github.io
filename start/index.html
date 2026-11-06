@@ -22,16 +22,16 @@
   body { min-height:100vh; min-height:100svh; display:flex; flex-direction:column; background:#0161A8; font-family:'Space Grotesk',-apple-system,Helvetica,Arial,sans-serif; font-weight:500; }
   a { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; text-decoration:none; padding:12px 24px; font-size:clamp(22px,6.5vw,32px); font-weight:700; -webkit-tap-highlight-color:transparent; }
   a img { width:120px; height:69px; object-fit:contain; }
-  a.one img { position:absolute; top:max(10px,env(safe-area-inset-top)); left:50%; transform:translateX(-50%); }
-  a.one { flex:0 0 30vh; flex-basis:30svh; background:#0161A8; color:#fff; position:relative; padding-top:84px; }
-  a.two, a.card { flex:0 0 22vh; flex-basis:22svh; background:#fff; color:#0161A8; }
-  a.card { border-top:1.5px solid #0161A8; }
-  a.three { flex:1 0 auto; min-height:56px; background:#f0f7fc; color:#0161A8; border-top:1.5px solid #0161A8; font-size:18px; padding:10px 24px max(10px,env(safe-area-inset-bottom)); }
+  .brand { flex:0 0 24vh; flex-basis:24svh; background:#0161A8; display:flex; align-items:center; justify-content:center; padding-top:env(safe-area-inset-top); }
+  a.one { flex:1 0 auto; background:#fff; color:#0161A8; }
+  a.two { flex:0 0 20vh; flex-basis:20svh; background:#fff; color:#0161A8; border-top:1.5px solid #0161A8; }
+  a.three { flex:0 0 auto; min-height:56px; background:#f0f7fc; color:#0161A8; border-top:1.5px solid #0161A8; font-size:18px; padding:10px 24px max(10px,env(safe-area-inset-bottom)); }
   a:active { filter:brightness(.94); }
 </style>
 </head>
 <body>
-<a class="one" href="/start/contacts/"><img src="/start/logo.svg" alt="Heirloom Roofing logo">Company contacts</a>
+<div class="brand"><img src="/start/logo.svg" alt="Heirloom Roofing logo"></div>
+<a class="one" href="/start/contacts/">Company contacts</a>
 <a class="two" href="https://heirloomroofing.github.io/workorder/">Work Order Checklist</a>
 <a class="three" href="/start/resources/">Company Resources</a>
 </body>
