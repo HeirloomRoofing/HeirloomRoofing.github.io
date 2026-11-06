@@ -19,14 +19,14 @@
   @font-face { font-family:'Space Grotesk'; font-style:normal; font-weight:300 700; font-display:swap; src:url('/kit/fonts/sg-latin.woff2') format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2215,U+FEFF,U+FFFD; }
   * { box-sizing:border-box; }
   html, body { margin:0; }
-  body { background:#0161A8; font-family:'Space Grotesk',-apple-system,Helvetica,Arial,sans-serif; font-weight:500; }
-  a { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; text-decoration:none; padding:24px; font-size:clamp(28px,8vw,44px); font-weight:700; -webkit-tap-highlight-color:transparent; }
-  a img { width:190px; height:110px; object-fit:contain; }
-  a.one img { position:absolute; top:max(16px,env(safe-area-inset-top)); left:50%; transform:translateX(-50%); }
-  a.one { height:40vh; height:40svh; background:#0161A8; color:#fff; position:relative; padding-top:110px; }
-  a.two, a.card { height:30vh; height:30svh; background:#fff; color:#0161A8; }
+  body { min-height:100vh; min-height:100svh; display:flex; flex-direction:column; background:#0161A8; font-family:'Space Grotesk',-apple-system,Helvetica,Arial,sans-serif; font-weight:500; }
+  a { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; text-decoration:none; padding:16px 24px; font-size:clamp(24px,7vw,38px); font-weight:700; -webkit-tap-highlight-color:transparent; }
+  a img { width:150px; height:87px; object-fit:contain; }
+  a.one img { position:absolute; top:max(12px,env(safe-area-inset-top)); left:50%; transform:translateX(-50%); }
+  a.one { flex:0 0 36vh; flex-basis:36svh; background:#0161A8; color:#fff; position:relative; padding-top:96px; }
+  a.two, a.card { flex:0 0 24vh; flex-basis:24svh; background:#fff; color:#0161A8; }
   a.card { border-top:1.5px solid #0161A8; }
-  a.three { height:25vh; height:25svh; min-height:140px; background:#f0f7fc; color:#0161A8; border-top:1.5px solid #0161A8; padding-bottom:max(24px,env(safe-area-inset-bottom)); }
+  a.three { flex:1 0 auto; min-height:56px; background:#f0f7fc; color:#0161A8; border-top:1.5px solid #0161A8; font-size:19px; padding:12px 24px max(12px,env(safe-area-inset-bottom)); }
   a:active { filter:brightness(.94); }
 </style>
 </head>
