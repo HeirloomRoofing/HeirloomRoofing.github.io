@@ -47,7 +47,7 @@
   .swcap { color:#4a7ba6; font-size:13px; font-weight:500; text-align:center; padding:0 12px 10px; }
   a.back { flex:0 0 auto; display:block; background:#f0f6fb; color:#0161A8; font-size:18px; font-weight:700; text-align:center; padding:18px 24px max(18px,env(safe-area-inset-bottom)); border-top:1.5px solid #0161A8; }
   a:active, .tabs button:active { filter:brightness(.94); }
-  .sendpdf { display:block; margin:16px auto 0; background:#fff; color:#0161A8; border:1.5px solid #0161A8; border-radius:999px; font-family:inherit; font-size:15px; font-weight:700; padding:9px 22px; cursor:pointer; }
+  .sendpdf { display:block; width:max-content; margin:16px auto 0; background:#fff; color:#0161A8; border:1.5px solid #0161A8; border-radius:999px; font-family:inherit; font-size:15px; font-weight:700; padding:9px 22px; cursor:pointer; }
   .sendpdf:active { filter:brightness(.94); }
 </style>
 </head>
@@ -107,7 +107,7 @@
 <div class="swcap">Color example on Legacy shingles</div></div>
 </div>
 <p class="note">Malarkey Highlander colors for our area. Photos don't show true color - view a physical sample before choosing.</p>
-<button type="button" class="sendpdf" onclick="sendPDF('/start/resources/malarkey/Malarkey-Highlander-Colors.pdf','Malarkey-Highlander-Colors.pdf')" aria-label="Send the Highlander colors PDF">Send PDF</button>
+<a class="sendpdf" href="/start/resources/malarkey/Malarkey-Highlander-Colors.pdf" download="Malarkey-Highlander-Colors.pdf" target="_blank" rel="noopener" onclick="return sharePDF(event,this)" aria-label="Send the Highlander colors PDF">Send PDF</a>
 </div>
 <div id="pane-specs" class="pane" role="tabpanel" aria-labelledby="tab-specs">
 <a class="link" href="/start/files/Malarkey-Certified-Premium-Warranty.pdf">Malarkey Warranty</a>
@@ -126,7 +126,7 @@
 <a href="/start/files/Malarkey-Highlander-AR-Flyer.pdf"><img class="pg" src="/start/resources/malarkey/img/har-2.jpg" alt="Highlander AR page 2"></a>
 <a class="link small" href="/start/files/Malarkey-Highlander-AR-Flyer.pdf">Open full PDF</a>
 <p class="note">Malarkey notes colors are not available in all regions or product lines, and photos don't show true color. Confirm local availability with the supplier and view a physical sample before choosing.</p>
-<button type="button" class="sendpdf" onclick="sendPDF('/start/resources/malarkey/Malarkey-Shingle-Specifications.pdf','Malarkey-Shingle-Specifications.pdf')" aria-label="Send the shingle specifications PDF">Send PDF</button>
+<a class="sendpdf" href="/start/resources/malarkey/Malarkey-Shingle-Specifications.pdf" download="Malarkey-Shingle-Specifications.pdf" target="_blank" rel="noopener" onclick="return sharePDF(event,this)" aria-label="Send the shingle specifications PDF">Send PDF</a>
 </div>
 </div>
 <a class="back" href="/start/resources/">Back</a>
@@ -141,16 +141,19 @@ function showTab(t) {
   if (history.replaceState) history.replaceState(null, '', t==='specs' ? '#specs' : window.location.pathname);
 }
 if (window.location.hash === '#specs') showTab('specs');
-async function sendPDF(url, filename) {
+async function sharePDF(e, a) {
+  e.preventDefault();
+  var url = a.href, filename = a.getAttribute('download') || 'document.pdf';
   try {
     var r = await fetch(url);
-    if (r.ok) {
-      var b = await r.blob();
-      var f = new File([b], filename, {type: 'application/pdf'});
-      if (navigator.canShare && navigator.canShare({files: [f]})) { await navigator.share({files: [f]}); return; }
+    if (r.ok && navigator.canShare) {
+      var f = new File([await r.blob()], filename, {type: 'application/pdf'});
+      if (navigator.canShare({files: [f]})) { await navigator.share({files: [f]}); return false; }
     }
-  } catch (e) {}
-  window.open(url, '_blank');
+  } catch (err) {}
+  var w = window.open(url, '_blank');
+  if (!w) window.location.href = url;
+  return false;
 }
 </script>
 </body>
