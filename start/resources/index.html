@@ -22,14 +22,16 @@
   body { min-height:100vh; min-height:100svh; display:flex; flex-direction:column; background:#0161A8; font-family:'Space Grotesk',-apple-system,Helvetica,Arial,sans-serif; font-weight:500; }
   a { flex:1 1 20%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; text-decoration:none; padding:18px 24px; font-size:clamp(22px,6vw,32px); font-weight:700; -webkit-tap-highlight-color:transparent; }
   a img { width:150px; height:87px; object-fit:contain; margin-bottom:14px; }
-  a.one { background:#0161A8; color:#fff; padding-top:max(18px,env(safe-area-inset-top)); }
+  .masthead { background:#0161A8; text-align:center; padding:max(18px,env(safe-area-inset-top)) 24px 16px; }
+  .masthead img { width:150px; height:87px; object-fit:contain; }
   a.two { background:#fff; color:#0161A8; border-top:1.5px solid #0161A8; }
   a.back { flex:0 0 auto; background:#f0f7fc; color:#0161A8; font-size:18px; padding:18px 24px max(18px,env(safe-area-inset-bottom)); border-top:1.5px solid #0161A8; }
   a:active { filter:brightness(.94); }
 </style>
 </head>
 <body>
-<a class="two" style="border-top:0;padding-top:max(18px,env(safe-area-inset-top))" href="/start/files/Aidan-calendar-sand.pdf">Aidan's Handout</a>
+<div class="masthead"><img src="/start/logo.svg" alt="Heirloom Roofing logo"></div>
+<a class="two" style="border-top:0" href="/start/files/Aidan-calendar-sand.pdf">Aidan's Handout</a>
 <a class="two" href="/start/files/Company-calendar-sand.pdf">Company Handout</a>
 <a class="two" href="/start/files/Eagle-Tile-Catalog.pdf">Eagle Tile Catalog</a>
 <a class="two" href="/start/files/Unified-Steel-Catalog.pdf">Unified Steel Catalog</a>
