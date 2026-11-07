@@ -59,6 +59,12 @@
   a.pg-link::after { content:'\203A'; position:absolute; right:10px; bottom:14px; width:28px; height:28px; line-height:28px; text-align:center; background:#0161A8; color:#fff; border-radius:50%; font-size:19px; font-weight:700; opacity:.92; box-shadow:0 2px 6px rgba(0,0,0,.3); }
   a.sendpdf::after { content:' \203A'; font-weight:400; opacity:.6; }
 
+  .lb { position:fixed; inset:0; z-index:70; display:none; background:rgba(4,20,36,.96); overflow:hidden; touch-action:none; }
+  .lb.open { display:block; }
+  .lb img { position:absolute; left:50%; top:50%; max-width:100vw; max-height:100vh; transform:translate(-50%,-50%); user-select:none; -webkit-user-select:none; -webkit-user-drag:none; touch-action:none; }
+  .lb-close { position:absolute; top:calc(max(12px,env(safe-area-inset-top)) + 4px); right:14px; z-index:72; width:46px; height:46px; border-radius:50%; background:#0161A8; color:#fff; border:2px solid #fff; font-family:inherit; font-size:24px; font-weight:700; line-height:1; cursor:pointer; }
+  .lb-hint { position:absolute; left:0; right:0; bottom:calc(max(14px,env(safe-area-inset-bottom)) + 4px); z-index:72; color:#cfe4f5; font-size:14px; font-weight:500; text-align:center; pointer-events:none; }
+  body.lb-open { overflow:hidden; }
 </style>
 </head>
 <body>
@@ -82,13 +88,13 @@
 <div class="swatch-card">
 <a class="house" href="/start/resources/malarkey/img/colors/golden-amber-house.jpg"><img src="/start/resources/malarkey/img/colors/golden-amber-house.jpg" alt="House with shingles in Golden Amber" loading="lazy"></a>
 <div class="swrow"><a class="swthumb" href="/start/resources/malarkey/img/colors/golden-amber-swatch.jpg"><img src="/start/resources/malarkey/img/colors/golden-amber-swatch.jpg" alt="Close-up of Golden Amber shingle" loading="lazy"></a><span class="swname">Golden Amber</span></div>
-<div class="swcap">Color example; shingle line may differ</div></div>
+</div>
 <div class="swatch-card">
 <a class="house" href="/start/resources/malarkey/img/colors/heather-house.jpg"><img src="/start/resources/malarkey/img/colors/heather-house.jpg" alt="House with shingles in Heather" loading="lazy"></a>
 <div class="swrow"><a class="swthumb" href="/start/resources/malarkey/img/colors/heather-swatch.jpg"><img src="/start/resources/malarkey/img/colors/heather-swatch.jpg" alt="Close-up of Heather shingle" loading="lazy"></a><span class="swname">Heather</span></div>
 </div>
 <div class="swatch-card">
-<a class="house sw" href="/start/resources/malarkey/img/colors/ivory-mist-swatch.jpg"><img src="/start/resources/malarkey/img/colors/ivory-mist-swatch.jpg" alt="Malarkey Highlander shingle swatch in Ivory Mist" loading="lazy"></a>
+<a class="house" href="/start/resources/malarkey/img/colors/ivory-mist-house.jpg"><img src="/start/resources/malarkey/img/colors/ivory-mist-house.jpg" alt="House with shingles in Ivory Mist" loading="lazy"></a>
 <div class="swrow"><a class="swthumb" href="/start/resources/malarkey/img/colors/ivory-mist-swatch.jpg"><img src="/start/resources/malarkey/img/colors/ivory-mist-swatch.jpg" alt="Close-up of Ivory Mist shingle" loading="lazy"></a><span class="swname">Ivory Mist</span></div>
 </div>
 <div class="swatch-card">
@@ -106,15 +112,15 @@
 <div class="swatch-card">
 <a class="house" href="/start/resources/malarkey/img/colors/silverwood-house.jpg"><img src="/start/resources/malarkey/img/colors/silverwood-house.jpg" alt="House with shingles in Silverwood" loading="lazy"></a>
 <div class="swrow"><a class="swthumb" href="/start/resources/malarkey/img/colors/silverwood-swatch.jpg"><img src="/start/resources/malarkey/img/colors/silverwood-swatch.jpg" alt="Close-up of Silverwood shingle" loading="lazy"></a><span class="swname">Silverwood</span></div>
-<div class="swcap">Color example; shingle line may differ</div></div>
+</div>
 <div class="swatch-card">
 <a class="house" href="/start/resources/malarkey/img/colors/storm-grey-house.jpg"><img src="/start/resources/malarkey/img/colors/storm-grey-house.jpg" alt="House with shingles in Storm Grey" loading="lazy"></a>
 <div class="swrow"><a class="swthumb" href="/start/resources/malarkey/img/colors/storm-grey-swatch.jpg"><img src="/start/resources/malarkey/img/colors/storm-grey-swatch.jpg" alt="Close-up of Storm Grey shingle" loading="lazy"></a><span class="swname">Storm Grey</span></div>
-<div class="swcap">Color example on Legacy shingles</div></div>
+</div>
 <div class="swatch-card">
 <a class="house" href="/start/resources/malarkey/img/colors/weathered-wood-house.jpg"><img src="/start/resources/malarkey/img/colors/weathered-wood-house.jpg" alt="House with shingles in Weathered Wood" loading="lazy"></a>
 <div class="swrow"><a class="swthumb" href="/start/resources/malarkey/img/colors/weathered-wood-swatch.jpg"><img src="/start/resources/malarkey/img/colors/weathered-wood-swatch.jpg" alt="Close-up of Weathered Wood shingle" loading="lazy"></a><span class="swname">Weathered Wood</span></div>
-<div class="swcap">Color example on Legacy shingles</div></div>
+</div>
 </div>
 <p class="note">Malarkey Highlander colors for our area. Photos don't show true color - view a physical sample before choosing.</p>
 <a class="sendpdf" href="/start/resources/malarkey/Malarkey-Highlander-Colors.pdf" download="Malarkey-Highlander-Colors.pdf" target="_blank" rel="noopener" onclick="return sharePDF(event,this)" aria-label="Send the Highlander colors PDF">Send PDF</a>
@@ -140,6 +146,7 @@
 </div>
 </div>
 <a class="back" href="/start/resources/">Back</a>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Photo viewer"><img id="lb-img" alt=""><button class="lb-close" id="lb-close" aria-label="Close photo viewer">&times;</button><div class="lb-hint">Pinch, double-tap, or scroll to zoom. Drag to move.</div></div>
 <script>
 function showTab(t) {
   document.getElementById('tab-colors').classList.toggle('active', t==='colors');
@@ -165,6 +172,114 @@ async function sharePDF(e, a) {
   if (!w) window.location.href = url;
   return false;
 }
+
+(function(){
+  var lb = document.getElementById('lb');
+  var img = document.getElementById('lb-img');
+  var fitW = 0, fitH = 0, scale = 1, tx = 0, ty = 0, MAXS = 8;
+  var pointers = [];
+  var lastDist = 0, lastX = 0, lastY = 0;
+  var downX = 0, downY = 0, downT = 0, moved = false;
+  var lastTapT = 0, tapTimer = null;
+
+  function apply(){
+    img.style.transform = 'translate(-50%,-50%) translate('+tx+'px,'+ty+'px) scale('+scale+')';
+  }
+  function clampPan(){
+    var w = fitW*scale, h = fitH*scale;
+    var mx = Math.max(0,(w-window.innerWidth)/2), my = Math.max(0,(h-window.innerHeight)/2);
+    if (tx>mx) tx=mx; if (tx<-mx) tx=-mx;
+    if (ty>my) ty=my; if (ty<-my) ty=-my;
+  }
+  function zoomAt(px,py,k){
+    var ns = scale*k; if (ns<1) ns=1; if (ns>MAXS) ns=MAXS;
+    k = ns/scale;
+    var cx = window.innerWidth/2, cy = window.innerHeight/2;
+    tx = px - cx - k*(px - cx - tx);
+    ty = py - cy - k*(py - cy - ty);
+    scale = ns; clampPan(); apply();
+  }
+  function reset(){ scale = 1; tx = 0; ty = 0; apply(); }
+  function open(src, alt){
+    img.alt = alt || '';
+    lb.classList.add('open'); document.body.classList.add('lb-open');
+    scale = 1; tx = 0; ty = 0;
+    img.style.transform = 'translate(-50%,-50%)';
+    var measure = function(){ var r = img.getBoundingClientRect(); fitW = r.width; fitH = r.height; };
+    img.onload = measure;
+    img.src = src;
+    if (img.complete && img.naturalWidth) measure();
+  }
+  function close(){
+    lb.classList.remove('open'); document.body.classList.remove('lb-open');
+    img.removeAttribute('src'); pointers = [];
+    if (tapTimer) { clearTimeout(tapTimer); tapTimer = null; }
+  }
+  var taps = document.querySelectorAll('a.house, a.swthumb');
+  for (var i=0;i<taps.length;i++) {
+    taps[i].addEventListener('click', function(e){
+      e.preventDefault();
+      var im = this.querySelector('img');
+      open(this.getAttribute('href'), im ? im.alt : '');
+    });
+  }
+  document.getElementById('lb-close').addEventListener('click', close);
+  window.addEventListener('keydown', function(e){ if (e.key==='Escape' && lb.classList.contains('open')) close(); });
+
+  lb.addEventListener('pointerdown', function(e){
+    if (e.target.id === 'lb-close') return;
+    lb.setPointerCapture(e.pointerId);
+    pointers.push({id:e.pointerId, x:e.clientX, y:e.clientY});
+    if (pointers.length === 1) { downX = e.clientX; downY = e.clientY; downT = Date.now(); moved = false; lastX = e.clientX; lastY = e.clientY; }
+    if (pointers.length === 2) {
+      moved = true;
+      var dx = pointers[1].x-pointers[0].x, dy = pointers[1].y-pointers[0].y;
+      lastDist = Math.sqrt(dx*dx+dy*dy);
+    }
+  });
+  lb.addEventListener('pointermove', function(e){
+    for (var i=0;i<pointers.length;i++) { if (pointers[i].id===e.pointerId) { pointers[i].x=e.clientX; pointers[i].y=e.clientY; } }
+    if (pointers.length === 0) return;
+    if (Math.abs(e.clientX-downX) > 8 || Math.abs(e.clientY-downY) > 8) moved = true;
+    if (pointers.length === 2) {
+      var dx = pointers[1].x-pointers[0].x, dy = pointers[1].y-pointers[0].y;
+      var d = Math.sqrt(dx*dx+dy*dy);
+      var mx = (pointers[0].x+pointers[1].x)/2, my = (pointers[0].y+pointers[1].y)/2;
+      if (lastDist > 0 && d > 0) zoomAt(mx, my, d/lastDist);
+      lastDist = d;
+    } else if (pointers.length === 1 && scale > 1) {
+      tx += e.clientX - lastX; ty += e.clientY - lastY;
+      lastX = e.clientX; lastY = e.clientY;
+      clampPan(); apply();
+    } else { lastX = e.clientX; lastY = e.clientY; }
+  });
+  function lift(e){
+    pointers = pointers.filter(function(p){ return p.id !== e.pointerId; });
+    if (pointers.length < 2) lastDist = 0;
+    if (pointers.length === 0) {
+      if (!moved && Date.now()-downT < 350) {
+        var now = Date.now();
+        if (now - lastTapT < 320) {
+          if (tapTimer) { clearTimeout(tapTimer); tapTimer = null; }
+          lastTapT = 0;
+          if (scale > 1.05) reset(); else zoomAt(e.clientX, e.clientY, 2.6);
+        } else {
+          lastTapT = now;
+          var onBackdrop = (e.target === lb);
+          tapTimer = setTimeout(function(){ tapTimer = null; if (onBackdrop) close(); }, 320);
+        }
+      }
+      moved = false;
+    }
+  }
+  lb.addEventListener('pointerup', lift);
+  lb.addEventListener('pointercancel', lift);
+  lb.addEventListener('wheel', function(e){
+    e.preventDefault();
+    zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY*0.0016));
+  }, {passive:false});
+})();
+
 </script>
 </body>
 </html>
