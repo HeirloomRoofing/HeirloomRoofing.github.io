@@ -520,6 +520,11 @@
   function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   function rowKV(k,v){ return v ? '<tr><td class="k">'+esc(k)+'</td><td>'+esc(v)+'</td></tr>' : ''; }
+  function splitExt(v){ var m=String(v).match(/^(.*?)\s*(?:ext\.?|extension|x)\s*[:.]?\s*(\d+)$/i); if(m && m[1].replace(/\D/g,'').length>=7) return [m[1].trim(), ' ext '+m[2]]; return [String(v).trim(), '']; }
+  function fmtPhone(raw){ var v=String(raw||'').trim(); if(!v) return v; var se=splitExt(v), base=se[0], ext=se[1]; if(base.indexOf('+')>=0) return base+ext; var d=base.replace(/\D/g,''); if(d.length===10) return d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6)+ext; if(d.length===11 && d.charAt(0)==='1') return '1-'+d.slice(1,4)+'-'+d.slice(4,7)+'-'+d.slice(7)+ext; return base+ext; }
+  function telHref(raw){ var v=String(raw||'').trim(); if(!v) return ''; var se=splitExt(v), base=se[0], d=base.replace(/\D/g,''); if(!d) return ''; var num; if(base.indexOf('+')>=0) num='+'+d; else if(d.length===10) num='+1'+d; else if(d.length===11 && d.charAt(0)==='1') num='+'+d; else return ''; if(se[1]) num+=';ext='+se[1].replace(/\D/g,''); return 'tel:'+num; }
+  function rowPhone(k,v){ if(!v) return ''; var h=telHref(v), label=esc(fmtPhone(v)); var disp=h?'<a href="'+h+'" style="color:inherit;white-space:nowrap">'+label+'</a>':'<span style="white-space:nowrap">'+label+'</span>'; return '<tr><td class="k">'+esc(k)+'</td><td>'+disp+'</td></tr>'; }
+
 
   function sizeBreakdown(st){ var parts=Object.keys(st.sizeqty||{}).filter(function(z){return st.sizeqty[z]>0;}).map(function(z){return z+': '+st.sizeqty[z];}); return parts.length?' <span class="unit">('+parts.join(', ')+')</span>':''; }
   function currentSystemVal(){ var v=chipVal('currentsystem'); var o=val('currentsystemother'); return v==='Other' && o ? 'Other - '+o : v; }
@@ -626,8 +631,8 @@
     var h = '<div class="wohead"><img src="heirloom-logo-white.png" alt="" style="background:#0161A8;border-radius:10px;padding:6px 10px"><div class="wt">PRODUCTION WORK ORDER</div><div class="wd">Heirloom Roofing LLC &bull; '+today+'</div></div>';
     if(state.review) h += '<div style="border:2px solid #b57800;padding:12px;margin:16px 0;color:#704800"><b>DRAFT - REVIEW BEFORE PRODUCTION</b><br>'+(pendingMessage().match(/PENDING/g)||[]).length+' pending choices or quantities. Full review list is after the order below.</div>';
     function sec(title, rows){ return rows ? '<h3>'+title+'</h3><table>'+rows+'</table>' : ''; }
-    h += sec('Project Manager', rowKV('Heirloom Project Manager', val('pm')) + rowKV('Phone Number', val('pmphone')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')));
-    h += sec('Job Info', rowKV('Customer', val('customer')) + rowKV('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', gateVal()));
+    h += sec('Project Manager', rowKV('Heirloom Project Manager', val('pm')) + rowPhone('Phone Number', val('pmphone')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')));
+    h += sec('Job Info', rowKV('Customer', val('customer')) + rowPhone('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', gateVal()));
     h += sec('Current Roof Details', rowKV('Roof System', currentSystemVal()));
     h += sec('Roof System Being Installed', rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Tile Profile', val('tileprofile')) + rowKV('Stone-Coated Steel Profile', val('steelprofile')) + rowKV('Composite Product', val('compositeproduct')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off (SQ)', val('tearoff')) + rowKV('Approx. Install (SQ)', val('install')));
     h += sec('The Big 5', rowKV('1. Layers', layersVal())
@@ -668,8 +673,8 @@
     var L=[]; if(state.review) L.push('DRAFT - REVIEW BEFORE PRODUCTION',pendingMessage(),''); var p=function(k,v){ if(v) L.push(k+': '+v); };
     L.push('HEIRLOOM ROOFING - PRODUCTION WORK ORDER');
     L.push(new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'})); L.push('');
-    p('PM', val('pm')); p('PM Phone', val('pmphone')); p('Request JT PM', val('jt')); if(val('pmnotes')) p('PM Notes', val('pmnotes'));
-    p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', gateVal());
+    p('PM', val('pm')); p('PM Phone', fmtPhone(val('pmphone'))); p('Request JT PM', val('jt')); if(val('pmnotes')) p('PM Notes', val('pmnotes'));
+    p('Customer', val('customer')); p('Phone', fmtPhone(val('phone'))); p('Address', val('address')); p('Gate Code', gateVal());
     L.push('');
     p('Current Roof System', currentSystemVal()); p('Roof System Being Installed', val('roofsystem')); p('Malarkey Product', val('malarkey')); p('Tile Profile', val('tileprofile')); p('Steel Profile', val('steelprofile')); p('Composite Product', val('compositeproduct')); p('Shingle Color', val('shinglecolor')); p('Drip Edge', val('dripedge')); p('Flat Roof Color', val('flatcolor')); p('Job Type', val('jobtype')); p('Approx. Tear-Off (SQ)', val('tearoff')); p('Approx. Install (SQ)', val('install'));
     L.push(''); L.push('BIG 5:');
@@ -728,7 +733,7 @@
   function compactText(){
     var L=['HEIRLOOM ROOFING - PRODUCTION WORK ORDER', new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'}), ''];
     var p=function(k,v){ if(v) L.push(k+': '+v); };
-    p('PM', val('pm')); p('PM Phone', val('pmphone')); p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', val('gate'));
+    p('PM', val('pm')); p('PM Phone', fmtPhone(val('pmphone'))); p('Customer', val('customer')); p('Phone', fmtPhone(val('phone'))); p('Address', val('address')); p('Gate Code', val('gate'));
     p('Current Roof System', currentSystemVal()); p('Roof System Being Installed', val('roofsystem')); p('Malarkey', val('malarkey')); p('Tile Profile', val('tileprofile')); p('Steel Profile', val('steelprofile')); p('Composite Product', val('compositeproduct')); p('Shingle Color', val('shinglecolor')); p('Job Type', val('jobtype'));
     p('Layers', layersVal()); p('Decking', val('decking')); p('A/C / Crane', val('accrane') + (val('acnotes')? ' - '+val('acnotes'):'')); p('Fascia', val('fascia')); p('Special Conditions', val('special'));
     L.push(''); L.push('Full work order with all quantities is copied to your clipboard - paste it below this line.'); L.push('');
