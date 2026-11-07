@@ -293,9 +293,9 @@
         '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="" placeholder="-">'+
         '<button type="button" data-d="1" aria-label="increase">+</button></span>')+
         (it[7]==='date'?'<label class="sizeq">Reset date: <input type="date" data-datefor="'+id+'" aria-label="Solar reset date"></label>':'')+
-        (it[4]&&it[6]==='multi'?'<span class="sizeqs">'+it[4].map(function(z){return '<label class="sizeq">'+z+' <input type="number" min="0" step="1" inputmode="numeric" data-sq="'+id+'" data-sz="'+z+'" value="" placeholder="-"></label>';}).join('')+'</span>':
+        (it[4]&&it[6]==='multi'?'<span class="sizeqs">'+it[4].map(function(z){return '<label class="sizeq">'+(z==='No Size'?'':z)+' <input type="number" min="0" step="1" inputmode="numeric" data-sq="'+id+'" data-sz="'+z+'" value="" placeholder="-"></label>';}).join('')+'</span>':
         it[4]?'<select data-sizefor="'+id+'" aria-label="Size"><option value="">Size</option>'+it[4].map(function(z){return '<option>'+z+'</option>';}).join('')+'</select>':'')+
-        '<button type="button" class="notebtn" data-notebtn="'+id+'">+ measurement</button>'+
+        '<button type="button" class="notebtn" data-notebtn="'+id+'">'+(it[0]==='Replace pipe jacks'?'+ notes':'+ measurement')+'</button>'+
         '<textarea data-notefor="'+id+'" placeholder="Note for this line" style="display:none;flex-basis:100%"></textarea>';
       det.appendChild(row);
     });
@@ -526,7 +526,7 @@
 
   function rowKV(k,v){ return v ? '<tr><td class="k">'+esc(k)+'</td><td>'+esc(v)+'</td></tr>' : ''; }
 
-  function sizeBreakdown(st){ var parts=Object.keys(st.sizeqty||{}).filter(function(z){return st.sizeqty[z]>0;}).map(function(z){return z+': '+st.sizeqty[z];}); return parts.length?' <span class="unit">('+parts.join(', ')+')</span>':''; }
+  function sizeBreakdown(st){ var parts=Object.keys(st.sizeqty||{}).filter(function(z){return st.sizeqty[z]>0 && z!=='No Size';}).map(function(z){return z+': '+st.sizeqty[z];}); return parts.length?' <span class="unit">('+parts.join(', ')+')</span>':''; }
   function currentSystemVal(){ var v=chipVal('currentsystem'); var o=val('currentsystemother'); return v==='Other' && o ? 'Other - '+o : v; }
   function layersVal(){ return chipVal('layers') || val('layersother'); }
   function gateNA(){ var c=document.getElementById('gatena'); return c && c.checked; }
