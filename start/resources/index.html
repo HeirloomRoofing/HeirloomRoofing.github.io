@@ -24,8 +24,9 @@
   a img { width:150px; height:87px; object-fit:contain; margin-bottom:14px; }
   .masthead { background:#0161A8; text-align:center; padding:max(18px,env(safe-area-inset-top)) 24px 16px; }
   .masthead img { width:150px; height:87px; object-fit:contain; }
-  a.two { background:#fff; color:#0161A8; border-top:1.5px solid #0161A8; }
-  a.back { flex:0 0 auto; background:#f0f7fc; color:#0161A8; font-size:18px; padding:18px 24px max(18px,env(safe-area-inset-bottom)); border-top:1.5px solid #0161A8; }
+  a.two { background:#fff; color:#0161A8; border:none; border-radius:16px; box-shadow:0 3px 10px rgba(0,0,0,.22); margin:7px 16px; position:relative; }
+  a.two::after { content:'\203A'; position:absolute; right:22px; top:50%; transform:translateY(-50%); font-size:32px; font-weight:400; opacity:.4; }
+  a.back { flex:0 0 auto; background:none; color:#fff; font-size:18px; padding:14px 24px max(18px,env(safe-area-inset-bottom)); border:none; }
   a:active { filter:brightness(.94); }
 </style>
 </head>
