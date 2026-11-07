@@ -763,14 +763,28 @@
   document.getElementById('emailbtn').addEventListener('click', async function(e){
     e.preventDefault();
     if(state.review){ alert('This is a review draft. Printing or copying keeps its draft warning. Resolve the pending choices and review the order before sending.'); return; }
-    var file=null;
-    if(navigator.canShare){
-      var r = await buildPDF();
-      if(r){ var f = new File([r.pdf.output('blob')], r.name, {type:'application/pdf'}); if(navigator.canShare({files:[f]})) file=f; }
+    var r = null;
+    if(window.jspdf && window.html2canvas){ r = await buildPDF(); }
+    var file = null;
+    if(r && navigator.canShare){
+      var f = new File([r.pdf.output('blob')], r.name, {type:'application/pdf'});
+      if(navigator.canShare({files:[f]})) file = f;
     }
     if(file){
       if(!confirm('Share the finished work order as a PDF attachment? In the next step pick Mail and address it to Nick and Erik - you still review it and press Send. Nothing sends by itself.')) return;
       navigator.share({files:[file], title:'Production Work Order', text:'Work Order - '+(val('customer')||'New job')+(val('address')?' - '+val('address'):'')}).catch(function(){});
+      return;
+    }
+    if(r){
+      if(!confirm('This browser cannot attach the PDF for you. The PDF downloads now, then your email app opens addressed to Nick and Erik - attach the downloaded PDF to that email and press Send. Nothing sends by itself.')) return;
+      var blob = r.pdf.output('blob');
+      var u = URL.createObjectURL(blob);
+      var dl = document.createElement('a'); dl.href = u; dl.download = r.name;
+      document.body.appendChild(dl); dl.click(); document.body.removeChild(dl);
+      setTimeout(function(){ URL.revokeObjectURL(u); }, 15000);
+      if(this.getAttribute('data-copied')==='1'){ copyText(this.getAttribute('data-full'), function(){ toast('Full order copied - paste it into the email body'); }); }
+      var self = this;
+      setTimeout(function(){ window.location.href = self.href; }, 800);
       return;
     }
     if(!confirm('Open your email app with this work order addressed and ready to send to Nick and Erik? Nothing sends by itself - you still review it and press Send in your email app.')) return;
