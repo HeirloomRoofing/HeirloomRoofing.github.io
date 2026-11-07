@@ -49,8 +49,7 @@
 import * as pdfjsLib from '/start/files/pdfjs/pdf.min.mjs';
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/start/files/pdfjs/pdf.worker.min.mjs';
 var DOCS = {
-  'Aidan-calendar-sand.pdf': 'Your Project Calendar',
-  'Company-calendar-sand.pdf': 'Your Project Calendar'
+  'Aidan-calendar-sand.pdf': 'Your Project Calendar'
 };
 var params = new URLSearchParams(location.search);
 var name = params.get('doc') || '';
