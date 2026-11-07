@@ -38,6 +38,7 @@
   a.prooflink small { display:block; color:var(--muted); font-weight:500; margin-top:3px; font-size:12px; }
   footer { margin-top:20px; text-align:center; color:var(--muted); font-size:12px; font-weight:500; }
 </style>
+<style>.shareback select { width:100%; padding:12px 14px; font-size:16px; font-family:inherit; border:1.5px solid #cfd9e0; border-radius:12px; background:#fbfaf7; color:var(--ink); }</style>
 </head>
 <body>
 <div class="band">
@@ -63,6 +64,24 @@
       </div>
       <a class="btn sharebtn" id="sharebackbtn" href="#" style="margin-top:12px;">Text Zach my contact</a>
     </div>
+      <a class="btn" id="ccabtn" style="grid-column:span 2; background:#f0f7fc;" href="#" role="button" aria-expanded="false" aria-controls="ccapanel">Claim communication approval</a>
+      <div id="ccapanel" class="shareback" style="grid-column:span 2; display:none; text-align:left; border:1.5px solid #e3e8ec; border-radius:12px; padding:4px 14px 16px;">
+        <p style="font-size:13px; color:var(--muted); margin:12px 0 0; line-height:1.45;">Pick your insurance carrier. If your carrier has a claims email, this opens an email to them, already written, that lets Aidan receive your claim emails and talk with them about your roof claim - you review it and tap send. If not, it gives you the same text to send your adjuster yourself.</p>
+        <label for="ccacarrier">Your insurance carrier</label>
+        <select id="ccacarrier"><option value="">Choose carrier</option><option value="sf">State Farm</option><option value="af">American Family</option><option value="sw">Stillwater</option><option value="gl">Great Lakes (J&amp;J Insurance)</option><option value="ot">Allstate, Farmers, Travelers, Kin or other</option></select>
+        <label for="ccaname">Your name (policyholder)</label>
+        <input id="ccaname" type="text" placeholder="First and last name" autocomplete="name">
+        <label for="ccaaddr">Property address</label>
+        <input id="ccaaddr" type="text" placeholder="Street, city, ZIP" autocomplete="street-address">
+        <label for="ccaclaim">Claim number</label>
+        <input id="ccaclaim" type="text" placeholder="From your claim email" autocapitalize="characters">
+        <label for="ccaphone">Your phone number</label>
+        <input id="ccaphone" type="tel" placeholder="Optional" autocomplete="tel">
+        <div id="ccanote" style="font-size:12px; color:var(--muted); margin-top:10px; line-height:1.4;"></div>
+        <div id="ccaerr" style="font-size:13px; color:#b3261e; font-weight:700; margin-top:8px; min-height:16px;"></div>
+        <a class="btn sharebtn" id="ccasend" href="#" role="button" style="margin-top:10px;">Open email to send</a>
+        <a class="btn" id="ccacopy" href="#" role="button" style="margin-top:10px; background:#fff;">Copy email text instead</a>
+      </div>
     </div>
     <div class="proof">
       <a class="prooflink" href="https://azroc.my.site.com/AZRoc/s/contractor-search?licenseId=a0ocs00000P3SnlAAF">
@@ -106,6 +125,50 @@ document.getElementById('savevcf').addEventListener('click', function(ev){
     if (!n) { ev.preventDefault(); alert('Please type your name so Zach knows who it is.'); return; }
     var body = 'Hi Zach, this is ' + n + (c ? ' - my cell is ' + c : '') + '. You just shared your Heirloom Roofing contact with me about my roof.';
     this.href = smsHref(body);
+  });
+})();
+</script>
+<script>
+(function(){
+  var C={
+    sf:{to:'StateFarmFireClaims@StateFarm.com',subj:'claim',note:'State Farm asks for the claim number alone as the email subject, so it is set that way. Their inbox may send an auto-reply saying it is not monitored.'},
+    af:{to:'claimdocuments@afics.com',note:'American Family asks that the claim number be in the subject line, so it is.'},
+    sw:{to:'claims@stillwater.com',note:'Stillwater claims inbox.'},
+    gl:{to:'claims@jjins.com',note:'Claims inbox for Great Lakes policies written through J&J Insurance.'},
+    ot:{to:'',note:'We could not confirm a general claims email for this carrier. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Aidan is already copied.'}
+  };
+  function $(i){return document.getElementById(i);}
+  function v(i){return $(i).value.trim();}
+  function build(){
+    var k=v('ccacarrier'), err=$('ccaerr'); err.textContent='';
+    if(!k){err.textContent='Choose your carrier first.';return null;}
+    if(!v('ccaname')||!v('ccaaddr')||!v('ccaclaim')){err.textContent='Add your name, property address and claim number.';return null;}
+    var c=C[k], claim=v('ccaclaim');
+    var subject = c.subj==='claim' ? claim : 'Claim '+claim+' - Authorization to communicate with Heirloom Roofing';
+    var L=['Hello,','',
+      'I am the homeowner and policyholder for the claim below. I authorize Aidan Leavitt of Heirloom Roofing to receive claim-related correspondence and updates and to communicate with you regarding my roof claim, including inspections, estimates, repair documentation, and claim status.','',
+      'Please copy Aidan on all future correspondence about this claim and include him when coordinating inspections or requesting roofing documents.','',
+      'Aidan Leavitt','Heirloom Roofing','aidan@heirloomroofing.com','959-929-8585','',
+      'This authorization is for communication and information sharing only. I retain all decisions regarding coverage, settlement, and payment. It does not assign my policy benefits or authorize anyone to endorse checks on my behalf.','',
+      'Please confirm that this authorization has been added to my claim file. If you require your own authorization form, please send it to me and copy Aidan.','',
+      'Thank you,',v('ccaname'),v('ccaaddr'),'Claim number: '+claim];
+    if(v('ccaphone')) L.push(v('ccaphone'));
+    return {to:c.to,subject:subject,body:L.join('\n')};
+  }
+  $('ccabtn').addEventListener('click',function(e){e.preventDefault();var p=$('ccapanel'),o=p.style.display==='none';p.style.display=o?'block':'none';this.setAttribute('aria-expanded',o);});
+  $('ccacarrier').addEventListener('change',function(){var c=C[this.value];$('ccanote').textContent=c?c.note:'';});
+  ['ccacarrier','ccaname','ccaaddr','ccaclaim','ccaphone'].forEach(function(i){$(i).addEventListener('input',function(){$('ccaerr').textContent='';});});
+  $('ccasend').addEventListener('click',function(e){
+    e.preventDefault(); var m=build(); if(!m) return;
+    var u='mailto:'+m.to+'?cc='+encodeURIComponent('aidan@heirloomroofing.com')+'&subject='+encodeURIComponent(m.subject)+'&body='+encodeURIComponent(m.body.replace(/\n/g,'\r\n'));
+    this.href=u; location.href=u;
+  });
+  $('ccacopy').addEventListener('click',function(e){
+    e.preventDefault(); var m=build(); if(!m) return;
+    var t=(m.to?'To: '+m.to+'\n':'')+'Cc: aidan@heirloomroofing.com\nSubject: '+m.subject+'\n\n'+m.body, self=this;
+    function done(){self.textContent='Copied';setTimeout(function(){self.textContent='Copy email text instead';},2000);}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,function(){$('ccaerr').textContent='Copy failed. Use Open email instead.';});}
+    else{var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done();}catch(x){$('ccaerr').textContent='Copy failed. Use Open email instead.';}document.body.removeChild(a);}
   });
 })();
 </script>
