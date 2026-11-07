@@ -868,7 +868,7 @@
       var d=validateDraft(JSON.parse(json));
       localStorage.setItem(KEY, JSON.stringify(d));
       try{ history.replaceState(null,'',location.pathname+location.search); }catch(e2){}
-    }catch(e){}
+    }catch(e){ try{ console.error('SEED-FAIL: '+String(e&&e.stack||e)); }catch(e3){} }
   })();
   restore();
   updateCounts();
