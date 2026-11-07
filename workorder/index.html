@@ -296,7 +296,7 @@
         (it[7]==='date'?'<label class="sizeq">Reset date: <input type="date" data-datefor="'+id+'" aria-label="Solar reset date"></label>':'')+
         (it[4]&&it[6]==='multi'?'<span class="sizeqs">'+it[4].map(function(z){return '<label class="sizeq"+(z==='No Size'?' nosize':'')+'>'+(z==='No Size'?'':z)+' <input type="number" min="0" step="1" inputmode="numeric" data-sq="'+id+'" data-sz="'+z+'" value="" placeholder="-"></label>';}).join('')+'</span>':
         it[4]?'<select data-sizefor="'+id+'" aria-label="Size"><option value="">Size</option>'+it[4].map(function(z){return '<option>'+z+'</option>';}).join('')+'</select>':'')+
-        '<button type="button" class="notebtn" data-notebtn="'+id+'">'+(it[0]==='Replace pipe jacks'?'+ notes':'+ measurement')+'</button>'+
+        '<button type="button" class="notebtn" data-notebtn="'+id+'">'+(['Replace pipe jacks','Replace B-vent flashing','Replace split pipe boots'].indexOf(it[0])>=0?'+ notes':'+ measurement')+'</button>'+
         '<textarea data-notefor="'+id+'" placeholder="Note for this line" style="display:none;flex-basis:100%"></textarea>';
       det.appendChild(row);
     });
