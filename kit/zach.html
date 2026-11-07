@@ -39,13 +39,14 @@
   footer { margin-top:20px; text-align:center; color:rgba(255,255,255,.85); font-size:12px; font-weight:500; }
   .actions a.btn, a.sharebtn { position:relative; }
   .actions a[href^="sms:"]::after { content:' \270E'; opacity:.55; }
-  .actions a[href^="tel:"]::after { content:' \260E'; opacity:.55; }
+  .actions a[href^="tel:"]::after { content:' \260E\FE0E'; opacity:.55; }
   .actions a[href^="mailto:"]::after { content:' \2709'; opacity:.55; }
   .actions a[href^="http"]::after { content:' \2197'; opacity:.55; }
   .actions a#savevcf::after { content:' \FF0B'; opacity:.7; }
   a.sharebtn::after { content:' \270E'; opacity:.7; }
   #ccabtn::after { content:' \25B8'; opacity:.55; }
   #ccabtn[aria-expanded="true"]::after { content:' \25BE'; opacity:.55; }
+  @media (hover:none){ a.prooflink, a.prooflink:hover { background:#fff !important; color:var(--brand) !important; } a.prooflink small, a.prooflink:hover small { color:var(--muted) !important; } }
 </style>
 <style>@media (hover:none){ #ccabtn, #ccabtn:hover, #ccabtn:active { color:var(--brand) !important; background:#f0f7fc !important; } }.shareback select { width:100%; padding:12px 14px; font-size:16px; font-family:inherit; border:1.5px solid #cfd9e0; border-radius:12px; background:#fbfaf7; color:var(--ink); }</style>
 </head>
@@ -98,9 +99,9 @@
         Verify License - ROC 366805 &#8599;
         <small>Heirloom Roofing LLC (CR-42 Roofing) - AZ Registrar of Contractors</small>
       </a>
-      <a class="prooflink" href="/kit/company.html" style="margin-top:10px; background:var(--brand); border:1.5px solid var(--brand); color:#fff; font-size:17px; padding:17px 12px;">
+      <a class="prooflink" href="/kit/company.html" style="margin-top:10px;">
         About Heirloom Roofing - License &amp; Company Info
-        <small style="color:#dbe6f0;">AZ ROC 366805 - license, bond and insurance details</small>
+        <small>AZ ROC 366805 - license, bond and insurance details</small>
       </a>
     </div>
   </div>
