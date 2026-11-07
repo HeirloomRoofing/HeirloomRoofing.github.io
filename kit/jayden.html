@@ -75,6 +75,7 @@
               <p style="font-size:13px; color:var(--muted); margin:12px 0 0; line-height:1.45;">Pick your insurance carrier. If your carrier has a claims email, this opens an email to them, already written, that lets Jayden receive your claim emails and talk with them about your roof claim - you review it and tap send. If not, it gives you the same text to send your adjuster yourself.</p>
               <label for="ccacarrier">Your insurance carrier</label>
               <select id="ccacarrier"><option value="">Choose carrier</option><option value="sf">State Farm</option><option value="al">Allstate</option><option value="af">American Family</option><option value="fm">Farmers</option><option value="tr">Travelers</option><option value="sw">Stillwater</option><option value="kn">Kin</option><option value="gl">Great Lakes (J&amp;J Insurance)</option><option value="ot">Other</option></select>
+              <div id="ccaotwrap" style="display:none;"><label for="ccaotemail">Company or adjuster email</label><input id="ccaotemail" type="email" inputmode="email" placeholder="claims@theircompany.com" autocomplete="off"></div>
               <label for="ccaname">Your name (policyholder)</label>
               <input id="ccaname" type="text" placeholder="First and last name" autocomplete="name">
               <label for="ccaaddr">Property address</label>
@@ -145,7 +146,7 @@ document.getElementById('savevcf').addEventListener('click', function(ev){
     fm:{to:'',note:'We could not confirm a general claims email for Farmers. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Jayden is already copied.'},
     tr:{to:'',note:'We could not confirm a general claims email for Travelers. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Jayden is already copied.'},
     kn:{to:'',note:'We could not confirm a general claims email for Kin. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Jayden is already copied.'},
-    ot:{to:'',note:'We could not confirm a general claims email for this carrier. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Jayden is already copied.'}
+    ot:{to:'',note:'We could not confirm a general claims email for this carrier. Type the company or adjuster email in the field that appears and Open email addresses it for you - or leave it blank and fill in the To line yourself. Jayden is already copied.'}
   };
   function $(i){return document.getElementById(i);}
   function v(i){return $(i).value.trim();}
@@ -154,6 +155,7 @@ document.getElementById('savevcf').addEventListener('click', function(ev){
     if(!k){err.textContent='Choose your carrier first.';return null;}
     if(!v('ccaname')||!v('ccaaddr')||!v('ccaclaim')){err.textContent='Add your name, property address and claim number.';return null;}
     var c=C[k], claim=v('ccaclaim');
+    if(k==='ot'){var em=v('ccaotemail'); if(em){ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){err.textContent='Check the company email address.';return null;} c={to:em,subj:c.subj,note:c.note}; }}
     var subject = c.subj==='claim' ? claim : 'Claim '+claim+' - Authorization to communicate with Heirloom Roofing';
     var L=['Hello,','',
       'I am the homeowner and policyholder for the claim below. I authorize Jayden Wardrop of Heirloom Roofing to receive claim-related correspondence and updates and to communicate with you regarding my roof claim, including inspections, estimates, repair documentation, and claim status.','',
@@ -166,7 +168,7 @@ document.getElementById('savevcf').addEventListener('click', function(ev){
     return {to:c.to,subject:subject,body:L.join('\n')};
   }
   $('ccabtn').addEventListener('click',function(e){e.preventDefault();var p=$('ccapanel'),o=p.style.display==='none';p.style.display=o?'block':'none';this.setAttribute('aria-expanded',o);});
-  $('ccacarrier').addEventListener('change',function(){var c=C[this.value];$('ccanote').textContent=c?c.note:'';});
+  $('ccacarrier').addEventListener('change',function(){var c=C[this.value];$('ccanote').textContent=c?c.note:'';$('ccaotwrap').style.display=this.value==='ot'?'block':'none';});
   ['ccacarrier','ccaname','ccaaddr','ccaclaim','ccaphone'].forEach(function(i){$(i).addEventListener('input',function(){$('ccaerr').textContent='';});});
   $('ccasend').addEventListener('click',function(e){
     e.preventDefault(); var m=build(); if(!m) return;
