@@ -857,8 +857,9 @@
 
 
   // Load a draft embedded in the link (#d=...): a prepared work order opens already filled.
-  // The link is the restore point - reopening it re-fills every saved answer, even after a clear.
-  // The hash never leaves the browser, and it is removed from the address bar after loading.
+  // The link is the restore point - it re-fills every saved answer, even after a clear.
+  // The hash never leaves the browser and is removed from the address bar after loading.
+  // If this device already holds a different draft, nothing is replaced without an explicit OK.
   (function seedFromLink(){
     try{
       var h=location.hash||''; if(h.indexOf('#d=')!==0) return;
@@ -866,9 +867,17 @@
       while(b64.length%4)b64+='=';
       var json=decodeURIComponent(escape(atob(b64)));
       var d=validateDraft(JSON.parse(json));
-      localStorage.setItem(KEY, JSON.stringify(d));
+      var norm=function(x){var f={};Object.keys(x.fields).sort().forEach(function(k){if(x.fields[k])f[k]=x.fields[k];});var i={};Object.keys(x.items).sort().forEach(function(k){var v=x.items[k];if(v&&(v.qty!=null||v.note||v.size||(v.sizeqty&&Object.keys(v.sizeqty).length)||v.soldate))i[k]=v;});return JSON.stringify({f:f,i:i});};
+      var raw=null; try{ raw=localStorage.getItem(KEY); }catch(e4){}
+      var apply=true;
+      if(raw){
+        try{ var cur=validateDraft(JSON.parse(raw)); if(norm(cur)!==norm(d)) apply=confirm('This link opens a prepared work order and replaces the different draft saved on this device. Open the prepared one?'); }
+        catch(e5){ apply=confirm('This link opens a prepared work order and replaces the draft saved on this device. Open the prepared one?'); }
+      }
       try{ history.replaceState(null,'',location.pathname+location.search); }catch(e2){}
-    }catch(e){ try{ console.error('SEED-FAIL: '+String(e&&e.stack||e)); }catch(e3){} }
+      if(!apply) return;
+      localStorage.setItem(KEY, JSON.stringify(d));
+    }catch(e){}
   })();
   restore();
   updateCounts();
