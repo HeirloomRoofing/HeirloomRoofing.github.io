@@ -2,65 +2,185 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Nick | Heirloom Roofing</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nick Thor Kulyniak | Heirloom Roofing</title>
+<meta name="description" content="Nick Thor Kulyniak, Heirloom Roofing - save contact, text, call, and verify license ROC 366805.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nick Thor Kulyniak | Heirloom Roofing">
+<meta property="og:description" content="Heirloom Roofing - save Nick's contact, text, or call.">
 <meta name="robots" content="noindex">
 <style>
+  :root { --brand:#0161A8; --brand-dark:#014e85; --ink:#1c2b36; --muted:#5a6b78; --paper:#f7f5f0; }
   * { box-sizing:border-box; }
-  html, body { margin:0; }
-  body { min-height:100vh; min-height:100svh; background:#0161A8; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',-apple-system,Helvetica,Arial,sans-serif; padding:24px; }
-  .gate { background:#fff; border-radius:22px; padding:30px 24px; max-width:400px; width:100%; text-align:center; box-shadow:0 18px 44px rgba(0,0,0,.25); }
-  .gate img { width:120px; height:69px; object-fit:contain; }
-  h1 { font-size:22px; color:#0161A8; margin:14px 0 6px; font-weight:700; }
-  p.sub { color:#5a6b78; font-size:14px; margin:0 0 18px; font-weight:500; }
-  input[type=password] { width:100%; padding:14px; font-size:17px; font-family:inherit; border:1.5px solid #cfd9e0; border-radius:12px; background:#fbfaf7; color:#1c2b36; }
-  button { width:100%; margin-top:12px; padding:15px; font-size:17px; font-weight:700; font-family:inherit; border:0; border-radius:12px; background:#0161A8; color:#fff; cursor:pointer; }
-  button:active { filter:brightness(.92); }
-  .err { color:#b3261e; font-size:13px; font-weight:700; margin-top:10px; min-height:17px; }
-  .busy { color:#5a6b78; font-size:13px; font-weight:500; margin-top:10px; }
+  @font-face { font-family:'Space Grotesk'; font-style:normal; font-weight:300 700; font-display:swap; src:url('/kit/fonts/sg-latin.woff2') format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152,U+0153,U+02BB,U+02BC,U+02C6,U+02DA,U+02DC,U+0300-0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+FEFF,U+FFFD; }
+  body { margin:0; min-height:100vh; background:var(--paper); color:var(--ink); font-family:'Space Grotesk',-apple-system,Helvetica,Arial,sans-serif; font-weight:500; }
+  .band { background:var(--brand); padding:30px 20px 62px; text-align:center; }
+  .band img { width:170px; height:85px; object-fit:contain; }
+  main { max-width:460px; margin:-34px auto 0; padding:0 20px 30px; }
+  .cardbox { border-radius:22px; padding:26px 22px; background:#fff; border:1px solid #e3e8ec; box-shadow:0 18px 44px rgba(1,97,168,.14); text-align:center; }
+  h1 { font-weight:700; margin:0; font-size:30px; color:var(--brand); }
+  .role { color:var(--muted); font-weight:500; margin-top:4px; font-size:14px; }
+  .actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; }
+  a.btn { display:block; text-decoration:none; font-weight:700; font-size:15px; border-radius:12px; padding:14px 10px; border:1.5px solid var(--brand); background:#fff; color:var(--brand); transition:.18s; }
+  a.btn:hover { background:var(--brand); color:#fff; }
+  a.primary { grid-column:span 2; background:var(--brand); color:#fff; font-size:17px; }
+  a.primary:hover { background:var(--brand-dark); border-color:var(--brand-dark); color:#fff; }
+  .shareback label { display:block; text-align:left; font-size:11px; font-weight:700; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; margin:12px 0 5px; }
+  .shareback input { width:100%; padding:12px 14px; font-size:16px; font-family:inherit; border:1.5px solid #cfd9e0; border-radius:12px; background:#fbfaf7; color:var(--ink); }
+  .sharetitle { font-weight:700; color:var(--ink); font-size:15px; }
+  .share { margin-top:14px; text-align:center; }
+  a.sharebtn { display:block; background:var(--brand); color:#fff; border:1.5px solid var(--brand); font-size:16px; text-align:center; }
+  a.sharebtn:hover { background:var(--brand-dark); border-color:var(--brand-dark); color:#fff; }
+  .proof { margin-top:16px; }
+  a.prooflink { display:block; text-decoration:none; font-weight:700; font-size:15px; border-radius:12px; padding:14px 10px; border:1.5px solid var(--brand); background:#fff; color:var(--brand); text-align:center; transition:.18s; }
+  a.prooflink:hover { background:var(--brand); color:#fff; }
+  a.prooflink:hover small { color:#dbe6f0; }
+  a.prooflink small { display:block; color:var(--muted); font-weight:500; margin-top:3px; font-size:12px; }
+  footer { margin-top:20px; text-align:center; color:var(--muted); font-size:12px; font-weight:500; }
 </style>
-</head>
+<style>@media (hover:none){ #ccabtn, #ccabtn:hover, #ccabtn:active { color:var(--brand) !important; background:#f0f7fc !important; } }.shareback select { width:100%; padding:12px 14px; font-size:16px; font-family:inherit; border:1.5px solid #cfd9e0; border-radius:12px; background:#fbfaf7; color:var(--ink); }</style></head>
 <body>
-<div class="gate">
-  <img src="/start/logo-blue.svg" alt="Heirloom Roofing logo">
-  <h1>Nick's contact info</h1>
-  <p class="sub">This contact card is password protected.</p>
-  <form id="f" autocomplete="off">
-    <input type="password" inputmode="numeric" pattern="[0-9]*" id="pw" placeholder="PIN" autocomplete="current-password" required>
-    <button type="submit" id="go">Unlock</button>
-  </form>
-  <div class="err" id="err"></div>
-  <div class="busy" id="busy"></div>
+<div class="band">
+  <img src="/kit/heirloom-logo-white.png" alt="Heirloom Roofing logo">
 </div>
+<main>
+  <div class="cardbox">
+    <h1>Nick Thor Kulyniak</h1>
+    <div class="role">Co-owner - Heirloom Roofing LLC, licensed Arizona contractor, ROC 366805</div>
+    <div class="actions">
+      <a class="btn primary" href="#" id="savevcf">Save Contact</a>
+      <a class="btn" href="sms:+14803108956">Text</a>
+      <a class="btn" href="tel:+14803108956">Call</a>
+      <a class="btn" href="mailto:nick@heirloomroofing.com">Email</a>
+      <a class="btn" href="https://heirloomroofing.com">Website</a>
+    </div>
+    <div class="share" style="text-align:left; border-top:1px solid #e3e8ec; margin-top:18px; padding-top:16px;">
+      <div class="sharetitle" style="text-align:center;">Share your contact with Nick</div>
+      <div class="shareback">
+        <label for="hname">Your name</label>
+        <input id="hname" type="text" placeholder="First and last name" autocomplete="name">
+        <label for="hcell">Your cell number</label>
+        <input id="hcell" type="tel" placeholder="So Nick can save you back" autocomplete="tel">
+      </div>
+      <a class="btn sharebtn" id="sharebackbtn" href="#" style="margin-top:12px;">Text Nick my contact</a>
+    </div>
+            <a class="btn" id="ccabtn" style="grid-column:span 2; background:#f0f7fc;" href="#" role="button" aria-expanded="false" aria-controls="ccapanel">Claim communication approval</a>
+      <div id="ccapanel" class="shareback" style="grid-column:span 2; display:none; text-align:left; border:1.5px solid #e3e8ec; border-radius:12px; padding:4px 14px 16px;">
+        <p style="font-size:13px; color:var(--muted); margin:12px 0 0; line-height:1.45;">Pick your insurance carrier. If your carrier has a claims email, this opens an email to them, already written, that lets Nick receive your claim emails and talk with them about your roof claim - you review it and tap send. If not, it gives you the same text to send your adjuster yourself.</p>
+        <label for="ccacarrier">Your insurance carrier</label>
+        <select id="ccacarrier"><option value="">Choose carrier</option><option value="sf">State Farm</option><option value="al">Allstate</option><option value="af">American Family</option><option value="fm">Farmers</option><option value="tr">Travelers</option><option value="sw">Stillwater</option><option value="kn">Kin</option><option value="gl">Great Lakes (J&amp;J Insurance)</option><option value="ot">Other</option></select>
+        <div id="ccaotwrap" style="display:none;"><label for="ccaotemail">Company or adjuster email</label><input id="ccaotemail" type="email" inputmode="email" placeholder="claims@theircompany.com" autocomplete="off"></div>
+        <label for="ccaname">Your name (policyholder)</label>
+        <input id="ccaname" type="text" placeholder="First and last name" autocomplete="name">
+        <label for="ccaaddr">Property address</label>
+        <input id="ccaaddr" type="text" placeholder="Street, city, ZIP" autocomplete="street-address">
+        <label for="ccaclaim">Claim number</label>
+        <input id="ccaclaim" type="text" placeholder="From your claim email" autocapitalize="characters">
+        <label for="ccaphone">Your phone number</label>
+        <input id="ccaphone" type="tel" placeholder="Optional" autocomplete="tel">
+        <div id="ccanote" style="font-size:12px; color:var(--muted); margin-top:10px; line-height:1.4;"></div>
+        <div id="ccaerr" style="font-size:13px; color:#b3261e; font-weight:700; margin-top:8px; min-height:16px;"></div>
+        <a class="btn sharebtn" id="ccasend" href="#" role="button" style="margin-top:10px;">Open email to send</a>
+        <a class="btn" id="ccacopy" href="#" role="button" style="margin-top:10px; background:#fff;">Copy email text instead</a>
+      </div>
+
+    </div>
+    <div class="proof">
+      <a class="prooflink" href="https://azroc.my.site.com/AZRoc/s/contractor-search?licenseId=a0ocs00000P3SnlAAF">
+        Verify License - ROC 366805 &#8599;
+        <small>Heirloom Roofing LLC (CR-42 Roofing) - AZ Registrar of Contractors</small>
+      </a>
+      <a class="prooflink" href="/kit/company.html" style="margin-top:10px; background:var(--brand); border:1.5px solid var(--brand); color:#fff; font-size:17px; padding:17px 12px;">
+        About Heirloom Roofing - License &amp; Company Info
+        <small style="color:#dbe6f0;">AZ ROC 366805 - license, bond and insurance details</small>
+      </a>
+    </div>
+  </div>
+  <footer>Heirloom Roofing LLC - 4700 E Thomas Rd, Suite 104, Phoenix, AZ 85018</footer>
+</main>
 <script>
-var S='7VUW3BcxencxCpNVhbqigQ==', I='qSr5QpmOmyYX/tMy', D='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';
-function b64(s){ var b=atob(s), a=new Uint8Array(b.length); for(var i=0;i<b.length;i++) a[i]=b.charCodeAt(i); return a; }
-document.getElementById('f').addEventListener('submit', async function(ev){
+var VCF = [
+  'BEGIN:VCARD',
+  'VERSION:3.0',
+  'N:Kulyniak;Nick;Thor;;',
+  'FN:Nick Thor Kulyniak',
+  'ORG:Heirloom Roofing',
+  'TITLE:Co-Owner',
+  'TEL;TYPE=CELL,VOICE:480-310-8956',
+  'TEL;TYPE=WORK,VOICE:602-456-2787',
+  'EMAIL;TYPE=WORK,INTERNET:nick@heirloomroofing.com',
+  'URL:https://heirloomroofing.com',
+  'END:VCARD'
+].join('\r\n');
+document.getElementById('savevcf').addEventListener('click', function(ev){
   ev.preventDefault();
-  var err=document.getElementById('err'), busy=document.getElementById('busy');
-  err.textContent=''; busy.textContent='Unlocking...';
-  try {
-    var pw=document.getElementById('pw').value;
-    var km=await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
-    var key=await crypto.subtle.deriveKey({name:'PBKDF2', salt:b64(S), iterations:600000, hash:'SHA-256'}, km, {name:'AES-GCM', length:256}, false, ['decrypt']);
-    var plain=await crypto.subtle.decrypt({name:'AES-GCM', iv:b64(I)}, key, b64(D));
-    var html=new TextDecoder().decode(plain);
-    var bpad='<style>body{background:#0161A8 !important;padding-bottom:max(80px,calc(env(safe-area-inset-bottom, 0px) + 66px)) !important} footer{color:rgba(255,255,255,.85) !important} .actions a.btn, a.sharebtn, #ccabtn{position:relative} .actions a.btn::after, a.sharebtn::after{content:" \\203A";position:absolute;right:14px;top:50%;transform:translateY(-50%);opacity:.55} #ccabtn::after{content:" \\25B8";position:absolute;right:14px;top:50%;transform:translateY(-50%);opacity:.55} #ccabtn[aria-expanded="true"]::after{content:" \\25BE"} a[href="/kit/company.html"]{background:#fff !important;color:#0161A8 !important;border:1.5px solid #0161A8 !important;border-radius:12px;padding:14px 10px;display:block;text-align:center;font-weight:700;text-decoration:none;} a[href="/kit/company.html"] small{color:#5b6670 !important;} @media (hover:none){ a.prooflink, a.prooflink:hover{ background:#fff !important; color:#0161A8 !important; } a.prooflink small{ color:#5b6670 !important; } }</style>';
-    var footlink="<script>(function(){var f=document.querySelector('footer');if(!f)return;if(f.textContent.indexOf('4700 E Thomas Rd')<0)return;var a=document.createElement('a');a.href='https://maps.google.com/?q=4700+E+Thomas+Rd+Suite+104+Phoenix+AZ+85018';a.setAttribute('style','color:inherit;text-decoration:none;');a.textContent=f.textContent;f.textContent='';f.appendChild(a);})();</scr"+"ipt>";
-    html = html.indexOf('</body>')>=0 ? html.replace('</body>', bpad+'</body>'+footlink+'</body>') : html+bpad+footlink;
-    var ccare=/<a[^>]*href="https:\/\/theleavittgroup\.github\.io\/heirloom\/connect\.html"[^>]*>[\s\S]*?<\/a>/g;
-    if(ccare.test(html)){
-      html=html.replace(ccare, "      <a class=\"btn\" id=\"ccabtn\" style=\"grid-column:span 2; background:#f0f7fc;\" href=\"#\" role=\"button\" aria-expanded=\"false\" aria-controls=\"ccapanel\">Claim communication approval<\/a>\n      <div id=\"ccapanel\" class=\"shareback\" style=\"grid-column:span 2; display:none; text-align:left; border:1.5px solid #e3e8ec; border-radius:12px; padding:4px 14px 16px;\">\n        <p style=\"font-size:13px; color:var(--muted); margin:12px 0 0; line-height:1.45;\">Pick your insurance carrier. If your carrier has a claims email, this opens an email to them, already written, that lets Nick receive your claim emails and talk with them about your roof claim - you review it and tap send. If not, it gives you the same text to send your adjuster yourself.<\/p>\n        <label for=\"ccacarrier\">Your insurance carrier<\/label>\n        <select id=\"ccacarrier\"><option value=\"\">Choose carrier<\/option><option value=\"sf\">State Farm<\/option><option value=\"al\">Allstate<\/option><option value=\"af\">American Family<\/option><option value=\"fm\">Farmers<\/option><option value=\"tr\">Travelers<\/option><option value=\"sw\">Stillwater<\/option><option value=\"kn\">Kin<\/option><option value=\"gl\">Great Lakes (J&amp;J Insurance)<\/option><option value=\"ot\">Other<\/option><\/select>\n        <div id=\"ccaotwrap\" style=\"display:none;\"><label for=\"ccaotemail\">Company or adjuster email<\/label><input id=\"ccaotemail\" type=\"email\" inputmode=\"email\" placeholder=\"claims@theircompany.com\" autocomplete=\"off\"><\/div>\n        <label for=\"ccaname\">Your name (policyholder)<\/label>\n        <input id=\"ccaname\" type=\"text\" placeholder=\"First and last name\" autocomplete=\"name\">\n        <label for=\"ccaaddr\">Property address<\/label>\n        <input id=\"ccaaddr\" type=\"text\" placeholder=\"Street, city, ZIP\" autocomplete=\"street-address\">\n        <label for=\"ccaclaim\">Claim number<\/label>\n        <input id=\"ccaclaim\" type=\"text\" placeholder=\"From your claim email\" autocapitalize=\"characters\">\n        <label for=\"ccaphone\">Your phone number<\/label>\n        <input id=\"ccaphone\" type=\"tel\" placeholder=\"Optional\" autocomplete=\"tel\">\n        <div id=\"ccanote\" style=\"font-size:12px; color:var(--muted); margin-top:10px; line-height:1.4;\"><\/div>\n        <div id=\"ccaerr\" style=\"font-size:13px; color:#b3261e; font-weight:700; margin-top:8px; min-height:16px;\"><\/div>\n        <a class=\"btn sharebtn\" id=\"ccasend\" href=\"#\" role=\"button\" style=\"margin-top:10px;\">Open email to send<\/a>\n        <a class=\"btn\" id=\"ccacopy\" href=\"#\" role=\"button\" style=\"margin-top:10px; background:#fff;\">Copy email text instead<\/a>\n      <\/div>\n");
-      html=html.replace('</head>','<style>@media (hover:none){ #ccabtn, #ccabtn:hover, #ccabtn:active { color:var(--brand) !important; background:#f0f7fc !important; } }'+".shareback select { width:100%; padding:12px 14px; font-size:16px; font-family:inherit; border:1.5px solid #cfd9e0; border-radius:12px; background:#fbfaf7; color:var(--ink); }"+'</style></head>');
-      html=html.replace('</body>',"<script>\n(function(){\n  var C={\n    sf:{to:'StateFarmFireClaims@StateFarm.com',subj:'claim',note:'State Farm asks for the claim number alone as the email subject, so it is set that way. Their inbox may send an auto-reply saying it is not monitored.'},\n    af:{to:'claimdocuments@afics.com',note:'American Family asks that the claim number be in the subject line, so it is.'},\n    sw:{to:'claims@stillwater.com',note:'Stillwater claims inbox.'},\n    gl:{to:'claims@jjins.com',note:'Claims inbox for Great Lakes policies written through J&J Insurance.'},\n    al:{to:'',note:'We could not confirm a general claims email for Allstate. Tap Open email, then put your adjuster\\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Nick is already copied.'},\n    fm:{to:'',note:'We could not confirm a general claims email for Farmers. Tap Open email, then put your adjuster\\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Nick is already copied.'},\n    tr:{to:'',note:'We could not confirm a general claims email for Travelers. Tap Open email, then put your adjuster\\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Nick is already copied.'},\n    kn:{to:'',note:'We could not confirm a general claims email for Kin. Tap Open email, then put your adjuster\\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Nick is already copied.'},\n    ot:{to:'',note:'We could not confirm a general claims email for this carrier. Type the company or adjuster email in the field that appears and Open email addresses it for you - or leave it blank and fill in the To line yourself. Nick is already copied.'}\n  };\n  function $(i){return document.getElementById(i);}\n  function v(i){return $(i).value.trim();}\n  function build(){\n    var k=v('ccacarrier'), err=$('ccaerr'); err.textContent='';\n    if(!k){err.textContent='Choose your carrier first.';return null;}\n    if(!v('ccaname')||!v('ccaaddr')||!v('ccaclaim')){err.textContent='Add your name, property address and claim number.';return null;}\n    var c=C[k], claim=v('ccaclaim');\n    if(k==='ot'){var em=v('ccaotemail'); if(em){ if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(em)){err.textContent='Check the company email address.';return null;} c={to:em,subj:c.subj,note:c.note}; }}\n    var subject = c.subj==='claim' ? claim : 'Claim '+claim+' - Authorization to communicate with Heirloom Roofing';\n    var L=['Hello,','',\n      'I am the homeowner and policyholder for the claim below. I authorize Nick Thor Kulyniak of Heirloom Roofing to receive claim-related correspondence and updates and to communicate with you regarding my roof claim, including inspections, estimates, repair documentation, and claim status.','',\n      'Please copy Nick on all future correspondence about this claim and include Nick when coordinating inspections or requesting roofing documents.','',\n      'Nick Thor Kulyniak','Heirloom Roofing','nick@heirloomroofing.com','480-310-8956','',\n      'This authorization is for communication and information sharing only. I retain all decisions regarding coverage, settlement, and payment. It does not assign my policy benefits or authorize anyone to endorse checks on my behalf.','',\n      'Please confirm that this authorization has been added to my claim file. If you require your own authorization form, please send it to me and copy Nick.','',\n      'Thank you,',v('ccaname'),v('ccaaddr'),'Claim number: '+claim];\n    if(v('ccaphone')) L.push(v('ccaphone'));\n    return {to:c.to,subject:subject,body:L.join('\\n')};\n  }\n  $('ccabtn').addEventListener('click',function(e){e.preventDefault();var p=$('ccapanel'),o=p.style.display==='none';p.style.display=o?'block':'none';this.setAttribute('aria-expanded',o);});\n  $('ccacarrier').addEventListener('change',function(){var c=C[this.value];$('ccanote').textContent=c?c.note:'';$('ccaotwrap').style.display=this.value==='ot'?'block':'none';});\n  ['ccacarrier','ccaname','ccaaddr','ccaclaim','ccaphone'].forEach(function(i){$(i).addEventListener('input',function(){$('ccaerr').textContent='';});});\n  $('ccasend').addEventListener('click',function(e){\n    e.preventDefault(); var m=build(); if(!m) return;\n    var u='mailto:'+m.to+'?cc='+encodeURIComponent('nick@heirloomroofing.com')+'&subject='+encodeURIComponent(m.subject)+'&body='+encodeURIComponent(m.body.replace(/\\n/g,'\\r\\n'));\n    this.href=u; location.href=u;\n  });\n  $('ccacopy').addEventListener('click',function(e){\n    e.preventDefault(); var m=build(); if(!m) return;\n    var t=(m.to?'To: '+m.to+'\\n':'')+'Cc: nick@heirloomroofing.com\\nSubject: '+m.subject+'\\n\\n'+m.body, self=this;\n    function done(){self.textContent='Copied';setTimeout(function(){self.textContent='Copy email text instead';},2000);}\n    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,function(){$('ccaerr').textContent='Copy failed. Use Open email instead.';});}\n    else{var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done();}catch(x){$('ccaerr').textContent='Copy failed. Use Open email instead.';}document.body.removeChild(a);}\n  });\n})();\n<\/script>\n"+'</body>');
-    }
-    document.open(); document.write(html); document.close();
-  } catch(e) {
-    busy.textContent='';
-    err.textContent='Wrong PIN - try again.';
-    document.getElementById('pw').select();
-  }
+  var blob = new Blob([VCF], {type:'text/vcard'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'nick-kulyniak.vcf';
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
 });
+(function(){
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  function smsHref(body){ return 'sms:+14803108956' + (isIOS ? '?&body=' : '?body=') + encodeURIComponent(body); }
+  document.getElementById('sharebackbtn').addEventListener('click', function(ev){
+    var n = document.getElementById('hname').value.trim();
+    var c = document.getElementById('hcell').value.trim();
+    if (!n) { ev.preventDefault(); alert('Please type your name so Nick knows who it is.'); return; }
+    var body = 'Hi Nick, this is ' + n + (c ? ' - my cell is ' + c : '') + '. You just shared your Heirloom Roofing contact with me about my roof.';
+    this.href = smsHref(body);
+  });
+})();
 </script>
-</body>
+<style>body{background:#0161A8 !important;padding-bottom:max(80px,calc(env(safe-area-inset-bottom, 0px) + 66px)) !important} footer{color:rgba(255,255,255,.85) !important} .actions a.btn, a.sharebtn, #ccabtn{position:relative} .actions a.btn::after, a.sharebtn::after{content:" \203A";position:absolute;right:14px;top:50%;transform:translateY(-50%);opacity:.55} #ccabtn::after{content:" \25B8";position:absolute;right:14px;top:50%;transform:translateY(-50%);opacity:.55} #ccabtn[aria-expanded="true"]::after{content:" \25BE"} a[href="/kit/company.html"]{background:#fff !important;color:#0161A8 !important;border:1.5px solid #0161A8 !important;border-radius:12px;padding:14px 10px;display:block;text-align:center;font-weight:700;text-decoration:none;} a[href="/kit/company.html"] small{color:#5b6670 !important;} @media (hover:none){ a.prooflink, a.prooflink:hover{ background:#fff !important; color:#0161A8 !important; } a.prooflink small{ color:#5b6670 !important; } }</style><script>
+(function(){
+  var C={
+    sf:{to:'StateFarmFireClaims@StateFarm.com',subj:'claim',note:'State Farm asks for the claim number alone as the email subject, so it is set that way. Their inbox may send an auto-reply saying it is not monitored.'},
+    af:{to:'claimdocuments@afics.com',note:'American Family asks that the claim number be in the subject line, so it is.'},
+    sw:{to:'claims@stillwater.com',note:'Stillwater claims inbox.'},
+    gl:{to:'claims@jjins.com',note:'Claims inbox for Great Lakes policies written through J&J Insurance.'},
+    al:{to:'',note:'We could not confirm a general claims email for Allstate. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Nick is already copied.'},
+    fm:{to:'',note:'We could not confirm a general claims email for Farmers. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Nick is already copied.'},
+    tr:{to:'',note:'We could not confirm a general claims email for Travelers. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Nick is already copied.'},
+    kn:{to:'',note:'We could not confirm a general claims email for Kin. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Nick is already copied.'},
+    ot:{to:'',note:'We could not confirm a general claims email for this carrier. Type the company or adjuster email in the field that appears and Open email addresses it for you - or leave it blank and fill in the To line yourself. Nick is already copied.'}
+  };
+  function $(i){return document.getElementById(i);}
+  function v(i){return $(i).value.trim();}
+  function build(){
+    var k=v('ccacarrier'), err=$('ccaerr'); err.textContent='';
+    if(!k){err.textContent='Choose your carrier first.';return null;}
+    if(!v('ccaname')||!v('ccaaddr')||!v('ccaclaim')){err.textContent='Add your name, property address and claim number.';return null;}
+    var c=C[k], claim=v('ccaclaim');
+    if(k==='ot'){var em=v('ccaotemail'); if(em){ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){err.textContent='Check the company email address.';return null;} c={to:em,subj:c.subj,note:c.note}; }}
+    var subject = c.subj==='claim' ? claim : 'Claim '+claim+' - Authorization to communicate with Heirloom Roofing';
+    var L=['Hello,','',
+      'I am the homeowner and policyholder for the claim below. I authorize Nick Thor Kulyniak of Heirloom Roofing to receive claim-related correspondence and updates and to communicate with you regarding my roof claim, including inspections, estimates, repair documentation, and claim status.','',
+      'Please copy Nick on all future correspondence about this claim and include Nick when coordinating inspections or requesting roofing documents.','',
+      'Nick Thor Kulyniak','Heirloom Roofing','nick@heirloomroofing.com','480-310-8956','',
+      'This authorization is for communication and information sharing only. I retain all decisions regarding coverage, settlement, and payment. It does not assign my policy benefits or authorize anyone to endorse checks on my behalf.','',
+      'Please confirm that this authorization has been added to my claim file. If you require your own authorization form, please send it to me and copy Nick.','',
+      'Thank you,',v('ccaname'),v('ccaaddr'),'Claim number: '+claim];
+    if(v('ccaphone')) L.push(v('ccaphone'));
+    return {to:c.to,subject:subject,body:L.join('\n')};
+  }
+  $('ccabtn').addEventListener('click',function(e){e.preventDefault();var p=$('ccapanel'),o=p.style.display==='none';p.style.display=o?'block':'none';this.setAttribute('aria-expanded',o);});
+  $('ccacarrier').addEventListener('change',function(){var c=C[this.value];$('ccanote').textContent=c?c.note:'';$('ccaotwrap').style.display=this.value==='ot'?'block':'none';});
+  ['ccacarrier','ccaname','ccaaddr','ccaclaim','ccaphone'].forEach(function(i){$(i).addEventListener('input',function(){$('ccaerr').textContent='';});});
+  $('ccasend').addEventListener('click',function(e){
+    e.preventDefault(); var m=build(); if(!m) return;
+    var u='mailto:'+m.to+'?cc='+encodeURIComponent('nick@heirloomroofing.com')+'&subject='+encodeURIComponent(m.subject)+'&body='+encodeURIComponent(m.body.replace(/\n/g,'\r\n'));
+    this.href=u; location.href=u;
+  });
+  $('ccacopy').addEventListener('click',function(e){
+    e.preventDefault(); var m=build(); if(!m) return;
+    var t=(m.to?'To: '+m.to+'\n':'')+'Cc: nick@heirloomroofing.com\nSubject: '+m.subject+'\n\n'+m.body, self=this;
+    function done(){self.textContent='Copied';setTimeout(function(){self.textContent='Copy email text instead';},2000);}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,function(){$('ccaerr').textContent='Copy failed. Use Open email instead.';});}
+    else{var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done();}catch(x){$('ccaerr').textContent='Copy failed. Use Open email instead.';}document.body.removeChild(a);}
+  });
+})();
+</script>
+</body><script>(function(){var f=document.querySelector('footer');if(!f)return;if(f.textContent.indexOf('4700 E Thomas Rd')<0)return;var a=document.createElement('a');a.href='https://maps.google.com/?q=4700+E+Thomas+Rd+Suite+104+Phoenix+AZ+85018';a.setAttribute('style','color:inherit;text-decoration:none;');a.textContent=f.textContent;f.textContent='';f.appendChild(a);})();</script></body>
 </html>
