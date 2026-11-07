@@ -44,9 +44,10 @@
   label { display:block; font-size:11px; font-weight:700; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; margin:14px 0 5px; }
   input { width:100%; padding:12px 14px; font-size:16px; font-family:inherit; border:1.5px solid #cfd9e0; border-radius:12px; background:#fbfaf7; color:var(--ink); }
   .fineprint { text-align:center; color:var(--muted); font-size:12px; font-weight:500; margin-top:14px; line-height:1.45; }
-  .actions a.btn::after, a.sharebtn::after { content:' \203A'; opacity:.55; }
-  #ccabtn::after { content:' \25B8'; opacity:.55; }
-  #ccabtn[aria-expanded="true"]::after { content:' \25BE'; opacity:.55; }
+  .actions a.btn, a.sharebtn, #ccabtn { position:relative; }
+  .actions a.btn::after, a.sharebtn::after { content:'\203A'; position:absolute; right:14px; top:50%; transform:translateY(-50%); opacity:.55; }
+  #ccabtn::after { content:'\25B8'; position:absolute; right:14px; top:50%; transform:translateY(-50%); opacity:.55; }
+  #ccabtn[aria-expanded="true"]::after { content:'\25BE'; }
   @media (hover:none){ a.co, a.co:hover { background:#fff !important; color:var(--brand) !important; } }
 </style>
 </head>

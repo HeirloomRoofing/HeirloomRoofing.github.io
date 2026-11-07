@@ -37,9 +37,10 @@
   a.prooflink:hover small { color:#dbe6f0; }
   a.prooflink small { display:block; color:var(--muted); font-weight:500; margin-top:3px; font-size:12px; }
   footer { margin-top:20px; text-align:center; color:rgba(255,255,255,.85); font-size:12px; font-weight:500; }
-  .actions a.btn::after, a.sharebtn::after { content:' \203A'; opacity:.55; }
-  #ccabtn::after { content:' \25B8'; opacity:.55; }
-  #ccabtn[aria-expanded="true"]::after { content:' \25BE'; opacity:.55; }
+  .actions a.btn, a.sharebtn, #ccabtn { position:relative; }
+  .actions a.btn::after, a.sharebtn::after { content:'\203A'; position:absolute; right:14px; top:50%; transform:translateY(-50%); opacity:.55; }
+  #ccabtn::after { content:'\25B8'; position:absolute; right:14px; top:50%; transform:translateY(-50%); opacity:.55; }
+  #ccabtn[aria-expanded="true"]::after { content:'\25BE'; }
   @media (hover:none){ a.prooflink, a.prooflink:hover { background:#fff !important; color:var(--brand) !important; } a.prooflink small, a.prooflink:hover small { color:var(--muted) !important; } }
 </style>
 </head>
