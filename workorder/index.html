@@ -413,7 +413,7 @@
 
   // Steppers
   document.getElementById('form').addEventListener('click', function(e){
-    var b = e.target.closest('.step button');
+    var b = e.target.closest('.step button[data-d]');
     if(b){
       var inp = b.parentElement.querySelector('input');
       var v = Math.max(0, Math.round(((parseFloat(inp.value)||0) + parseInt(b.getAttribute('data-d'),10))*100)/100);
