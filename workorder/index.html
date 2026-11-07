@@ -192,7 +192,7 @@
 <button class="chip" data-v="None Expected">None Expected</button><button class="chip" data-v="Partial Fascia Replacement">Partial</button><button class="chip" data-v="Full Fascia Replacement">Full</button>
 </div>
 <label class="f" for="fasciasize">Fascia Board Size</label>
-<select data-f="fasciasize" id="fasciasize"><option value="">Choose</option><option>1x4</option><option>1x6</option><option>1x8</option><option>2x4</option><option>2x6</option><option>2x8</option><option>2x10</option><option>Other / Verify</option></select>
+<select data-f="fasciasize" id="fasciasize"><option value="">Choose</option><option>1x4</option><option>1x6</option><option>1x8</option><option>2x4</option><option>2x6</option><option>2x8</option><option>2x10</option><option>Not Verified</option></select>
 <label class="f">5. Job Complexity / Special Conditions</label>
 <div class="chips" data-f="special" data-multi="1">
 <button class="chip" data-v="Pitched-to-Flat Transition">Pitched-to-Flat Transition</button><button class="chip" data-v="Wall / Stucco Flashing">Wall / Stucco Flashing</button><button class="chip" data-v="Skylights / Penetrations">Skylights / Penetrations</button><button class="chip" data-v="Restricted Access / HOA">Restricted Access / HOA</button><button class="chip" data-v="Sensitive Landscaping / Property Protection">Sensitive Landscaping</button><button class="chip" data-v="None Expected">None Expected</button>
@@ -266,7 +266,7 @@
   var WORK = [
     {g:"SITE PROTECTION", items:[["Protect landscaping / plants / trees","LS",1,"w"],["Protect windows / walls / driveway / hardscape","LS",1,"w"]]},
     {g:"ROOFING", items:[["Tear off & dispose existing roofing","SQ",0,"w"],["Install architectural shingles","SQ",0,"m"],["Install underlayment","SQ",0,"m"],["Ice & water barrier at valley","LF",0,"m"],["Install drip edge","LF",0,"m"],["Install ridge cap","LF",0,"m"],["Flat roof restoration","SQ",0,"m"]]},
-    {g:"ACCESSORIES", items:[["Replace pipe jacks","EA",0,"m",["1\"","2\"","3\"","4\"","No Size"],null,"multi"],["Replace turbine vents","EA",0,"m"],["Replace T-top vents","EA",0,"m",["4\"","7\""],null,"multi"],["Replace B-vent flashing","EA",0,"m"],["Replace split pipe boots","EA",0,"m",["1\"","2\"","3\"","4\"","Need to verify"]],["Replace dormer vents","EA",0,"m"],["Replace O'Hagin vents","EA",0,"m"],["Satellite realignment after roof completion","EA",0,"w"],["Straighten A/C condenser fins","EA",0,"w"]]},
+    {g:"ACCESSORIES", items:[["Replace pipe jacks","EA",0,"m",["1\"","2\"","3\"","4\"","No Size"],null,"multi"],["Replace turbine vents","EA",0,"m"],["Replace T-top vents","EA",0,"m",["4\"","7\""],null,"multi"],["Replace B-vent flashing","EA",0,"m"],["Replace split pipe boots","EA",0,"m",["1\"","2\"","3\"","4\"","Not Verified"]],["Replace dormer vents","EA",0,"m"],["Replace O'Hagin vents","EA",0,"m"],["Satellite realignment after roof completion","EA",0,"w"],["Straighten A/C condenser fins","EA",0,"w"]]},
     {g:"DECKING", removed:true, items:[["Backup 4' x 8' decking sheets","EA",0,"m"]]},
     {g:"SPECIAL CONDITIONS", items:[["rooftop HVAC","LS",0,"w"],["Take extra care at pitched / flat roof transition","LS",0,"w"],["Shingle moulding","LF",0,"m"],["Fascia replacement","LF",0,"m",null,true],["Do not disturb patio flat roof or shed roofs","LS",0,"w"],["Dispose of Swamp Cooler and Patch Deck","EA",0,"w"],["SOLAR DnR will be needed.","",0,"w",null,null,null,"date"]]},
     {g:"CLOSEOUT", items:[["Remove all debris","EA",1,"w"],["Final magnetic sweep","EA",1,"w"],["Final roof inspection","EA",1,"w"],["Completion photos","EA",1,"w"]]}
@@ -495,6 +495,9 @@
     if(!raw) return;
     try{
       var d = JSON.parse(raw); if(d.review) state.review=d.review;
+      var LEGACY={"Other / Verify":"Not Verified","Need to verify":"Not Verified"};
+      if(d.fields){ Object.keys(d.fields).forEach(function(k){ if(LEGACY[d.fields[k]]) d.fields[k]=LEGACY[d.fields[k]]; }); }
+      if(d.items){ Object.keys(d.items).forEach(function(k){ var it=d.items[k]; if(it&&LEGACY[it.size]) it.size=LEGACY[it.size]; }); }
       if(d.items){ Object.keys(d.items).forEach(function(k){ if(state.items[k]) state.items[k]=Object.assign({qty:null, note:'', size:'', sizeqty:{}, soldate:''}, d.items[k]); }); }
       if(d.fields){ Object.keys(d.fields).forEach(function(k){
         var el = document.querySelector('[data-f="'+k+'"]');
