@@ -61,5 +61,34 @@ document.getElementById('f').addEventListener('submit', async function(ev){
   }
 });
 </script>
+<script>
+(function(){
+  function enhance(sel){
+    if(sel.getAttribute('data-split')) return;
+    var combined=null;
+    for(var i=0;i<sel.options.length;i++){ if(sel.options[i].value==='ot'){ combined=sel.options[i]; break; } }
+    if(!combined) return;
+    var names=['Allstate','Farmers','Travelers','Kin'];
+    var frag=document.createDocumentFragment();
+    names.forEach(function(n){ var o=document.createElement('option'); o.value='ot'; o.textContent=n; o.setAttribute('data-carrier',n); frag.appendChild(o); });
+    combined.textContent='Other';
+    sel.insertBefore(frag, combined);
+    sel.setAttribute('data-split','1');
+    sel.addEventListener('change', function(){
+      var o=sel.options[sel.selectedIndex];
+      var note=document.getElementById('ccanote');
+      if(!note||!o) return;
+      var c=o.getAttribute('data-carrier');
+      if(c && note.textContent.indexOf('this carrier')>-1){
+        note.textContent=note.textContent.replace('this carrier', c);
+      }
+    });
+  }
+  new MutationObserver(function(){
+    var sel=document.getElementById('ccacarrier');
+    if(sel) enhance(sel);
+  }).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
 </body>
 </html>
