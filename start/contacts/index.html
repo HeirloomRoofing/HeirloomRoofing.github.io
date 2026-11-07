@@ -28,6 +28,10 @@
   .carrier .act:active { filter:brightness(.9); }
   a.back { display:block; margin-top:20px; text-align:center; color:#fff; font-weight:700; font-size:14px; text-decoration:none; padding-bottom:max(72px,calc(env(safe-area-inset-bottom) + 58px)); }
   .carrier .act::after { content:' \203A'; opacity:.55; }
+  a.bigbtn { display:flex; align-items:center; background:#fff; border:1px solid #e3e8ec; border-radius:20px; padding:28px 22px; margin-top:18px; text-decoration:none; color:#1c2b36; box-shadow:0 12px 30px rgba(1,97,168,.14); }
+  a.bigbtn:active { filter:brightness(.96); }
+  a.bigbtn .nm { font-size:24px; font-weight:700; color:#0161A8; }
+  a.bigbtn .chev { margin-left:auto; color:#0161A8; font-size:26px; font-weight:700; }
 </style>
 </head>
 <body>
@@ -36,134 +40,14 @@
   <h1>Company contacts</h1>
 </div>
 <main>
-  <h2 class="sec" style="margin-top:0">Heirloom Contacts</h2>
-  <a class="person" href="/start/contact/">
-    <div>
-      <div class="nm">Aidan Leavitt</div>
-      <div class="sub">Heirloom Roofing &middot; <span class="lock">&#128274; claim approval password protected</span></div>
-    </div>
+  <a class="bigbtn" href="/start/contacts/heirloom/">
+    <div class="nm">Heirloom Contacts</div>
     <div class="chev">&rsaquo;</div>
   </a>
-  <a class="person" href="/start/contact/nick/">
-    <div>
-      <div class="nm">Nick Thor Kulyniak</div>
-      <div class="sub">Heirloom Roofing &middot; Co-owner</div>
-    </div>
+  <a class="bigbtn" href="/start/contacts/insurance/">
+    <div class="nm">Insurance Contacts</div>
     <div class="chev">&rsaquo;</div>
   </a>
-  <a class="person" href="/start/contact/erik/">
-    <div>
-      <div class="nm">Erik Wiersum</div>
-      <div class="sub">Heirloom Roofing &middot; Founder &amp; Managing Director</div>
-    </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
-  <a class="person" href="/kit/jerit.html">
-    <div>
-      <div class="nm">Jerit Wohlford</div>
-      <div class="sub">Heirloom Roofing</div>
-    </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
-  <a class="person" href="/kit/ben.html">
-    <div>
-      <div class="nm">Benjamin Heckaman</div>
-      <div class="sub">Heirloom Roofing</div>
-    </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
-  <a class="person" href="/kit/carson.html">
-    <div>
-      <div class="nm">Carson Dohan</div>
-      <div class="sub">Heirloom Roofing</div>
-    </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
-  <a class="person" href="/kit/jayden.html">
-    <div>
-      <div class="nm">Jayden Wardrop</div>
-      <div class="sub">Heirloom Roofing</div>
-    </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
-  <a class="person" href="/kit/josh.html">
-    <div>
-      <div class="nm">Josh Henderson</div>
-      <div class="sub">Heirloom Roofing</div>
-    </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
-  <a class="person" href="/kit/kelsey.html">
-    <div>
-      <div class="nm">Kelsey Svea</div>
-      <div class="sub">Heirloom Roofing</div>
-    </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
-  <a class="person" href="/kit/zach.html">
-    <div>
-      <div class="nm">Zachary Brammer</div>
-      <div class="sub">Heirloom Roofing</div>
-    </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
-  <a class="person" href="/kit/company-card.html">
-    <div>
-      <div class="nm">Heirloom Roofing (office)</div>
-      <div class="sub">Company card &middot; ROC 366805</div>
-    </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
-  <h2 class="sec">Insurance Contacts</h2>
-  <div class="carrier">
-    <div class="nm">Allstate</div>
-    <div class="acts">
-    <a class="act" href="tel:+18002557828">Call <span style="white-space:nowrap">(800) 255-7828</span></a>
-    <a class="act" href="mailto:claims@claims.allstate.com">Email Claims</a>
-    </div>
-  </div>
-  <div class="carrier">
-    <div class="nm">American Family</div>
-    <div class="acts">
-    <a class="act" href="tel:+18006926326">Call <span style="white-space:nowrap">(800) 692-6326</span></a>
-    <a class="act" href="mailto:claimdocuments@afics.com">Email Claims</a>
-    </div>
-  </div>
-  <div class="carrier">
-    <div class="nm">Great Lakes SE - J&amp;J policies</div>
-    <div class="acts">
-    <a class="act" href="tel:+18004877565">Call <span style="white-space:nowrap">(800) 487-7565</span></a>
-    <a class="act" href="mailto:claims@jjins.com">Email Claims</a>
-    </div>
-  </div>
-  <div class="carrier">
-    <div class="nm">Kin</div>
-    <div class="acts">
-    <a class="act" href="tel:+18662042219">Call <span style="white-space:nowrap">(866) 204-2219</span></a>
-    <a class="act" href="https://claims.kin.com/start">File claim online</a>
-    </div>
-  </div>
-  <div class="carrier">
-    <div class="nm">State Farm</div>
-    <div class="acts">
-    <a class="act" href="tel:+18007325246">Call <span style="white-space:nowrap">(800) 732-5246</span></a>
-    <a class="act" href="mailto:StateFarmFireClaims@StateFarm.com">Email Claims</a>
-    </div>
-  </div>
-  <div class="carrier">
-    <div class="nm">Stillwater</div>
-    <div class="acts">
-    <a class="act" href="tel:+18002201351">Call <span style="white-space:nowrap">(800) 220-1351</span></a>
-    <a class="act" href="mailto:lossnotices@stillwater.com">Email Claims</a>
-    </div>
-  </div>
-  <div class="carrier">
-    <div class="nm">Travelers</div>
-    <div class="acts">
-    <a class="act" href="tel:+18002524633">Call <span style="white-space:nowrap">(800) 252-4633</span></a>
-    <a class="act" href="https://www.travelers.com/claims/file-claim">File claim online</a>
-    </div>
-  </div>
   <a class="back" href="/start/">&larr; Back</a>
 </main>
 </body>
