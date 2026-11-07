@@ -175,7 +175,7 @@
 <input data-f="layersother" id="layersother" type="text" placeholder="Other - type what it is" style="margin-top:10px"/>
 <label class="f">2. Decking / Redeck / Space Decking</label>
 <div class="chips" data-f="decking">
-<button class="chip" data-v="Solid Decking / Backup Sheets Only">Solid / Backup Sheets Only</button><button class="chip" data-v="Solid Decking / Full Redeck">Solid / Full Redeck</button><button class="chip" data-v="Space Decking / Overlay OSB">Space / Overlay OSB</button><button class="chip" data-v="Space Decking / Full Redeck">Space / Full Redeck</button>
+<button class="chip" data-v="Solid Decking / Backup Sheets Only">Solid / Backup Sheets Only</button><button class="chip" data-v="Solid Decking / No Decking Needed">Solid / No Decking Needed</button><button class="chip" data-v="Solid Decking / Full Redeck">Solid / Full Redeck</button><button class="chip" data-v="Space Decking / Overlay OSB">Space / Overlay OSB</button><button class="chip" data-v="Space Decking / Full Redeck">Space / Full Redeck</button>
 </div>
 <div class="row2">
 <div><label class="f" for="deckqty">Decking Sheets (Qty)</label><input data-f="deckqty" id="deckqty" inputmode="numeric" max="60" min="0" type="number"/></div>
@@ -537,7 +537,7 @@
   // Generate Work Order button still needs every field below filled in too.
   var REQUIRED_TOP = [
     ['layersother', function(){ return !chipVal('layers'); }],['decking'],
-    ['deckqty', function(){ return !!chipVal('decking'); }],
+    ['deckqty', function(){ return !!chipVal('decking') && chipVal('decking')!=='Solid Decking / No Decking Needed'; }],
     ['deckthick', function(){ return !!chipVal('decking') && (parseInt(val('deckqty'),10)||0)>0; }],
     ['accrane'],['fascia'],
     ['fasciasize', function(){ var f=chipVal('fascia'); return f==='Partial Fascia Replacement'||f==='Full Fascia Replacement'; }],
