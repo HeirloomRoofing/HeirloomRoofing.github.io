@@ -21,6 +21,11 @@
   a.person .chev { margin-left:auto; color:#0161A8; font-size:22px; font-weight:700; }
   .lock { font-size:12px; color:#5a6b78; }
   h2.sec { margin:30px 4px 0; font-size:14px; font-weight:700; color:#5a6b78; text-transform:uppercase; letter-spacing:.5px; }
+  .carrier { background:#fff; border:1px solid #e3e8ec; border-radius:18px; padding:16px 18px; margin-top:14px; box-shadow:0 10px 26px rgba(1,97,168,.10); }
+  .carrier .nm { font-size:20px; font-weight:700; color:#0161A8; }
+  .carrier .acts { display:flex; gap:10px; margin-top:10px; }
+  .carrier .act { flex:1; text-align:center; background:#0161A8; color:#fff; font-weight:700; font-size:15px; padding:10px 8px; border-radius:12px; text-decoration:none; }
+  .carrier .act:active { filter:brightness(.9); }
   a.back { display:block; margin-top:20px; text-align:center; color:#0161A8; font-weight:700; font-size:14px; text-decoration:none; padding-bottom:max(72px,calc(env(safe-area-inset-bottom) + 58px)); }
 </style>
 </head>
@@ -108,55 +113,52 @@
     <div class="chev">&rsaquo;</div>
   </a>
   <h2 class="sec">Insurance carriers - file a claim</h2>
-  <a class="person" href="tel:+18007325246">
-    <div>
-      <div class="nm">State Farm</div>
-      <div class="sub">Claims: (800) 732-5246</div>
+  <div class="carrier">
+    <div class="nm">State Farm</div>
+    <div class="acts">
+    <a class="act" href="tel:+18007325246">Call (800) 732-5246</a>
+    <a class="act" href="mailto:StateFarmFireClaims@StateFarm.com">Email claims dept</a>
     </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
-  <a class="person" href="tel:+18002557828">
-    <div>
-      <div class="nm">Allstate</div>
-      <div class="sub">Claims: (800) 255-7828</div>
+  </div>
+  <div class="carrier">
+    <div class="nm">Allstate</div>
+    <div class="acts">
+    <a class="act" href="tel:+18002557828">Call (800) 255-7828</a>
     </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
-  <a class="person" href="tel:+18006926326">
-    <div>
-      <div class="nm">American Family</div>
-      <div class="sub">Claims: (800) 692-6326</div>
+  </div>
+  <div class="carrier">
+    <div class="nm">American Family</div>
+    <div class="acts">
+    <a class="act" href="tel:+18006926326">Call (800) 692-6326</a>
+    <a class="act" href="mailto:claimdocuments@afics.com">Email claim docs</a>
     </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
-  <a class="person" href="tel:+18002524633">
-    <div>
-      <div class="nm">Travelers</div>
-      <div class="sub">Claims: (800) 252-4633</div>
+  </div>
+  <div class="carrier">
+    <div class="nm">Travelers</div>
+    <div class="acts">
+    <a class="act" href="tel:+18002524633">Call (800) 252-4633</a>
     </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
-  <a class="person" href="tel:+18002201351">
-    <div>
-      <div class="nm">Stillwater</div>
-      <div class="sub">Claims: (800) 220-1351</div>
+  </div>
+  <div class="carrier">
+    <div class="nm">Stillwater</div>
+    <div class="acts">
+    <a class="act" href="tel:+18002201351">Call (800) 220-1351</a>
+    <a class="act" href="mailto:lossnotices@stillwater.com">Email new claim</a>
     </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
-  <a class="person" href="tel:+18662042219">
-    <div>
-      <div class="nm">Kin</div>
-      <div class="sub">Claims: (866) 204-2219</div>
+  </div>
+  <div class="carrier">
+    <div class="nm">Kin</div>
+    <div class="acts">
+    <a class="act" href="tel:+18662042219">Call (866) 204-2219</a>
     </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
-  <a class="person" href="tel:+18004877565">
-    <div>
-      <div class="nm">Great Lakes SE (via J&amp;J)</div>
-      <div class="sub">Claims: (800) 487-7565</div>
+  </div>
+  <div class="carrier">
+    <div class="nm">Great Lakes SE (via J&amp;J)</div>
+    <div class="acts">
+    <a class="act" href="tel:+18004877565">Call (800) 487-7565</a>
+    <a class="act" href="mailto:claims@jjins.com">Email loss notice</a>
     </div>
-    <div class="chev">&rsaquo;</div>
-  </a>
+  </div>
   <a class="back" href="/start/">&larr; Back</a>
 </main>
 </body>
