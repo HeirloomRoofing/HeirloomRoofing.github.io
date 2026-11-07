@@ -182,7 +182,7 @@
 <div class="chips" data-f="decking">
 <button class="chip" data-v="Solid Decking / Backup Sheets Only">Solid / Backup Sheets Only</button><button class="chip" data-v="Solid Decking / No Decking Needed">Solid / No Decking Needed</button><button class="chip" data-v="Solid Decking / Full Redeck">Solid / Full Redeck</button><button class="chip" data-v="Space Decking / Overlay OSB">Space / Overlay OSB</button><button class="chip" data-v="Space Decking / Full Redeck">Space / Full Redeck</button>
 </div>
-<div class="row2">
+<div class="row2" id="deckrow">
 <div><label class="f" for="deckqty">Decking Sheets (Qty)</label><input data-f="deckqty" id="deckqty" inputmode="numeric" max="60" min="0" type="number"/></div>
 <div><label class="f" for="deckthick">Decking Thickness</label><select data-f="deckthick" id="deckthick"><option value="">Choose</option><option>3/8"</option><option>7/16"</option><option>1/2"</option><option>5/8"</option><option>3/4"</option><option>N/A</option><option>Not Verified</option></select></div>
 </div>
@@ -376,6 +376,21 @@
     window.syncSystemProducts();
   })();
 
+  // No Decking Needed: sheet qty and thickness do not apply - hide and clear them
+  (function(){
+    var dc=document.querySelector('.chips[data-f="decking"]'); if(!dc) return;
+    window.syncDecking=function(){
+      var none = chipVal('decking')==='Solid Decking / No Decking Needed';
+      var row=document.getElementById('deckrow'); if(row) row.style.display = none ? 'none' : '';
+      if(none){
+        var q=document.getElementById('deckqty'), t=document.getElementById('deckthick');
+        if((q&&q.value)||(t&&t.value)){ if(q) q.value=''; if(t) t.value=''; save(); }
+      }
+    };
+    dc.addEventListener('click', function(){ setTimeout(window.syncDecking,0); });
+    window.syncDecking();
+  })();
+
   // Layers: typed Other clears the chips, picking a chip clears the Other box
   (function(){ var lo=document.getElementById('layersother'); if(!lo) return;
     lo.addEventListener('input', function(){ if(lo.value.trim()) setChip('layers',''); });
@@ -524,6 +539,7 @@
       updateCounts(); refreshDraftNotice();
       if(window.syncCurrentOther) window.syncCurrentOther();
       if(window.syncSystemProducts) window.syncSystemProducts();
+      if(window.syncDecking) window.syncDecking();
     }catch(e){}
   }
 
@@ -537,6 +553,7 @@
   function sizeBreakdown(st){ var parts=Object.keys(st.sizeqty||{}).filter(function(z){return st.sizeqty[z]>0 && z!=='No Size';}).map(function(z){return z+': '+st.sizeqty[z];}); return parts.length?' <span class="unit">('+parts.join(', ')+')</span>':''; }
   function currentSystemVal(){ var v=chipVal('currentsystem'); var o=val('currentsystemother'); return v==='Other' && o ? 'Other - '+o : v; }
   function layersVal(){ return chipVal('layers') || val('layersother'); }
+  function deckingVal(){ var d=val('decking'); if(!d || d==='Solid Decking / No Decking Needed') return d; if(val('deckqty')) d+=' - Qty: '+val('deckqty')+' sheets'; if(val('deckthick')) d+=' - Thickness: '+val('deckthick'); return d; }
   function gateNA(){ var c=document.getElementById('gatena'); return c && c.checked; }
   function gateVal(){ return val('gate') || (gateNA() ? 'None' : ''); }
 
@@ -644,9 +661,9 @@
     h += sec('Current Roof Details', rowKV('Roof System', currentSystemVal()));
     h += sec('Roof System Being Installed', rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Tile Profile', val('tileprofile')) + rowKV('Stone-Coated Steel Profile', val('steelprofile')) + rowKV('Composite Product', val('compositeproduct')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off (SQ)', val('tearoff')) + rowKV('Approx. Install (SQ)', val('install')));
     h += sec('The Big 5', rowKV('1. Layers', layersVal())
-      + rowKV('2. Decking / Redeck', val('decking') + (val('deckqty')? ' - '+val('deckqty')+' sheets':'') + (val('deckthick')? ' - '+val('deckthick'):''))
-      + rowKV('3. A/C / Crane', val('accrane') + (val('acnotes')? ' - '+val('acnotes'):''))
-      + rowKV('4. Fascia Replacement', val('fascia') + (val('fasciasize')? ' - '+val('fasciasize'):''))
+      + rowKV('2. Decking / Redeck', deckingVal())
+      + rowKV('3. A/C / Crane', val('accrane') + (val('acnotes')? ' - Notes: '+val('acnotes'):''))
+      + rowKV('4. Fascia Replacement', val('fascia') + (val('fasciasize')? ' - Board Size: '+val('fasciasize'):''))
       + rowKV('5. Special Conditions', val('special')));
     h += sec('Property Conditions', rowKV('Steep Pitch', val('pitch')) + rowKV('Stories / Roof Height', val('stories')) + rowKV('Limited Access', val('access')) + rowKV('Complex Roof Design', val('complex')) + rowKV('Special Equipment', val('equipment')) + rowKV('Occupied / Restricted', val('occupied')) + rowKV('Other / Special Instructions', val('otherinstr')));
     function itemRows(kind){
@@ -687,9 +704,9 @@
     p('Current Roof System', currentSystemVal()); p('Roof System Being Installed', val('roofsystem')); p('Malarkey Product', val('malarkey')); p('Tile Profile', val('tileprofile')); p('Steel Profile', val('steelprofile')); p('Composite Product', val('compositeproduct')); p('Shingle Color', val('shinglecolor')); p('Drip Edge', val('dripedge')); p('Flat Roof Color', val('flatcolor')); p('Job Type', val('jobtype')); p('Approx. Tear-Off (SQ)', val('tearoff')); p('Approx. Install (SQ)', val('install'));
     L.push(''); L.push('BIG 5:');
     p('Layers', layersVal());
-    var d = val('decking'); if(val('deckqty')) d += ' - '+val('deckqty')+' sheets'; if(val('deckthick')) d += ' - '+val('deckthick'); p('Decking', d);
-    p('A/C / Crane', val('accrane') + (val('acnotes')? ' - '+val('acnotes'):''));
-    var fa = val('fascia'); if(val('fasciasize')) fa += ' - '+val('fasciasize'); p('Fascia', fa);
+    p('Decking', deckingVal());
+    p('A/C / Crane', val('accrane') + (val('acnotes')? ' - Notes: '+val('acnotes'):''));
+    p('Fascia', val('fascia') + (val('fasciasize')? ' - Board Size: '+val('fasciasize'):''));
     p('Special Conditions', val('special'));
     L.push(''); L.push('CONDITIONS:');
     p('Steep Pitch', val('pitch')); p('Stories', val('stories')); p('Limited Access', val('access')); p('Complex Design', val('complex')); p('Special Equipment', val('equipment')); p('Occupied/Restricted', val('occupied'));
