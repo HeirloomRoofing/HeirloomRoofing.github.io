@@ -54,6 +54,8 @@
   .step button { width:38px; height:38px; border-radius:10px; border:1.5px solid #cfd9e0; background:#fff; font-size:20px; font-weight:700; color:var(--brand); cursor:pointer; font-family:inherit; }
   .step input { width:56px; text-align:center; padding:8px 4px; font-size:16px; border:1.5px solid #cfd9e0; border-radius:10px; font-family:inherit; }
   .sizeq.nosize { margin-top:16px; }
+  .ynbtn { border:1.5px solid #cfd9e0; background:#fff; border-radius:10px; padding:9px 18px; font-size:14px; font-weight:700; color:var(--brand); cursor:pointer; font-family:inherit; }
+  .ynbtn.on { background:var(--brand); color:#fff; border-color:var(--brand); }
   .notebtn { font-size:12px; color:var(--brand); background:none; border:none; font-weight:700; cursor:pointer; font-family:inherit; padding:4px 0; }
   .item textarea { margin-top:6px; min-height:44px; font-size:14px; }
   .savebar { position:fixed; left:0; right:0; bottom:0; background:rgba(255,255,255,.97); border-top:1px solid var(--line); padding:10px 16px; display:flex; gap:10px; align-items:center; justify-content:center; z-index:10; }
@@ -270,7 +272,7 @@
     {g:"ACCESSORIES", items:[["Replace pipe jacks","EA",0,"m",["1\"","2\"","3\"","4\"","No Size"],null,"multi"],["Replace turbine vents","EA",0,"m"],["Replace T-top vents","EA",0,"m",["4\"","7\""],null,"multi"],["Replace B-vent flashing","EA",0,"m"],["Replace split pipe boots","EA",0,"m",["1\"","2\"","3\"","4\"","Not Verified"]],["Replace dormer vents","EA",0,"m"],["Replace O'Hagin vents","EA",0,"m"],["Satellite realignment after roof completion","EA",0,"w"],["Straighten A/C condenser fins","EA",0,"w"]]},
     {g:"DECKING", removed:true, items:[["Backup 4' x 8' decking sheets","EA",0,"m"]]},
     {g:"SPECIAL CONDITIONS", items:[["rooftop HVAC","LS",0,"w"],["Take extra care at pitched / flat roof transition","LS",0,"w"],["Shingle moulding","LF",0,"m"],["Fascia replacement","LF",0,"m",null,true],["Do not disturb patio flat roof or shed roofs","LS",0,"w"],["Dispose of Swamp Cooler and Patch Deck","EA",0,"w"],["SOLAR DnR will be needed.","",0,"w",null,null,null,"date"]]},
-    {g:"CLOSEOUT", items:[["Remove all debris","EA",1,"w"],["Final magnetic sweep","EA",1,"w"],["Final roof inspection","EA",1,"w"],["Completion photos","EA",1,"w"]]}
+    {g:"CLOSEOUT", items:[["Remove all debris","EA",1,"w",null,null,null,null,"yn"],["Final magnetic sweep","EA",1,"w",null,null,null,null,"yn"],["Final roof inspection","EA",1,"w",null,null,null,null,"yn"],["Completion photos","EA",1,"w",null,null,null,null,"yn"]]}
   ];
   var KEY = 'hr-workorder-draft-v1';
   var state = { fields:{}, items:{} };
@@ -290,7 +292,7 @@
       var id = gi+'-'+ii;
       var row = document.createElement('div'); row.className='item';
       row.innerHTML = '<span class="nm">'+wiName(gi,ii)+(it[1]?' <span class="unit">'+it[1]+'</span>':'')+'</span>'+
-        (it[6]==='multi'?'':'<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
+        (it[6]==='multi'?'':it[8]==='yn'?'<span class="step yn" data-yn="'+id+'"><button type="button" class="ynbtn" data-ynv="1">Yes</button><button type="button" class="ynbtn" data-ynv="0">No</button></span>':'<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
         '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="" placeholder="-">'+
         '<button type="button" data-d="1" aria-label="increase">+</button></span>')+
         (it[7]==='date'?'<label class="sizeq">Reset date: <input type="date" data-datefor="'+id+'" aria-label="Solar reset date"></label>':'')+
@@ -400,6 +402,8 @@
       var v = Math.max(0, Math.round(((parseFloat(inp.value)||0) + parseInt(b.getAttribute('data-d'),10))*100)/100);
       inp.value = v; state.items[inp.getAttribute('data-item')].qty = v; updateCounts(); save(); return;
     }
+    var yb = e.target.closest('.ynbtn');
+    if(yb){ var yw=yb.closest('[data-yn]'); var yid=yw.getAttribute('data-yn'); state.items[yid].qty = yb.getAttribute('data-ynv')==='1'?1:0; yw.querySelectorAll('.ynbtn').forEach(function(x){ x.classList.toggle('on', x===yb); }); updateCounts(); save(); return; }
     var nb = e.target.closest('.notebtn');
     if(nb){ var ta = document.querySelector('textarea[data-notefor="'+nb.getAttribute('data-notebtn')+'"]');
       ta.style.display = ta.style.display==='none' ? 'block' : 'none'; if(ta.style.display==='block') ta.focus(); }
@@ -513,6 +517,7 @@
         var sz = document.querySelector('select[data-sizefor="'+k+'"]'); if(sz && state.items[k].size) sz.value = state.items[k].size;
         document.querySelectorAll('input[data-sq="'+k+'"]').forEach(function(b){ var v=state.items[k].sizeqty&&state.items[k].sizeqty[b.getAttribute('data-sz')]; b.value=(v==null?'':v); });
         var di = document.querySelector('input[data-datefor="'+k+'"]'); if(di && state.items[k].soldate) di.value = state.items[k].soldate;
+        var yw2 = document.querySelector('[data-yn="'+k+'"]'); if(yw2){ var yq=state.items[k].qty; yw2.querySelectorAll('.ynbtn').forEach(function(x){ x.classList.toggle('on', yq!=null && String(yq)===x.getAttribute('data-ynv')); }); }
       });
       updateCounts(); refreshDraftNotice();
       if(window.syncCurrentOther) window.syncCurrentOther();
@@ -595,7 +600,7 @@
         if(det){ det.open=true; det.classList.add('miss'); }
         WORK[gi].items.forEach(function(it,ii){
           var st=state.items[gi+'-'+ii];
-          if(!st || st.qty==null || (it[4] && st.qty>0 && !st.size)){ var inp=document.querySelector('input[data-item="'+gi+'-'+ii+'"]'); if(inp && inp.closest('.item')) inp.closest('.item').classList.add('miss'); }
+          if(!st || st.qty==null || (it[4] && st.qty>0 && !st.size)){ var inp=document.querySelector('input[data-item="'+gi+'-'+ii+'"],[data-yn="'+gi+'-'+ii+'"]'); if(inp && inp.closest('.item')) inp.closest('.item').classList.add('miss'); }
         });
         return;
       }
@@ -652,7 +657,7 @@
           if(it[3]!==kind) return;
           var st = state.items[gi+'-'+ii];
           if(st.qty==null || st.qty>0 || (st.note && st.note.trim())){
-            rows += '<tr class="wline"><td class="qbox">'+(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">'+st.qty+'</span>':'<span class="qpill zero">0</span>'))+'</td><td class="wname">'+esc(wiName(gi,ii))+(it[6]==='multi'?sizeBreakdown(st):(st.size?' <span class="unit">- '+esc(st.size)+'</span>':''))+(st.soldate?' <span class="unit">(reset scheduled '+esc(st.soldate)+')</span>':'')+'</td><td class="un2">'+esc(it[1])+'</td></tr>';
+            rows += '<tr class="wline"><td class="qbox">'+(it[8]==='yn'?(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">Yes</span>':'<span class="qpill zero">No</span>')):(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">'+st.qty+'</span>':'<span class="qpill zero">0</span>')))+'</td><td class="wname">'+esc(wiName(gi,ii))+(it[6]==='multi'?sizeBreakdown(st):(st.size?' <span class="unit">- '+esc(st.size)+'</span>':''))+(st.soldate?' <span class="unit">(reset scheduled '+esc(st.soldate)+')</span>':'')+'</td><td class="un2">'+esc(it[1])+'</td></tr>';
             if(st.note && st.note.trim()) rows += '<tr><td></td><td colspan="2" class="inote">'+esc(st.note)+'</td></tr>';
           }
         });
@@ -692,7 +697,7 @@
       if(g.removed) return;
       var lines=[];
       g.items.forEach(function(it,ii){ if(it[5]) return; var st=state.items[gi+'-'+ii];
-        if(st.qty==null || st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+wiName(gi,ii)+(st.qty==null?': PENDING quantity / scope':(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):''))+(it[6]==='multi'?sizeBreakdown(st):(st.size?' - '+st.size:''))+(st.soldate?' - reset scheduled '+st.soldate:'')+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
+        if(st.qty==null || st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+wiName(gi,ii)+(it[8]==='yn'?(st.qty==null?': PENDING':(st.qty>0?': Yes':': No')):(st.qty==null?': PENDING quantity / scope':(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):'')))+(it[6]==='multi'?sizeBreakdown(st):(st.size?' - '+st.size:''))+(st.soldate?' - reset scheduled '+st.soldate:'')+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
       if(lines.length){ L.push(g.g+':'); lines.forEach(function(x){L.push(x);}); }
     });
     if(val('addnotes')){ L.push(''); L.push('NOTES: '+val('addnotes')); }
