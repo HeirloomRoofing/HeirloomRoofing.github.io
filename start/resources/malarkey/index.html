@@ -228,7 +228,7 @@ async function sharePDF(e, a) {
 
   lb.addEventListener('pointerdown', function(e){
     if (e.target.id === 'lb-close') return;
-    lb.setPointerCapture(e.pointerId);
+    try { lb.setPointerCapture(e.pointerId); } catch (err) {}
     pointers.push({id:e.pointerId, x:e.clientX, y:e.clientY});
     if (pointers.length === 1) { downX = e.clientX; downY = e.clientY; downT = Date.now(); moved = false; lastX = e.clientX; lastY = e.clientY; }
     if (pointers.length === 2) {
