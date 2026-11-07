@@ -760,12 +760,22 @@
     if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(ok, function(){}); }
     else { var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); ok(); }catch(e){} document.body.removeChild(ta); }
   }
-  document.getElementById('emailbtn').addEventListener('click', function(e){
-    if(state.review){ if(typeof e!=='undefined') e.preventDefault(); alert('This is a review draft. Printing or copying keeps its draft warning. Resolve the pending choices and review the order before sending.'); return; }
-    if(!confirm('Open your email app with this work order addressed and ready to send to Nick and Erik? Nothing sends by itself - you still review it and press Send in your email app.')){
-      e.preventDefault(); return;
+  document.getElementById('emailbtn').addEventListener('click', async function(e){
+    e.preventDefault();
+    if(state.review){ alert('This is a review draft. Printing or copying keeps its draft warning. Resolve the pending choices and review the order before sending.'); return; }
+    var file=null;
+    if(navigator.canShare){
+      var r = await buildPDF();
+      if(r){ var f = new File([r.pdf.output('blob')], r.name, {type:'application/pdf'}); if(navigator.canShare({files:[f]})) file=f; }
     }
+    if(file){
+      if(!confirm('Share the finished work order as a PDF attachment? In the next step pick Mail and address it to Nick and Erik - you still review it and press Send. Nothing sends by itself.')) return;
+      navigator.share({files:[file], title:'Production Work Order', text:'Work Order - '+(val('customer')||'New job')+(val('address')?' - '+val('address'):'')}).catch(function(){});
+      return;
+    }
+    if(!confirm('Open your email app with this work order addressed and ready to send to Nick and Erik? Nothing sends by itself - you still review it and press Send in your email app.')) return;
     if(this.getAttribute('data-copied')==='1'){ copyText(this.getAttribute('data-full'), function(){ toast('Full order copied - paste it into the email body'); }); }
+    window.location.href = this.href;
   });
 
   async function buildPDF(){
