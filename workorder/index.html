@@ -553,7 +553,7 @@
   function sizeBreakdown(st){ var parts=Object.keys(st.sizeqty||{}).filter(function(z){return st.sizeqty[z]>0 && z!=='No Size';}).map(function(z){return z+': '+st.sizeqty[z];}); return parts.length?' <span class="unit">('+parts.join(', ')+')</span>':''; }
   function currentSystemVal(){ var v=chipVal('currentsystem'); var o=val('currentsystemother'); return v==='Other' && o ? 'Other - '+o : v; }
   function layersVal(){ return chipVal('layers') || val('layersother'); }
-  function deckingVal(){ var d=val('decking'); if(!d || d==='Solid Decking / No Decking Needed') return d; if(val('deckqty')) d+=' - Qty: '+val('deckqty')+' sheets'; if(val('deckthick')) d+=' - Thickness: '+val('deckthick'); return d; }
+  function deckingVal(){ var d=val('decking'); if(d==='Solid Decking / No Decking Needed') return 'No Decking Needed'; if(!d) return d; if(val('deckqty')) d+=' - Qty: '+val('deckqty')+' sheets'; if(val('deckthick')) d+=' - Thickness: '+val('deckthick'); return d; }
   function gateNA(){ var c=document.getElementById('gatena'); return c && c.checked; }
   function gateVal(){ return val('gate') || (gateNA() ? 'None' : ''); }
 
@@ -760,7 +760,7 @@
     var p=function(k,v){ if(v) L.push(k+': '+v); };
     p('PM', val('pm')); p('PM Phone', val('pmphone')); p('Customer', val('customer')); p('Phone', val('phone')); p('Address', val('address')); p('Gate Code', val('gate'));
     p('Current Roof System', currentSystemVal()); p('Roof System Being Installed', val('roofsystem')); p('Malarkey', val('malarkey')); p('Tile Profile', val('tileprofile')); p('Steel Profile', val('steelprofile')); p('Composite Product', val('compositeproduct')); p('Shingle Color', val('shinglecolor')); p('Job Type', val('jobtype'));
-    p('Layers', layersVal()); p('Decking', val('decking')); p('A/C / Crane', val('accrane') + (val('acnotes')? ' - '+val('acnotes'):'')); p('Fascia', val('fascia')); p('Special Conditions', val('special'));
+    p('Layers', layersVal()); p('Decking', deckingVal()); p('A/C / Crane', val('accrane') + (val('acnotes')? ' - '+val('acnotes'):'')); p('Fascia', val('fascia')); p('Special Conditions', val('special'));
     L.push(''); L.push('Full work order with all quantities is copied to your clipboard - paste it below this line.'); L.push('');
     return L.join('\n');
   }
