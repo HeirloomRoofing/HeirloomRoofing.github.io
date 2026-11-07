@@ -48,6 +48,7 @@ document.getElementById('f').addEventListener('submit', async function(ev){
     var bpad='<style>body{padding-bottom:max(80px,calc(env(safe-area-inset-bottom, 0px) + 66px)) !important}</style>';
     html = html.indexOf('</body>')>=0 ? html.replace('</body>', bpad+'</body>') : html+bpad;
     html=html.replace(/<a[^>]*href="https:\/\/theleavittgroup\.github\.io\/heirloom\/connect\.html"[^>]*>[\s\S]*?<\/a>/g, '');
+    if(html.indexOf('id="ccabtn"')>=0){ html=html.replace('</head>','<style>@media (hover:none){ #ccabtn, #ccabtn:hover, #ccabtn:active { color:var(--brand) !important; background:#f0f7fc !important; } }</style></head>'); }
     document.open(); document.write(html); document.close();
   } catch(e) {
     busy.textContent='';
