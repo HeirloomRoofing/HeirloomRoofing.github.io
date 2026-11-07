@@ -36,6 +36,15 @@
     padding:14px 10px; margin-top:16px; border:1px solid var(--navy); background:#fff; color:var(--navy); }
   footer { margin-top:18px; text-align:center; color:rgba(255,255,255,.85); font-size:12px; font-weight:600; }
   .pill-active { background:#1e7d32; color:#ffffff; border-radius:999px; padding:3px 14px; font-weight:800; font-size:0.95em; letter-spacing:0.4px; }
+  .actions a.btn, a.sharebtn { position:relative; }
+  .actions a[href^="sms:"]::after { content:' \270E'; opacity:.55; }
+  .actions a[href^="tel:"]::after { content:' \260E'; opacity:.55; }
+  .actions a[href^="mailto:"]::after { content:' \2709'; opacity:.55; }
+  .actions a[href^="http"]::after { content:' \2197'; opacity:.55; }
+  .actions a#savevcf::after { content:' \FF0B'; opacity:.7; }
+  a.sharebtn::after { content:' \270E'; opacity:.7; }
+  #ccabtn::after { content:' \25B8'; opacity:.55; }
+  #ccabtn[aria-expanded="true"]::after { content:' \25BE'; opacity:.55; }
 </style>
 </head>
 <body>

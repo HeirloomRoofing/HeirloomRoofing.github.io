@@ -52,6 +52,13 @@
   a:active, .tabs button:active { filter:brightness(.94); }
   .sendpdf { display:block; width:max-content; margin:16px auto 0; background:#fff; color:#0161A8; border:1.5px solid #0161A8; border-radius:999px; font-family:inherit; font-size:15px; font-weight:700; padding:9px 22px; cursor:pointer; }
   .sendpdf:active { filter:brightness(.94); }
+  a.house, a.swthumb { position:relative; }
+  a.house::after, a.swthumb::after { content:'\203A'; position:absolute; right:8px; bottom:8px; width:26px; height:26px; line-height:26px; text-align:center; background:#0161A8; color:#fff; border-radius:50%; font-size:18px; font-weight:700; opacity:.92; box-shadow:0 2px 6px rgba(0,0,0,.3); }
+  a.swthumb::after { width:22px; height:22px; line-height:22px; font-size:15px; right:5px; bottom:5px; }
+  a.pg-link { position:relative; display:block; }
+  a.pg-link::after { content:'\203A'; position:absolute; right:10px; bottom:14px; width:28px; height:28px; line-height:28px; text-align:center; background:#0161A8; color:#fff; border-radius:50%; font-size:19px; font-weight:700; opacity:.92; box-shadow:0 2px 6px rgba(0,0,0,.3); }
+  a.sendpdf::after { content:' \2934'; font-weight:400; opacity:.6; }
+
 </style>
 </head>
 <body>
@@ -115,18 +122,18 @@
 <div id="pane-specs" class="pane" role="tabpanel" aria-labelledby="tab-specs">
 <a class="link" href="/start/files/Malarkey-Certified-Premium-Warranty.pdf">Malarkey Warranty</a>
 <h2>Architectural Shingles Brochure</h2>
-<a href="/start/files/Malarkey-Architectural-Shingles-Brochure.pdf"><img class="pg" src="/start/resources/malarkey/img/brochure-1.jpg" alt="Architectural Shingles Brochure page 1"></a>
-<a href="/start/files/Malarkey-Architectural-Shingles-Brochure.pdf"><img class="pg" src="/start/resources/malarkey/img/brochure-2.jpg" alt="Architectural Shingles Brochure page 2"></a>
-<a href="/start/files/Malarkey-Architectural-Shingles-Brochure.pdf"><img class="pg" src="/start/resources/malarkey/img/brochure-3.jpg" alt="Architectural Shingles Brochure page 3"></a>
-<a href="/start/files/Malarkey-Architectural-Shingles-Brochure.pdf"><img class="pg" src="/start/resources/malarkey/img/brochure-4.jpg" alt="Architectural Shingles Brochure page 4"></a>
+<a class="pg-link" href="/start/files/Malarkey-Architectural-Shingles-Brochure.pdf"><img class="pg" src="/start/resources/malarkey/img/brochure-1.jpg" alt="Architectural Shingles Brochure page 1"></a>
+<a class="pg-link" href="/start/files/Malarkey-Architectural-Shingles-Brochure.pdf"><img class="pg" src="/start/resources/malarkey/img/brochure-2.jpg" alt="Architectural Shingles Brochure page 2"></a>
+<a class="pg-link" href="/start/files/Malarkey-Architectural-Shingles-Brochure.pdf"><img class="pg" src="/start/resources/malarkey/img/brochure-3.jpg" alt="Architectural Shingles Brochure page 3"></a>
+<a class="pg-link" href="/start/files/Malarkey-Architectural-Shingles-Brochure.pdf"><img class="pg" src="/start/resources/malarkey/img/brochure-4.jpg" alt="Architectural Shingles Brochure page 4"></a>
 <a class="link small" href="/start/files/Malarkey-Architectural-Shingles-Brochure.pdf">Open full PDF</a>
 <h2>Highlander &amp; Highlander Cool</h2>
-<a href="/start/files/Malarkey-Highlander-and-Highlander-Cool-Flyer.pdf"><img class="pg" src="/start/resources/malarkey/img/hcool-1.jpg" alt="Highlander &amp; Highlander Cool page 1"></a>
-<a href="/start/files/Malarkey-Highlander-and-Highlander-Cool-Flyer.pdf"><img class="pg" src="/start/resources/malarkey/img/hcool-2.jpg" alt="Highlander &amp; Highlander Cool page 2"></a>
+<a class="pg-link" href="/start/files/Malarkey-Highlander-and-Highlander-Cool-Flyer.pdf"><img class="pg" src="/start/resources/malarkey/img/hcool-1.jpg" alt="Highlander &amp; Highlander Cool page 1"></a>
+<a class="pg-link" href="/start/files/Malarkey-Highlander-and-Highlander-Cool-Flyer.pdf"><img class="pg" src="/start/resources/malarkey/img/hcool-2.jpg" alt="Highlander &amp; Highlander Cool page 2"></a>
 <a class="link small" href="/start/files/Malarkey-Highlander-and-Highlander-Cool-Flyer.pdf">Open full PDF</a>
 <h2>Highlander AR</h2>
-<a href="/start/files/Malarkey-Highlander-AR-Flyer.pdf"><img class="pg" src="/start/resources/malarkey/img/har-1.jpg" alt="Highlander AR page 1"></a>
-<a href="/start/files/Malarkey-Highlander-AR-Flyer.pdf"><img class="pg" src="/start/resources/malarkey/img/har-2.jpg" alt="Highlander AR page 2"></a>
+<a class="pg-link" href="/start/files/Malarkey-Highlander-AR-Flyer.pdf"><img class="pg" src="/start/resources/malarkey/img/har-1.jpg" alt="Highlander AR page 1"></a>
+<a class="pg-link" href="/start/files/Malarkey-Highlander-AR-Flyer.pdf"><img class="pg" src="/start/resources/malarkey/img/har-2.jpg" alt="Highlander AR page 2"></a>
 <a class="link small" href="/start/files/Malarkey-Highlander-AR-Flyer.pdf">Open full PDF</a>
 <p class="note">Malarkey notes colors are not available in all regions or product lines, and photos don't show true color. Confirm local availability with the supplier and view a physical sample before choosing.</p>
 <a class="sendpdf" href="/start/resources/malarkey/Malarkey-Shingle-Specifications.pdf" download="Malarkey-Shingle-Specifications.pdf" target="_blank" rel="noopener" onclick="return sharePDF(event,this)" aria-label="Send the shingle specifications PDF">Send PDF</a>
