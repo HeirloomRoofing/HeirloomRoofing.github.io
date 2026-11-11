@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jerit | Heirloom Roofing</title>
-<meta name="description" content="Jerit, Heirloom Roofing - save contact, text, call, and verify license ROC 366805.">
+<title>Jerit Wolf | Heirloom Roofing</title>
+<meta name="description" content="Jerit Wolf, Heirloom Roofing - save contact, text, call, and verify license ROC 366805.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Jerit | Heirloom Roofing">
+<meta property="og:title" content="Jerit Wolf | Heirloom Roofing">
 <meta property="og:description" content="Heirloom Roofing - save Jerit's contact, text, or call.">
 <meta property="og:image" content="https://heirloomroofing.github.io/start/share-card.png">
 <meta name="robots" content="noindex">
@@ -46,7 +46,7 @@
 </div>
 <main>
   <div class="cardbox">
-    <h1>Jerit</h1>
+    <h1>Jerit Wolf</h1>
     <div class="role">Heirloom Roofing LLC, licensed Arizona contractor, ROC 366805</div>
     <div class="actions">
       <a class="btn primary" href="#" id="savevcf">Save Contact</a>
@@ -104,8 +104,8 @@
 var VCF = [
   'BEGIN:VCARD',
   'VERSION:3.0',
-  'N:;Jerit;;;',
-  'FN:Jerit',
+  'N:Wolf;Jerit;;;',
+  'FN:Jerit Wolf',
   'ORG:Heirloom Roofing',
   'TEL;TYPE=CELL,VOICE:714-980-2247',
   'EMAIL;TYPE=WORK,INTERNET:jerit@heirloomroofing.com',
@@ -2609,7 +2609,7 @@ document.getElementById('savevcf').addEventListener('click', function(ev){
   var blob = new Blob([VCF], {type:'text/vcard'});
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'jerit.vcf';
+  a.download = 'jerit-wolf.vcf';
   document.body.appendChild(a); a.click();
   setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
 });
@@ -2658,9 +2658,9 @@ document.getElementById('savevcf').addEventListener('click', function(ev){
     if(k==='ot'){var em=v('ccaotemail'); if(em){ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){err.textContent='Check the company email address.';return null;} c={to:em,subj:c.subj,note:c.note}; }}
     var subject = c.subj==='claim' ? claim : c.subj==='attention' ? 'Attention Claim # '+claim+' - Authorization to communicate with Heirloom Roofing' : 'Claim '+claim+' - Authorization to communicate with Heirloom Roofing';
     var L=['Hello,','',
-      'I am the homeowner and policyholder for the claim below. I authorize Jerit of Heirloom Roofing to receive claim-related correspondence and updates and to communicate with you regarding my roof claim, including inspections, estimates, repair documentation, and claim status.','',
+      'I am the homeowner and policyholder for the claim below. I authorize Jerit Wolf of Heirloom Roofing to receive claim-related correspondence and updates and to communicate with you regarding my roof claim, including inspections, estimates, repair documentation, and claim status.','',
       'Please copy Jerit on all future correspondence about this claim and include Jerit when coordinating inspections or requesting roofing documents.','',
-      'Jerit','Heirloom Roofing','jerit@heirloomroofing.com','714-980-2247','',
+      'Jerit Wolf','Heirloom Roofing','jerit@heirloomroofing.com','714-980-2247','',
       'This authorization is for communication and information sharing only. I retain all decisions regarding coverage, settlement, and payment. It does not assign my policy benefits or authorize anyone to endorse checks on my behalf.','',
       'Please confirm that this authorization has been added to my claim file. If you require your own authorization form, please send it to me and copy Jerit.','',
       'Thank you,',v('ccaname'),v('ccaaddr'),'Claim number: '+claim];
