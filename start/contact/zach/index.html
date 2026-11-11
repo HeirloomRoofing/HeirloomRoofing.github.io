@@ -141,7 +141,7 @@ document.getElementById('savevcf').addEventListener('click', function(ev){
     sw:{to:'claims@stillwater.com',note:'Stillwater claims inbox.'},
     gl:{to:'claims@jjins.com',note:'Claims inbox for Great Lakes policies written through J&J Insurance.'},
     al:{to:'',note:'We could not confirm a general claims email for Allstate. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Zach is already copied.'},
-    fm:{to:'',note:'We could not confirm a general claims email for Farmers. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Zach is already copied.'},
+    fm:{to:'myclaim@farmersinsurance.com',subj:'attention',note:'Farmers existing-claim correspondence inbox. Include your full claim number with your information; it is included in the subject and message. This requests communication access, which Farmers must process.'},
     tr:{to:'',note:'We could not confirm a general claims email for Travelers. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Zach is already copied.'},
     kn:{to:'',note:'We could not confirm a general claims email for Kin. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Zach is already copied.'},
     aaa:{to:'claimdocs@csaa.com',note:'AAA (CSAA) claim-documents inbox for claims already filed - your claim number goes in the subject. Zach is already copied.'},
@@ -164,7 +164,7 @@ document.getElementById('savevcf').addEventListener('click', function(ev){
     if(!v('ccaname')||!v('ccaaddr')||!v('ccaclaim')){err.textContent='Add your name, property address and claim number.';return null;}
     var c=C[k], claim=v('ccaclaim');
     if(k==='ot'){var em=v('ccaotemail'); if(em){ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){err.textContent='Check the company email address.';return null;} c={to:em,subj:c.subj,note:c.note}; }}
-    var subject = c.subj==='claim' ? claim : 'Claim '+claim+' - Authorization to communicate with Heirloom Roofing';
+    var subject = c.subj==='claim' ? claim : c.subj==='attention' ? 'Attention Claim # '+claim+' - Authorization to communicate with Heirloom Roofing' : 'Claim '+claim+' - Authorization to communicate with Heirloom Roofing';
     var L=['Hello,','',
       'I am the homeowner and policyholder for the claim below. I authorize Zachary Brammer of Heirloom Roofing to receive claim-related correspondence and updates and to communicate with you regarding my roof claim, including inspections, estimates, repair documentation, and claim status.','',
       'Please copy Zach on all future correspondence about this claim and include Zach when coordinating inspections or requesting roofing documents.','',
