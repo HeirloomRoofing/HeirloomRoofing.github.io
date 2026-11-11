@@ -1,4 +1,4 @@
-<!-- HEIRLOOM REP CONTACT CARD - MASTER TEMPLATE (see CARD-TEMPLATE.md). Placeholders: Abraham Guthrie Abraham abraham Guthrie guthrie +16025449264 602-544-9264     -->
+<!-- HEIRLOOM REP CONTACT CARD - MASTER TEMPLATE (see CARD-TEMPLATE.md). Placeholders: Abraham Guthrie Abraham abraham Guthrie guthrie +16025449264 602-544-9264 abraham@heirloomroofing.com    -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -57,9 +57,27 @@
       <a class="btn primary" href="#" id="savevcf">Save Contact</a>
       <a class="btn" href="sms:+16025449264">Text</a>
       <a class="btn" href="tel:+16025449264">Call</a>
-
+      <a class="btn" href="mailto:abraham@heirloomroofing.com">Email</a>
       <a class="btn" href="https://heirloomroofing.com">Website</a>
-<div style="grid-column:span 2; font-size:13px; color:var(--muted); padding:10px;">Claim communication approval will be available once Abraham's work email is confirmed.</div>
+<a class="btn" id="ccabtn" style="grid-column:span 2; background:#f0f7fc;" href="#" role="button" aria-expanded="false" aria-controls="ccapanel">Claim communication approval</a>
+      <div id="ccapanel" class="shareback" style="grid-column:span 2; display:none; text-align:left; border:1.5px solid #e3e8ec; border-radius:12px; padding:4px 14px 16px;">
+        <p style="font-size:13px; color:var(--muted); margin:12px 0 0; line-height:1.45;">Pick your insurance carrier. If your carrier has a claims email, this opens an email to them, already written, that lets Abraham receive your claim emails and talk with them about your roof claim - you review it and tap send. If not, it gives you the same text to send your adjuster yourself.</p>
+        <label for="ccacarrier">Your insurance carrier</label>
+        <select id="ccacarrier"><option value="">Choose carrier</option><option value="sf">State Farm</option><option value="al">Allstate</option><option value="af">American Family</option><option value="fm">Farmers</option><option value="tr">Travelers</option><option value="sw">Stillwater</option><option value="kn">Kin</option><option value="gl">Great Lakes (J&amp;J Insurance)</option><option value="aaa">AAA</option><option value="am">Amica</option><option value="ch">Chubb</option><option value="hf">Hartford</option><option value="lm">Liberty Mutual</option><option value="op">Openly</option><option value="pk">Pekin</option><option value="ph">Progressive Home</option><option value="sa">Safeco</option><option value="us">USAA</option><option value="ot">Other</option></select>
+        <div id="ccaotwrap" style="display:none;"><label for="ccaotemail">Company or adjuster email</label><input id="ccaotemail" type="email" inputmode="email" placeholder="claims@theircompany.com" autocomplete="off"></div>
+        <label for="ccaname">Your name (policyholder)</label>
+        <input id="ccaname" type="text" placeholder="First and last name" autocomplete="name">
+        <label for="ccaaddr">Property address</label>
+        <input id="ccaaddr" type="text" placeholder="Street, city, ZIP" autocomplete="street-address">
+        <label for="ccaclaim">Claim number</label>
+        <input id="ccaclaim" type="text" placeholder="From your claim email" autocapitalize="characters">
+        <label for="ccaphone">Your phone number</label>
+        <input id="ccaphone" type="tel" placeholder="Optional" autocomplete="tel">
+        <div id="ccanote" style="font-size:12px; color:var(--muted); margin-top:10px; line-height:1.4;"></div>
+        <div id="ccaerr" style="font-size:13px; color:#b3261e; font-weight:700; margin-top:8px; min-height:16px;"></div>
+        <a class="btn sharebtn" id="ccasend" href="#" role="button" style="margin-top:10px;">Open email to send</a>
+        <a class="btn" id="ccacopy" href="#" role="button" style="margin-top:10px; background:#fff;">Copy email text instead</a>
+      </div>
 
     </div>
     <div class="share" style="text-align:left; border-top:1px solid #e3e8ec; margin-top:18px; padding-top:16px;">
@@ -95,6 +113,7 @@ var VCF = [
   'FN:Abraham Guthrie',
   'ORG:Heirloom Roofing',
   'TEL;TYPE=CELL,VOICE:602-544-9264',
+  'EMAIL;TYPE=WORK,INTERNET:abraham@heirloomroofing.com',
   'URL:https://heirloomroofing.com',
   'END:VCARD'
 ].join('\r\n');
@@ -120,6 +139,63 @@ document.getElementById('savevcf').addEventListener('click', function(ev){
 })();
 </script>
 <style>body{background:#0161A8 !important;padding-bottom:max(80px,calc(env(safe-area-inset-bottom, 0px) + 66px)) !important} footer{color:rgba(255,255,255,.85) !important} .actions a.btn, a.sharebtn, #ccabtn{position:relative} .actions a.btn::after, a.sharebtn::after{content:" \203A";position:absolute;right:14px;top:50%;transform:translateY(-50%);opacity:.55} #ccabtn::after{content:" \25B8";position:absolute;right:14px;top:50%;transform:translateY(-50%);opacity:.55} #ccabtn[aria-expanded="true"]::after{content:" \25BE"} a[href="/kit/company.html"]{background:#fff !important;color:#0161A8 !important;border:1.5px solid #0161A8 !important;border-radius:12px;padding:14px 10px;display:block;text-align:center;font-weight:700;text-decoration:none;} a[href="/kit/company.html"] small{color:#5b6670 !important;} @media (hover:none){ a.prooflink, a.prooflink:hover{ background:#fff !important; color:#0161A8 !important; } a.prooflink small{ color:#5b6670 !important; } }</style><script>
+(function(){
+  var C={
+    sf:{to:'StateFarmFireClaims@StateFarm.com',subj:'claim',note:'State Farm asks for the claim number alone as the email subject, so it is set that way. Their inbox may send an auto-reply saying it is not monitored.'},
+    af:{to:'claimdocuments@afics.com',note:'American Family asks that the claim number be in the subject line, so it is.'},
+    sw:{to:'claims@stillwater.com',note:'Stillwater claims inbox.'},
+    gl:{to:'claims@jjins.com',note:'Claims inbox for Great Lakes policies written through J&J Insurance.'},
+    al:{to:'',note:'We could not confirm a general claims email for Allstate. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Abraham is already copied.'},
+    fm:{to:'myclaim@farmersinsurance.com',subj:'attention',note:'Farmers existing-claim correspondence inbox. Include your full claim number with your information; it is included in the subject and message. This requests communication access, which Farmers must process.'},
+    tr:{to:'',note:'We could not confirm a general claims email for Travelers. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Abraham is already copied.'},
+    kn:{to:'',note:'We could not confirm a general claims email for Kin. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Abraham is already copied.'},
+    aaa:{to:'claimdocs@csaa.com',note:'AAA (CSAA) claim-documents inbox for claims already filed - your claim number goes in the subject. Abraham is already copied.'},
+    am:{to:'',note:'We could not confirm a general claims email for Amica. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Abraham is already copied.'},
+    ch:{to:'',note:'We could not confirm a Chubb claims email for an existing claim - their cscfnol@chubb.com is for reporting NEW claims only. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Abraham is already copied.'},
+    hf:{to:'',note:'We could not confirm a general claims email for Hartford. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Abraham is already copied.'},
+    lm:{to:'',note:'We could not confirm a general claims email for Liberty Mutual. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Abraham is already copied.'},
+    op:{to:'',note:'We could not confirm a general claims email for Openly. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Abraham is already copied.'},
+    pk:{to:'',note:'We could not confirm a general claims email for Pekin. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Abraham is already copied.'},
+    ph:{to:'',note:'We could not confirm a general claims email for Progressive Home. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Abraham is already copied.'},
+    sa:{to:'',note:'We could not confirm a general claims email for Safeco. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Abraham is already copied.'},
+    us:{to:'',note:'We could not confirm a general claims email for USAA. Tap Open email, then put your adjuster\'s address (from the claim emails they already sent you) in the To line - or use Copy and paste the text into a reply to your carrier. Abraham is already copied.'},
+    ot:{to:'',note:'We could not confirm a general claims email for this carrier. Type the company or adjuster email in the field that appears and Open email addresses it for you - or leave it blank and fill in the To line yourself. Abraham is already copied.'}
+  };
+  function $(i){return document.getElementById(i);}
+  function v(i){return $(i).value.trim();}
+  function build(){
+    var k=v('ccacarrier'), err=$('ccaerr'); err.textContent='';
+    if(!k){err.textContent='Choose your carrier first.';return null;}
+    if(!v('ccaname')||!v('ccaaddr')||!v('ccaclaim')){err.textContent='Add your name, property address and claim number.';return null;}
+    var c=C[k], claim=v('ccaclaim');
+    if(k==='ot'){var em=v('ccaotemail'); if(em){ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){err.textContent='Check the company email address.';return null;} c={to:em,subj:c.subj,note:c.note}; }}
+    var subject = c.subj==='claim' ? claim : c.subj==='attention' ? 'Attention Claim # '+claim+' - Authorization to communicate with Heirloom Roofing' : 'Claim '+claim+' - Authorization to communicate with Heirloom Roofing';
+    var L=['Hello,','',
+      'I am the homeowner and policyholder for the claim below. I authorize Abraham Guthrie of Heirloom Roofing to receive claim-related correspondence and updates and to communicate with you regarding my roof claim, including inspections, estimates, repair documentation, and claim status.','',
+      'Please copy Abraham on all future correspondence about this claim and include Abraham when coordinating inspections or requesting roofing documents.','',
+      'Abraham Guthrie','Heirloom Roofing','abraham@heirloomroofing.com','602-544-9264','',
+      'This authorization is for communication and information sharing only. I retain all decisions regarding coverage, settlement, and payment. It does not assign my policy benefits or authorize anyone to endorse checks on my behalf.','',
+      'Please confirm that this authorization has been added to my claim file. If you require your own authorization form, please send it to me and copy Abraham.','',
+      'Thank you,',v('ccaname'),v('ccaaddr'),'Claim number: '+claim];
+    if(v('ccaphone')) L.push(v('ccaphone'));
+    return {to:c.to,subject:subject,body:L.join('\n')};
+  }
+  $('ccabtn').addEventListener('click',function(e){e.preventDefault();var p=$('ccapanel'),o=p.style.display==='none';p.style.display=o?'block':'none';this.setAttribute('aria-expanded',o);});
+  $('ccacarrier').addEventListener('change',function(){var c=C[this.value];$('ccanote').textContent=c?c.note:'';$('ccaotwrap').style.display=this.value==='ot'?'block':'none';});
+  ['ccacarrier','ccaname','ccaaddr','ccaclaim','ccaphone'].forEach(function(i){$(i).addEventListener('input',function(){$('ccaerr').textContent='';});});
+  $('ccasend').addEventListener('click',function(e){
+    e.preventDefault(); var m=build(); if(!m) return;
+    var u='mailto:'+m.to+'?cc='+encodeURIComponent('abraham@heirloomroofing.com')+'&subject='+encodeURIComponent(m.subject)+'&body='+encodeURIComponent(m.body.replace(/\n/g,'\r\n'));
+    this.href=u; location.href=u;
+  });
+  $('ccacopy').addEventListener('click',function(e){
+    e.preventDefault(); var m=build(); if(!m) return;
+    var t=(m.to?'To: '+m.to+'\n':'')+'Cc: abraham@heirloomroofing.com\nSubject: '+m.subject+'\n\n'+m.body, self=this;
+    function done(){self.textContent='Copied';setTimeout(function(){self.textContent='Copy email text instead';},2000);}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,function(){$('ccaerr').textContent='Copy failed. Use Open email instead.';});}
+    else{var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done();}catch(x){$('ccaerr').textContent='Copy failed. Use Open email instead.';}document.body.removeChild(a);}
+  });
+})();
 </script>
 </body><script>(function(){var f=document.querySelector('footer');if(!f)return;if(f.textContent.indexOf('4700 E Thomas Rd')<0)return;var a=document.createElement('a');a.href='https://maps.apple.com/?q=4700+E+Thomas+Rd+Suite+104+Phoenix+AZ+85018';a.setAttribute('style','color:inherit;text-decoration:none;');a.textContent=f.textContent;f.textContent='';f.appendChild(a);})();</script></body>
 </html>
