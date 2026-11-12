@@ -207,7 +207,7 @@
 <button class="chip" data-v="None Expected">None Expected</button><button class="chip" data-v="Partial Fascia Replacement">Partial</button><button class="chip" data-v="Full Fascia Replacement">Full</button>
 </div>
 <label class="f" for="fasciasize">Fascia Board Size</label>
-<select data-f="fasciasize" id="fasciasize"><option value="">Choose</option><option>1x4</option><option>1x6</option><option>1x8</option><option>2x4</option><option>2x6</option><option>2x8</option><option>2x10</option><option>Not Verified</option></select>
+<select data-f="fasciasize" id="fasciasize"><option value="">Choose</option><option>1x4</option><option>1x6</option><option>1x8</option><option>2x4</option><option>2x6</option><option>2x8</option><option>2x10</option><option>Not Verified</option></select><input id="fasciasize-na" type="text" value="N/A" readonly aria-label="Fascia Board Size - not applicable" style="display:none"/>
 <label class="f">5. Job Complexity / Special Conditions</label>
 <div class="chips" data-f="special" data-multi="1">
 <button class="chip" data-v="Pitched-to-Flat Transition">Pitched-to-Flat Transition</button><button class="chip" data-v="Wall / Stucco Flashing">Wall / Stucco Flashing</button><button class="chip" data-v="Skylights / Penetrations">Skylights / Penetrations</button><button class="chip" data-v="Restricted Access / HOA">Restricted Access / HOA</button><button class="chip" data-v="Sensitive Landscaping / Property Protection">Sensitive Landscaping</button><button class="chip" data-v="Bitchy Neighbor">Bitchy Neighbor</button><button class="chip" data-v="None Expected">None Expected</button>
@@ -420,6 +420,16 @@
     window.syncDecking();
   })();
 
+  // Keep a saved real size intact while no replacement is expected.
+  window.syncFasciaSize=function(){
+    var none=chipVal('fascia')==='None Expected';
+    document.getElementById('fasciasize').style.display=none?'none':'';
+    document.getElementById('fasciasize-na').style.display=none?'':'none';
+    document.querySelector('label[for="fasciasize"],label[for="fasciasize-na"]').htmlFor=none?'fasciasize-na':'fasciasize';
+  };
+  document.querySelector('[data-f="fascia"]').addEventListener('click',window.syncFasciaSize);
+  window.syncFasciaSize();
+
   // Layers: typed Other clears the chips, picking a chip clears the Other box
   (function(){ var lo=document.getElementById('layersother'); if(!lo) return;
     lo.addEventListener('input', function(){ if(lo.value.trim()) setChip('layers',''); });
@@ -590,10 +600,11 @@
       if(window.syncCurrentOther) window.syncCurrentOther();
       if(window.syncSystemProducts) window.syncSystemProducts();
       if(window.syncDecking) window.syncDecking();
+      window.syncFasciaSize();
     }catch(e){}
   }
 
-  function val(f){ var el=document.querySelector('[data-f="'+f+'"]'); if(!el) return '';
+  function val(f){ if(f==='fasciasize' && chipVal('fascia')==='None Expected') return 'N/A'; var el=document.querySelector('[data-f="'+f+'"]'); if(!el) return '';
     if(el.classList.contains('chips')) return chipVal(f); return el.value.trim(); }
 
   function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
