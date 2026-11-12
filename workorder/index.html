@@ -679,24 +679,25 @@
     h += sec('Project Manager', rowKV('Heirloom Project Manager', val('pm')) + rowPhone('Phone Number', val('pmphone')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')));
     h += sec('Job Info', rowKV('Customer', val('customer')) + rowPhone('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', gateVal()));
     h += sec('Current Roof Details', rowKV('Roof System', currentSystemVal()));
-    if(topOnly) h += sec('Roof System Being Installed', rowKV('Roof System', val('roofsystem')) + rowKV('Job Type', val('jobtype')));
-    else h += sec('Roof System Being Installed', rowKV('Roof System', val('roofsystem')) + rowKV('Malarkey Product', val('malarkey')) + rowKV('Tile Profile', val('tileprofile')) + rowKV('Stone-Coated Steel Profile', val('steelprofile')) + rowKV('Composite Product', val('compositeproduct')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Job Type', val('jobtype')) + rowKV('Approx. Tear-Off (SQ)', val('tearoff')) + rowKV('Approx. Install (SQ)', val('install')));
+    // Follow the form: upper work items precede roof system and conditions.
+    h += '<div class="secbar">Work Items</div>'+itemRows('workitems');
+    h += sec('Roof System Being Installed', rowKV('Roof System', val('roofsystem')) + rowKV('Job Type', val('jobtype')));
     h += sec('The Big 5', rowKV('1. Layers', layersVal())
       + rowKV('2. Decking / Redeck', deckingVal())
       + rowKV('3. A/C / Crane', val('accrane') + (val('acnotes')? ' - Notes: '+val('acnotes'):''))
       + rowKV('4. Fascia Replacement', val('fascia') + (val('fasciasize')? ' - Board Size: '+val('fasciasize'):''))
       + rowKV('5. Special Conditions', val('special')));
     h += sec('Property Conditions', rowKV('Steep Pitch', val('pitch')) + rowKV('Stories / Roof Height', val('stories')) + rowKV('Limited Access', val('access')) + rowKV('Complex Roof Design', val('complex')) + rowKV('Special Equipment', val('equipment')) + rowKV('Occupied / Restricted', val('occupied')) + rowKV('Other / Special Instructions', val('otherinstr')));
-    function itemRows(kind){
+    function itemRows(container){
       var out='';
-      WORK.forEach(function(g,gi){
-        if(g.removed || (topOnly && !document.querySelector('#workitems details.group[data-gi="'+gi+'"]'))) return;
+      document.querySelectorAll('#'+container+' details.group[data-gi]').forEach(function(group){
+        var gi=Number(group.getAttribute('data-gi')),g=WORK[gi];
+        if(g.removed) return;
         var rows='';
         g.items.forEach(function(it,ii){
           if(it[5]) return;
-          if(it[3]!==kind) return;
           var st = state.items[gi+'-'+ii];
-          if(st.qty==null || st.qty>0 || (st.note && st.note.trim())){
+          {
             rows += '<tr class="wline"><td class="qbox">'+(it[8]==='yn'?(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">Yes</span>':'<span class="qpill zero">No</span>')):(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">'+st.qty+'</span>':'<span class="qpill zero">0</span>')))+'</td><td class="wname">'+esc(wiName(gi,ii))+(it[6]==='multi'?sizeBreakdown(st):(st.size?' <span class="unit">- '+esc(st.size)+'</span>':''))+(st.soldate?' <span class="unit">(reset scheduled '+esc(st.soldate)+')</span>':'')+'</td><td class="un2">'+esc(it[1])+'</td></tr>';
             if(st.note && st.note.trim()) rows += '<tr><td></td><td colspan="2" class="inote">'+esc(st.note)+'</td></tr>';
           }
@@ -705,10 +706,11 @@
       });
       return out;
     }
-    var workRows = itemRows('w'), matRows = itemRows('m');
-    if(workRows) h += '<div class="secbar"><span class="sn">1</span>Work To Do On Site</div>' + workRows;
-    if(matRows) h += '<div class="secbar"><span class="sn">2</span>Materials To Order / Buy</div>' + matRows;
-    if(!workRows && !matRows) h += '<h3>Work Items</h3><table><tr><td class="k">No quantities set</td></tr></table>';
+    var lowerItems=topOnly?'':itemRows('workitems2');
+    if(!topOnly){
+      h += sec('New Roof Details', rowKV('Malarkey Product', val('malarkey')) + rowKV('Tile Profile', val('tileprofile')) + rowKV('Stone-Coated Steel Profile', val('steelprofile')) + rowKV('Composite Product', val('compositeproduct')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Approx. Tear-Off (SQ)', val('tearoff')) + rowKV('Approx. Install (SQ)', val('install')));
+      if(lowerItems) h += '<div class="secbar">Work Items</div>'+lowerItems;
+    }
     if(!topOnly && val('addnotes')) h += '<h3>Additional Notes</h3><table><tr><td>'+esc(val('addnotes')).replace(/\n/g,'<br>')+'</td></tr></table>';
     if(state.review) h += '<h3>Pending Choices and Review Notes</h3><div style="white-space:pre-line;border:1px solid #b57800;padding:12px">'+esc(pendingMessage(scope))+'</div>';
     h += '<div class="foot">Any unexpected conditions or additional work must be reported to the PM before proceeding.</div>';
