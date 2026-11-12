@@ -240,7 +240,7 @@
 <option>Antique Brown</option><option>Black Oak</option><option>Brilliant Black</option><option>Burlwood</option><option>Golden Amber</option><option>Heather</option><option>Ivory Mist</option><option>Midnight Black</option><option>Moonlit Black</option><option>Natural Wood</option><option>Riverstone Grey</option><option>Sienna Blend</option><option>Silverwood</option><option>Storm Grey</option><option>Weathered Wood</option><option>Weathered Wood Plus</option><option>Willow Wood</option><option>Other / Special Order</option>
 </select><label class="f">Drip Edge Color</label><div class="chips" data-f="dripedge">
 <button class="chip" data-v="White">White</button><button class="chip" data-v="Black">Black</button><button class="chip" data-v="Brown">Brown</button><button class="chip" data-v="Bronze">Bronze</button><button class="chip" data-v="Almond">Almond</button><button class="chip" data-v="Clay">Clay</button><button class="chip" data-v="Gray">Gray</button><button class="chip" data-v="Galvanized">Galvanized</button><button class="chip" data-v="Other">Other</button><button class="chip" data-v="Match shingles">Match Shingles</button><button class="chip" data-v="Match trim / fascia">Match Trim / Fascia</button>
-</div><label class="f" for="flatcolor">Flat Roof Color</label><input data-f="flatcolor" id="flatcolor" type="text" list="flatcolor-options" placeholder="Type a roof color or choose a suggestion"/><datalist id="flatcolor-options"><option value="White"></option><option value="Tan"></option><option value="Gray"></option><option value="Black"></option><option value="Match Original"></option><option value="Match New Shingles"></option><option value="Other"></option><option value="N/A - No Flat Roof"></option><option value="Not Included in This Job"></option></datalist><div class="row2">
+</div><label class="f" for="flatcolor">Flat Roof Color</label><select data-f="flatcolor" id="flatcolor"><option value="">Choose a flat roof color</option><option>Buff</option><option>Grey Slate</option><option>Black</option><option>Heatherblend</option><option>Chestnut</option><option>Oak</option><option>Pine Green</option><option>Weatherwood</option><option>Red Blend</option><option>White</option><option>Bright White</option><option>Polyfresko (Highly Reflective White)</option><option>Tan</option><option>Gray</option><option>Match Original</option><option>Match New Shingles</option><option>Other</option><option>N/A - No Flat Roof</option><option>Not Included in This Job</option></select><div class="row2">
 <div><label class="f" for="tearoff">Approx. Tear-Off (SQ)</label><input data-f="tearoff" id="tearoff" inputmode="decimal" max="100" min="0" step="any" type="number"/></div>
 <div><label class="f" for="install">Approx. Install (SQ)</label><input data-f="install" id="install" inputmode="decimal" max="100" min="0" step="any" type="number"/></div>
 </div></div><div class="card"><h2>Work Items</h2><div id="workitems2"></div></div><div class="card">
@@ -535,7 +535,10 @@
         if(!el) return;
         if(el.classList.contains('chips')) setChip(k, d.fields[k]);
         else if(el.type==='checkbox'){ el.checked = d.fields[k]==='Yes'; el.dispatchEvent(new Event('change')); }
-        else if(!el.hasAttribute('data-nosave')) el.value = d.fields[k];
+        else if(!el.hasAttribute('data-nosave')){
+          if(k==='flatcolor' && d.fields[k] && !Array.from(el.options).some(function(o){return o.value===d.fields[k];})){var opt=document.createElement('option');opt.value=d.fields[k];opt.textContent=d.fields[k]+' (saved color)';el.appendChild(opt);}
+          el.value = d.fields[k];
+        }
       }); }
       Object.keys(state.items).forEach(function(k){
         var inp = document.querySelector('input[data-item="'+k+'"]'); if(inp){ inp.value = state.items[k].qty==null?'':state.items[k].qty; if(state.review) inp.placeholder='Pending'; }
