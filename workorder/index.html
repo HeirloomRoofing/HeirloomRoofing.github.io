@@ -271,12 +271,12 @@
 <script>
 (function(){
   var WORK = [
-    {g:"SITE PROTECTION", items:[["Protect landscaping / plants / trees","LS",1,"w"],["Protect windows / walls / driveway / hardscape","LS",1,"w"]]},
-    {g:"ROOFING", items:[["Tear off & dispose existing roofing","SQ",0,"w"],["Install architectural shingles","SQ",0,"m"],["Install underlayment","SQ",0,"m"],["Ice & water barrier at valley","LF",0,"m"],["Install drip edge","LF",0,"m"],["Install ridge cap","LF",0,"m"],["Flat roof restoration","SQ",0,"m"]]},
-    {g:"ACCESSORIES", items:[["Replace pipe jacks","EA",0,"m",["1\"","2\"","3\"","4\"","No Size"],null,"multi"],["Replace turbine vents","EA",0,"m"],["Replace T-top vents","EA",0,"m",["4\"","7\""],null,"multi"],["Replace B-vent flashing","EA",0,"m"],["Replace split pipe boots","EA",0,"m",["1\"","2\"","3\"","4\"","Not Verified"]],["Replace dormer vents","EA",0,"m"],["Replace O'Hagin vents","EA",0,"m"],["Satellite realignment after roof completion","EA",0,"w"],["Straighten A/C condenser fins","EA",0,"w"]]},
-    {g:"DECKING", removed:true, items:[["Backup 4' x 8' decking sheets","EA",0,"m"]]},
-    {g:"SPECIAL CONDITIONS", items:[["rooftop HVAC","LS",0,"w"],["Take extra care at pitched / flat roof transition","LS",0,"w"],["Shingle moulding","LF",0,"m"],["Fascia replacement","LF",0,"m",null,true],["Do not disturb patio flat roof or shed roofs","LS",0,"w"],["Dispose of Swamp Cooler and Patch Deck","EA",0,"w"],["SOLAR DnR will be needed.","",0,"w",null,null,null,"date"]]},
-    {g:"CLOSEOUT", items:[["Remove all debris","EA",1,"w",null,null,null,null,"yn"],["Final magnetic sweep","EA",1,"w",null,null,null,null,"yn"],["Final roof inspection","EA",1,"w",null,null,null,null,"yn"],["Completion photos","EA",1,"w",null,null,null,null,"yn"]]}
+    {g:"SITE PROTECTION", items:[["Protect Landscaping / Plants / Trees","LS",1,"w"],["Protect Windows / Walls / Driveway / Hardscape","LS",1,"w"]]},
+    {g:"ROOFING", items:[["Tear Off & Dispose Existing Roofing","SQ",0,"w"],["Install Architectural Shingles","SQ",0,"m"],["Install Underlayment","SQ",0,"m"],["Ice & Water Barrier at Valley","LF",0,"m"],["Install Drip Edge","LF",0,"m"],["Install Ridge Cap","LF",0,"m"],["Flat Roof Restoration","SQ",0,"m"]]},
+    {g:"ACCESSORIES", items:[["Replace Pipe Jacks","EA",0,"m",["1\"","2\"","3\"","4\"","No Size"],null,"multi"],["Replace Turbine Vents","EA",0,"m"],["Replace T-Top Vents","EA",0,"m",["4\"","7\""],null,"multi"],["Replace B-Vent Flashing","EA",0,"m"],["Replace Split Pipe Boots","EA",0,"m",["1\"","2\"","3\"","4\"","Not Verified"]],["Replace Dormer Vents","EA",0,"m"],["Replace O'Hagin Vents","EA",0,"m"],["Satellite Realignment after Roof Completion","EA",0,"w"],["Straighten A/C Condenser Fins","EA",0,"w"]]},
+    {g:"DECKING", removed:true, items:[["Backup 4' x 8' Decking Sheets","EA",0,"m"]]},
+    {g:"SPECIAL CONDITIONS", items:[["Rooftop HVAC","LS",0,"w"],["Take Extra Care at Pitched / Flat Roof Transition","LS",0,"w"],["Shingle Moulding","LF",0,"m"],["Fascia Replacement","LF",0,"m",null,true],["Do Not Disturb Patio Flat Roof or Shed Roofs","LS",0,"w"],["Dispose of Swamp Cooler and Patch Deck","EA",0,"w"],["Solar DnR Will Be Needed.","",0,"w",null,null,null,"date"]]},
+    {g:"CLOSEOUT", items:[["Remove All Debris","EA",1,"w",null,null,null,null,"yn"],["Final Magnetic Sweep","EA",1,"w",null,null,null,null,"yn"],["Final Roof Inspection","EA",1,"w",null,null,null,null,"yn"],["Completion Photos","EA",1,"w",null,null,null,null,"yn"]]}
   ];
   var KEY = 'hr-workorder-draft-v1';
   var state = { fields:{}, items:{} };
@@ -299,10 +299,10 @@
         (it[6]==='multi'?'':it[8]==='yn'?'<span class="step yn" data-yn="'+id+'"><button type="button" class="ynbtn" data-ynv="1">Yes</button><button type="button" class="ynbtn" data-ynv="0">No</button></span>':'<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
         '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="" placeholder="-">'+
         '<button type="button" data-d="1" aria-label="increase">+</button></span>')+
-        (it[7]==='date'?'<label class="sizeq">Reset date (optional): <input type="date" data-datefor="'+id+'" aria-label="Solar reset date"></label>':'')+
-        (it[4]&&it[6]==='multi'?'<span class="sizeqs'+(it[0]==='Replace pipe jacks'?' pipeqs':'')+'">'+it[4].map(function(z){return '<label class="sizeq'+(z==='No Size'?' nosize':'')+'">'+(z==='No Size'?'':z)+(it[0]==='Replace pipe jacks'?' <span class="step"><button type="button" data-sqd="-1" aria-label="Decrease pipe jack quantity">&minus;</button>':' ')+'<input type="number" min="0" step="1" inputmode="numeric" data-sq="'+id+'" data-sz="'+z+'" value="" placeholder="-">'+(it[0]==='Replace pipe jacks'?'<button type="button" data-sqd="1" aria-label="Increase pipe jack quantity">+</button></span>':'')+'</label>';}).join('')+'</span>':
+        (it[7]==='date'?'<label class="sizeq">Reset Date (Optional): <input type="date" data-datefor="'+id+'" aria-label="Solar reset date"></label>':'')+
+        (it[4]&&it[6]==='multi'?'<span class="sizeqs'+(it[0]==='Replace Pipe Jacks'?' pipeqs':'')+'">'+it[4].map(function(z){return '<label class="sizeq'+(z==='No Size'?' nosize':'')+'">'+(z==='No Size'?'':z)+(it[0]==='Replace Pipe Jacks'?' <span class="step"><button type="button" data-sqd="-1" aria-label="Decrease pipe jack quantity">&minus;</button>':' ')+'<input type="number" min="0" step="1" inputmode="numeric" data-sq="'+id+'" data-sz="'+z+'" value="" placeholder="-">'+(it[0]==='Replace Pipe Jacks'?'<button type="button" data-sqd="1" aria-label="Increase pipe jack quantity">+</button></span>':'')+'</label>';}).join('')+'</span>':
         it[4]?'<select data-sizefor="'+id+'" aria-label="Size"><option value="">Size</option>'+it[4].map(function(z){return '<option>'+z+'</option>';}).join('')+'</select>':'')+
-        '<button type="button" class="notebtn" data-notebtn="'+id+'">'+(['Replace pipe jacks','Replace B-vent flashing','Replace split pipe boots','Tear off & dispose existing roofing','Install architectural shingles','Install underlayment','Ice & water barrier at valley','Install drip edge','Protect landscaping / plants / trees','Protect windows / walls / driveway / hardscape','Remove all debris','Final magnetic sweep','Final roof inspection','Completion photos','Satellite realignment after roof completion','Straighten A/C condenser fins'].indexOf(it[0])>=0?'+ notes':'+ measurement')+'</button>'+
+        '<button type="button" class="notebtn" data-notebtn="'+id+'">'+(['Replace Pipe Jacks','Replace B-Vent Flashing','Replace Split Pipe Boots','Tear Off & Dispose Existing Roofing','Install Architectural Shingles','Install Underlayment','Ice & Water Barrier at Valley','Install Drip Edge','Protect Landscaping / Plants / Trees','Protect Windows / Walls / Driveway / Hardscape','Remove All Debris','Final Magnetic Sweep','Final Roof Inspection','Completion Photos','Satellite Realignment after Roof Completion','Straighten A/C Condenser Fins'].indexOf(it[0])>=0?'+ Notes':'+ Measurement')+'</button>'+
         '<textarea data-notefor="'+id+'" placeholder="Note for this line" style="display:none;flex-basis:100%"></textarea>';
       det.appendChild(row);
     });
@@ -343,8 +343,8 @@
   function wiName(gi,ii){
     var it=WORK[gi].items[ii];
     if(gi===1&&ii===1){
-      var m={'Architectural Shingle':'Install architectural shingles','3-Tab Shingle':'Install 3-tab shingles','Tile':'Install tile roofing','Modified Bitumen':'Install modified bitumen roofing','SPF / Coating':'Install SPF / coating','Slate':'Install slate roofing','Stone-Coated Steel':'Install stone-coated steel roofing','Composite / Synthetic':'Install composite roofing'};
-      return m[chipVal('roofsystem')]||'Install new roof system';
+      var m={'Architectural Shingle':'Install Architectural Shingles','3-Tab Shingle':'Install 3-Tab Shingles','Tile':'Install Tile Roofing','Modified Bitumen':'Install Modified Bitumen Roofing','SPF / Coating':'Install SPF / Coating','Slate':'Install Slate Roofing','Stone-Coated Steel':'Install Stone-Coated Steel Roofing','Composite / Synthetic':'Install Composite Roofing'};
+      return m[chipVal('roofsystem')]||'Install New Roof System';
     }
     return it[0];
   }
