@@ -53,6 +53,8 @@
   .step { display:flex; align-items:center; gap:2px; }
   .step button { width:38px; height:38px; border-radius:10px; border:1.5px solid #cfd9e0; background:#fff; font-size:20px; font-weight:700; color:var(--brand); cursor:pointer; font-family:inherit; }
   .step input { width:56px; text-align:center; padding:8px 4px; font-size:16px; border:1.5px solid #cfd9e0; border-radius:10px; font-family:inherit; }
+  .pipeqs { flex-basis:100%; }
+  .pipeqs .sizeq { display:block; margin-bottom:8px; }
   .sizeq.nosize { display:block; margin-top:28px; }
   .step.yn { flex-shrink:0; }
   .step.yn .ynbtn { width:auto; height:auto; }
@@ -259,7 +261,7 @@
 </main>
 
 <div class="savebar no-print" id="savebar">
-  <span class="status" id="savestatus">Draft saves on this device - all fields required</span>
+  <span class="status" id="savestatus">Draft saves on this device</span>
   <button class="btn primary" id="genbtn">Generate Work Order</button>
 </div>
 <div class="toast" id="toast"></div>
@@ -297,8 +299,8 @@
         (it[6]==='multi'?'':it[8]==='yn'?'<span class="step yn" data-yn="'+id+'"><button type="button" class="ynbtn" data-ynv="1">Yes</button><button type="button" class="ynbtn" data-ynv="0">No</button></span>':'<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
         '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="" placeholder="-">'+
         '<button type="button" data-d="1" aria-label="increase">+</button></span>')+
-        (it[7]==='date'?'<label class="sizeq">Reset date: <input type="date" data-datefor="'+id+'" aria-label="Solar reset date"></label>':'')+
-        (it[4]&&it[6]==='multi'?'<span class="sizeqs">'+it[4].map(function(z){return '<label class="sizeq'+(z==='No Size'?' nosize':'')+'">'+(z==='No Size'?'':z)+' <input type="number" min="0" step="1" inputmode="numeric" data-sq="'+id+'" data-sz="'+z+'" value="" placeholder="-"></label>';}).join('')+'</span>':
+        (it[7]==='date'?'<label class="sizeq">Reset date (optional): <input type="date" data-datefor="'+id+'" aria-label="Solar reset date"></label>':'')+
+        (it[4]&&it[6]==='multi'?'<span class="sizeqs'+(it[0]==='Replace pipe jacks'?' pipeqs':'')+'">'+it[4].map(function(z){return '<label class="sizeq'+(z==='No Size'?' nosize':'')+'">'+(z==='No Size'?'':z)+(it[0]==='Replace pipe jacks'?' <span class="step"><button type="button" data-sqd="-1" aria-label="Decrease pipe jack quantity">&minus;</button>':' ')+'<input type="number" min="0" step="1" inputmode="numeric" data-sq="'+id+'" data-sz="'+z+'" value="" placeholder="-">'+(it[0]==='Replace pipe jacks'?'<button type="button" data-sqd="1" aria-label="Increase pipe jack quantity">+</button></span>':'')+'</label>';}).join('')+'</span>':
         it[4]?'<select data-sizefor="'+id+'" aria-label="Size"><option value="">Size</option>'+it[4].map(function(z){return '<option>'+z+'</option>';}).join('')+'</select>':'')+
         '<button type="button" class="notebtn" data-notebtn="'+id+'">'+(['Replace pipe jacks','Replace B-vent flashing','Replace split pipe boots','Tear off & dispose existing roofing','Install architectural shingles','Install underlayment','Ice & water barrier at valley','Install drip edge','Protect landscaping / plants / trees','Protect windows / walls / driveway / hardscape','Remove all debris','Final magnetic sweep','Final roof inspection','Completion photos','Satellite realignment after roof completion','Straighten A/C condenser fins'].indexOf(it[0])>=0?'+ notes':'+ measurement')+'</button>'+
         '<textarea data-notefor="'+id+'" placeholder="Note for this line" style="display:none;flex-basis:100%"></textarea>';
@@ -311,7 +313,7 @@
   function updateCounts(){
     WORK.forEach(function(g,gi){
       if(g.removed) return;
-      var n=0; g.items.forEach(function(it,ii){ if(it[5]){ n++; return; } var st=state.items[gi+'-'+ii]; if(st.qty!=null && (!it[4] || it[6]==='multi' || st.qty==0 || st.size) && (it[7]!=='date' || st.qty==0 || st.soldate)) n++; });
+      var n=0; g.items.forEach(function(it,ii){ if(it[5]){ n++; return; } var st=state.items[gi+'-'+ii]; if(st.qty!=null && (!it[4] || it[6]==='multi' || st.qty==0 || st.size)) n++; });
       var el=document.getElementById('cnt-'+gi); el.textContent = (g.items.length-n)+' unanswered';
     });
   }
@@ -413,6 +415,12 @@
 
   // Steppers
   document.getElementById('form').addEventListener('click', function(e){
+    var sb = e.target.closest('.step button[data-sqd]');
+    if(sb){
+      var si=sb.parentElement.querySelector('input[data-sq]');
+      si.value=Math.max(0,(parseInt(si.value,10)||0)+parseInt(sb.getAttribute('data-sqd'),10));
+      si.dispatchEvent(new Event('input',{bubbles:true})); return;
+    }
     var b = e.target.closest('.step button[data-d]');
     if(b){
       var inp = b.parentElement.querySelector('input');
@@ -603,7 +611,7 @@
       if(g.removed) return;
       if(scope==='top' && !document.querySelector('#workitems details.group[data-gi="'+gi+'"]')) return;
       var n=0;
-      g.items.forEach(function(it,ii){ if(it[5]) return; var st=state.items[gi+'-'+ii]; if(!st || st.qty==null || (it[4] && it[6]!=='multi' && st.qty>0 && !st.size) || (it[7]==='date' && st.qty>0 && !st.soldate)) n++; });
+      g.items.forEach(function(it,ii){ if(it[5]) return; var st=state.items[gi+'-'+ii]; if(!st || st.qty==null || (it[4] && it[6]!=='multi' && st.qty>0 && !st.size)) n++; });
       if(n) miss.push('__wi'+gi+':'+n);
     });
     return miss;
