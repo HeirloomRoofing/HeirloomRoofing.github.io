@@ -137,6 +137,23 @@
     #output { display:block !important; }
     .wo { border:none; border-radius:0; box-shadow:none; margin:0; padding:0; }
   }
+
+  @media(max-width:360px){ .photo-choices .chip img { width:32px !important;height:40px !important; } .photo-choices .chip { font-size:11px !important;gap:4px !important;padding:5px !important; } }
+  /* Compact photo references. Input and reading order are unchanged. */
+  .photo-choices { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
+  .photo-choices .chip,.photo-choices.aligned-choices .chip { min-height:62px;padding:6px;display:flex;gap:7px;align-items:center;justify-content:flex-start;text-align:left;font-size:12px;line-height:1.2;border-radius:10px; }
+  .photo-choices.aligned-choices .chip:first-child { grid-column:auto; }
+  .photo-choices .chip img { width:48px;height:48px;object-fit:cover;border-radius:5px;flex:none; }
+  .photo-thumb { width:64px;height:64px;padding:0;border:0;border-radius:7px;background:#eee;overflow:hidden;cursor:zoom-in;flex:none; }
+  .photo-thumb img { width:64px;height:64px;object-fit:cover;display:block; }
+  .item:has(.photo-thumb) .nm { flex:1 1 calc(100% - 80px); }
+  .pipeqs { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 8px; }
+  .pipeqs .sizeq { display:flex;flex-direction:column;gap:3px;margin:0;font-size:12px; }
+  .pipeqs .step button { width:36px;height:40px; }
+  .pipeqs .step input { width:40px;height:40px;box-sizing:border-box;padding:6px 2px; }
+  dialog.photo-view { max-width:min(90vw,800px);border:0;border-radius:12px;padding:14px;background:white; }
+  dialog.photo-view::backdrop { background:rgba(0,0,0,.7); }
+  .photo-view img { max-width:100%;max-height:70vh;display:block;object-fit:contain;margin:8px auto; }
 </style>
 </head>
 <body>
@@ -292,6 +309,7 @@
   <button class="btn primary" id="genbtn">Generate Work Order</button>
 </div>
 <div class="toast" id="toast"></div>
+<p style="text-align:center;font-size:11px;margin:10px 0 90px"><a href="./visuals/photo-credits.html" target="_blank" rel="noopener">Reference photo sources and credits</a></p>
 
 <script src="jspdf.umd.min.js"></script>
 <script>
@@ -308,6 +326,11 @@
   var state = { fields:{}, items:{} };
   WORK.forEach(function(g,gi){ g.items.forEach(function(it,ii){ state.items[gi+'-'+ii] = {qty:it[8]==='yn'?null:0, note:'', size:'', sizeqty:{}, soldate:''}; }); });
 
+  var MATERIAL_PHOTOS={'Architectural Shingle':'architectural','3-Tab Shingle':'3tab','Tile':'tile','Modified Bitumen':'bitumen','Slate':'slate'};
+  var ITEM_PHOTOS={'Replace Pipe Jacks':'pipe-jack-photo','Replace T-Top Vents':'t-top-photo','Install Architectural Shingles':'architectural','Install Underlayment':'underlayment','Replace Turbine Vents':'turbine',"Backup 4' x 8' Decking Sheets":'plywood'};
+  function itemPhoto(name){var key=ITEM_PHOTOS[name];return key?'<button type="button" class="photo-thumb" data-photo="'+key+'" aria-label="Enlarge photo: '+name+'"><img src="./visuals/'+key+'.jpg" alt="'+name+' real-photo example" loading="lazy" width="64" height="64"></button>':'';}
+  document.querySelectorAll('.chips[data-f="currentsystem"],.chips[data-f="roofsystem"]').forEach(function(group){group.classList.add('photo-choices');group.querySelectorAll('.chip').forEach(function(chip){var key=MATERIAL_PHOTOS[chip.dataset.v];if(!key)return;var img=document.createElement('img');img.src='./visuals/'+key+'.jpg';img.alt='';img.width=48;img.height=48;img.loading='lazy';chip.prepend(img);});});
+
   // Build work item UI
   var wi = document.getElementById('workitems'); var wi2 = document.getElementById('workitems2');
   WORK.forEach(function(g,gi){
@@ -321,7 +344,7 @@
       if(it[5]) return;
       var id = gi+'-'+ii;
       var row = document.createElement('div'); row.className='item';
-      row.innerHTML = (it[0]==='Replace Pipe Jacks'||it[0]==='Replace T-Top Vents'?'<img src="./visuals/'+(it[0]==='Replace Pipe Jacks'?'pipe-jack-photo.jpg':'t-top-photo.jpg')+'" alt="'+(it[0]==='Replace Pipe Jacks'?'Real pipe jack photo: vent pipe, rubber boot and metal flashing':'Real T-top roof vent photo')+'" width="112" height="140" style="width:112px;height:140px;object-fit:contain;background:#eee;border-radius:8px;flex:none" loading="lazy">':'')+'<span class="nm">'+wiName(gi,ii)+(it[1]?' <span class="unit">'+it[1]+'</span>':'')+'</span>'+
+      row.innerHTML = itemPhoto(it[0])+'<span class="nm">'+wiName(gi,ii)+(it[1]?' <span class="unit">'+it[1]+'</span>':'')+'</span>'+
         (it[6]==='multi'?'':it[8]==='yn'?'<span class="step yn" data-yn="'+id+'"><button type="button" class="ynbtn" data-ynv="1">Yes</button><button type="button" class="ynbtn" data-ynv="0">No</button></span>':'<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
         '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="0" placeholder="0">'+
         '<button type="button" data-d="1" aria-label="increase">+</button></span>')+
@@ -335,6 +358,9 @@
     var foot=document.createElement('div'); foot.className='count group-count'; foot.id='cnt-'+gi; det.appendChild(foot);
     (gi===0||gi===1||gi===5?wi2:wi).appendChild(det);
   });
+
+  var photoDialog=document.createElement('dialog');photoDialog.className='photo-view';photoDialog.innerHTML='<form method="dialog"><button class="btn" style="padding:7px 16px">Close photo</button></form><img alt=""><p style="font-size:12px;color:#526474">Reference photo, not an exact product or color specification.</p><a href="./visuals/photo-credits.html" target="_blank" rel="noopener" style="font-size:12px">Photo sources and credits</a>';document.body.appendChild(photoDialog);
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-photo]');if(!b)return;var img=photoDialog.querySelector('img');img.src='./visuals/'+b.dataset.photo+'.jpg';img.alt=b.getAttribute('aria-label');photoDialog.showModal();});
 
   function updateCounts(){
     WORK.forEach(function(g,gi){
