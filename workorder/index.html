@@ -216,20 +216,20 @@
 <button class="chip" data-v="1 Story">1 Story</button><button class="chip" data-v="2 Stories">2 Stories</button><button class="chip" data-v="3+ Stories">3+ Stories</button>
 </div>
 <label class="f">Limited Access?</label>
-<div class="chips aligned-choices" data-f="access">
-<button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Tight Driveway">Tight Driveway</button><button class="chip" data-v="Yes - Restricted Equipment Access">Restricted Equipment</button><button class="chip" data-v="Yes - Long Material Carry">Long Material Carry</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
+<div class="chips aligned-choices" data-f="access" data-multi="1">
+<button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Tight Driveway">Tight Driveway</button><button class="chip" data-v="Yes - Restricted Equipment Access">Restricted Equipment</button><button class="chip" data-v="Yes - Long Material Carry">Long Material Carry</button>
 </div>
 <label class="f">Complex Roof Design?</label>
-<div class="chips aligned-choices" data-f="complex">
+<div class="chips aligned-choices" data-f="complex" data-multi="1">
 <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Multiple Elevations">Multiple Elevations</button><button class="chip" data-v="Yes - Cut-Up Roof">Cut-Up Roof</button><button class="chip" data-v="Yes - Dormers / Transitions">Dormers / Transitions</button><button class="chip" data-v="Yes - Valleys / Drainage Areas">Valleys / Drainage Areas</button>
 </div>
 <label class="f">Special Equipment?</label>
-<div class="chips aligned-choices" data-f="equipment">
-<button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Lift">Lift</button><button class="chip" data-v="Yes - Scaffolding">Scaffolding</button><button class="chip" data-v="Yes - Additional Fall Protection">Additional Fall Protection</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
+<div class="chips aligned-choices" data-f="equipment" data-multi="1">
+<button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Lift">Lift</button><button class="chip" data-v="Yes - Scaffolding">Scaffolding</button><button class="chip" data-v="Yes - Additional Fall Protection">Additional Fall Protection</button>
 </div>
 <label class="f">Occupied / Restricted Property?</label>
-<div class="chips aligned-choices" data-f="occupied">
-<button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - HOA Restrictions">HOA Restrictions</button><button class="chip" data-v="Yes - Limited Work Hours">Limited Work Hours</button><button class="chip" data-v="Yes - Sensitive Landscape / Hardscape">Sensitive Landscape</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
+<div class="chips aligned-choices" data-f="occupied" data-multi="1">
+<button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - HOA Restrictions">HOA Restrictions</button><button class="chip" data-v="Yes - Limited Work Hours">Limited Work Hours</button><button class="chip" data-v="Yes - Sensitive Landscape / Hardscape">Sensitive Landscape</button>
 </div>
 <label class="f" for="otherinstr">Other / Special Instructions</label>
 <textarea data-f="otherinstr" id="otherinstr" placeholder='Required - enter "None" if no other instructions'></textarea>
@@ -323,9 +323,9 @@
     c.addEventListener('click', function(e){
       var b = e.target.closest('.chip'); if(!b) return;
       if(c.hasAttribute('data-multi')){
-        var none = b.getAttribute('data-v')==='None Expected' || b.getAttribute('data-v')==='No Crane Required - No A/C';
+        var none = b.getAttribute('data-v')==='No' || b.getAttribute('data-v')==='None Expected' || b.getAttribute('data-v')==='No Crane Required - No A/C';
         if(b.classList.contains('on')){ b.classList.remove('on'); }
-        else { c.querySelectorAll('.chip').forEach(function(x){ if(none || x.getAttribute('data-v')==='None Expected' || x.getAttribute('data-v')==='No Crane Required - No A/C') x.classList.remove('on'); }); b.classList.add('on'); }
+        else { c.querySelectorAll('.chip').forEach(function(x){ if(none || x.getAttribute('data-v')==='No' || x.getAttribute('data-v')==='None Expected' || x.getAttribute('data-v')==='No Crane Required - No A/C') x.classList.remove('on'); }); b.classList.add('on'); }
         save(); return;
       }
       c.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
@@ -530,6 +530,13 @@
       if(d.fields){ Object.keys(d.fields).forEach(function(k){ if(LEGACY[d.fields[k]]) d.fields[k]=LEGACY[d.fields[k]]; }); }
       if(d.items){ Object.keys(d.items).forEach(function(k){ var it=d.items[k]; if(it&&LEGACY[it.size]) it.size=LEGACY[it.size]; }); }
       if(d.items){ Object.keys(d.items).forEach(function(k){ if(state.items[k]) state.items[k]=Object.assign({qty:null, note:'', size:'', sizeqty:{}, soldate:''}, d.items[k]); }); }
+      ['access','equipment','occupied'].forEach(function(k){
+        if(d.fields && d.fields[k]==='Yes - Multiple'){
+          var legacy='Previous '+FIELD_LABELS[k]+' selection: Multiple. Confirm specific crew conditions.';
+          if((d.fields.otherinstr||'').indexOf(legacy)<0) d.fields.otherinstr=((d.fields.otherinstr||'')+'\n'+legacy).trim();
+          d.fields[k]='';
+        }
+      });
       if(d.fields && d.fields.complex==='Yes - Multiple'){
         var legacyComplex='Previous complex roof design selection: Multiple. Confirm specific crew conditions.';
         if((d.fields.otherinstr||'').indexOf(legacyComplex)<0) d.fields.otherinstr=((d.fields.otherinstr||'')+'\n'+legacyComplex).trim();
