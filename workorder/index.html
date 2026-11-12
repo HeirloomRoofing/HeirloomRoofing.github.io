@@ -268,7 +268,6 @@
 <div class="toast" id="toast"></div>
 
 <script src="jspdf.umd.min.js"></script>
-<script src="html2canvas.min.js"></script>
 <script>
 (function(){
   var WORK = [
@@ -809,7 +808,7 @@
     try {
     if(state.review){ alert('This is a review draft. Printing or copying keeps its draft warning. Resolve the pending choices and review the order before sending.'); return; }
     var r = null;
-    if(window.jspdf && window.html2canvas){ r = await buildPDF(); }
+    if(window.jspdf){ r = await buildPDF(); }
     var file = null;
     if(r && navigator.canShare){
       var f = new File([r.pdf.output('blob')], r.name, {type:'application/pdf'});
@@ -839,114 +838,68 @@
   });
 
   async function buildPDF(){
-    if(!window.jspdf||!window.html2canvas){ toast('PDF library did not load - try again'); return null; }
-    var wasOpen=[];document.querySelectorAll('#form details.group').forEach(function(d,i){wasOpen[i]=d.open;d.open=true;});
-    document.getElementById('output').style.display='block';
-    document.getElementById('form').style.display='none';
-    document.getElementById('savebar').style.display='none';
-    document.getElementById('wopaper').innerHTML=buildOutput(outputScope);
-    var w=document.getElementById('wopaper');
-    w.style.width='680px';w.style.maxWidth='none';
+    if(!window.jspdf){toast('PDF library did not load - try again');return null;}
+    var paper=document.getElementById('wopaper');
+    paper.innerHTML=buildOutput(outputScope);
     try{
-      // Keep the logo out of the page bitmap, then paint its original paths
-      // directly into the PDF. Other content keeps the existing page layout.
-      var logo=w.querySelector('.wohead img');
-      await logo.decode();
-      var response=await fetch(logo.getAttribute('src'));
-      if(!response.ok) throw new Error('Vector logo unavailable');
+      var response=await fetch('/start/logo.svg');if(!response.ok)throw Error('Logo unavailable');
       var svg=new DOMParser().parseFromString(await response.text(),'image/svg+xml');
-      var logoPath=svg.querySelector('path');
-      if(!logoPath) throw new Error('Vector logo missing');
-      var pathData=logoPath.getAttribute('d');
-      if(/[A-BD-KN-Za-z]/.test(pathData)) throw new Error('Unsupported logo geometry');
-      var tokens=pathData.match(/[MLC]|-?(?:\d*\.)?\d+(?:e[-+]?\d+)?/g);
-      var lr=logo.getBoundingClientRect(),wr=w.getBoundingClientRect(),ls=getComputedStyle(logo);
-      var lp={x:lr.left-wr.left,y:lr.top-wr.top,w:lr.width,h:lr.height,
-        px:parseFloat(ls.paddingLeft),py:parseFloat(ls.paddingTop)};
-      var cv=await html2canvas(w,{backgroundColor:'#ffffff',scale:2,useCORS:true,logging:false,
-        onclone:function(doc){doc.querySelector('#wopaper .wohead img').style.visibility='hidden';}});
+      var tokens=svg.querySelector('path').getAttribute('d').match(/[MLC]|-?(?:\d*\.)?\d+(?:e[-+]?\d+)?/g);
       var pdf=new window.jspdf.jsPDF({unit:'pt',format:'letter'});
-      var pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight(),m=28,imgw=pw-2*m;
-      var pageH=Math.floor(cv.width*(ph-2*m)/imgw); // canvas px that fit on one page
-      var sx=cv.width/w.offsetWidth;                // css px -> canvas px
-      var wTop=w.getBoundingClientRect().top;
-      function topOf(el){ return Math.round((el.getBoundingClientRect().top-wTop)*sx); }
-      // Candidate break points: tops of block elements and table rows, so pages
-      // always break between whole lines/rows, never through text.
-      var bounds=[];
-      for(var i=0;i<w.children.length;i++){
-        var el=w.children[i];
-        if(el.classList.contains('foot')) continue; // footer must stay with preceding content
-        var pv=el.previousElementSibling;
-        if(pv&&(pv.tagName==='H3'||pv.classList.contains('secbar'))) continue; // keep headings and section bars with what follows
-        bounds.push({y:topOf(el),block:true});
-      }
-      w.querySelectorAll('table tr').forEach(function(tr){
-        if(tr.querySelector('td.inote')) return; // keep a note row with its item row
-        var t=tr.closest('table');
-        if(t&&tr===t.querySelector('tr')){ var pv=t.previousElementSibling; if(pv&&(pv.tagName==='H3'||pv.classList.contains('secbar'))) return; } // keep first row with its heading/bar
-        bounds.push({y:topOf(tr),block:false});
-      });
-      // Line-box break points inside any tall cell or text block, so even a
-      // single very long entry splits between whole text lines, never through one.
-      function addLineBounds(el){
-        var walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT),n;
-        while(n=walker.nextNode()){
-          if(!n.textContent.replace(/\s/g,'')) continue;
-          var r=document.createRange(); r.selectNodeContents(n);
-          var rs=r.getClientRects();
-          for(var q=0;q<rs.length;q++) bounds.push({y:Math.round((rs[q].top-wTop)*sx),block:false});
-          r.detach();
-        }
-      }
-      w.querySelectorAll('td, #wopaper > div').forEach(function(el){
-        if(el.classList.contains('wohead')||el.classList.contains('foot')) return;
-        if(el.offsetHeight*sx>pageH*0.6) addLineBounds(el);
-      });
-      bounds=bounds.filter(function(b){return b.y>6&&b.y<cv.height-6;}).sort(function(a,b){return a.y-b.y;});
-      var ub=[];
-      bounds.forEach(function(b){ if(!ub.length||b.y-ub[ub.length-1].y>2) ub.push(b); });
-      var starts=[0],start=0,guard=0;
-      while(cv.height-start>pageH && guard++<200){
-        var limit=start+pageH,pick=-1;
-        for(var k=0;k<ub.length;k++){
-          if(ub[k].y<=limit&&ub[k].y>start+8) pick=ub[k].y;
-          else if(ub[k].y>limit) break;
-        }
-        if(pick<0) pick=limit; // one element taller than a page: last-resort slice
-        starts.push(pick); start=pick;
-      }
-      for(var p=0;p<starts.length;p++){
-        if(p>0) pdf.addPage();
-        var y0=starts[p], h=(p+1<starts.length?starts[p+1]:cv.height)-y0;
-        var piece=document.createElement('canvas');piece.width=cv.width;piece.height=h;
-        var ctx=piece.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,piece.width,piece.height);
-        ctx.drawImage(cv,0,y0,cv.width,h,0,0,cv.width,h);
-        pdf.addImage(piece.toDataURL('image/jpeg',0.92),'JPEG',m,m,imgw,h*imgw/cv.width);
-        if(p===0){
-          var unit=imgw/w.offsetWidth;
-          pdf.setFillColor(1,97,168);
-          pdf.roundedRect(m+lp.x*unit,m+lp.y*unit,lp.w*unit,lp.h*unit,10*unit,10*unit,'F');
-          var scale=Math.min((lp.w-2*lp.px)/125,(lp.h-2*lp.py)/72);
-          var ox=m+(lp.x+(lp.w-125*scale)/2)*unit;
-          var oy=m+(lp.y+(lp.h-72*scale)/2)*unit;
-          var ops=[],ti=0;
-          while(ti<tokens.length){
-            var cmd=tokens[ti++],n=cmd==='C'?6:2,coords=[];
-            for(var j=0;j<n;j++) coords.push((j%2?oy:ox)+Number(tokens[ti++])*scale*unit);
-            ops.push({op:cmd==='M'?'m':cmd==='L'?'l':'c',c:coords});
+      var left=38,right=574,width=536,y=38,bottom=748,page=1;
+      var blue=[1,97,168],ink=[32,48,60],muted=[94,111,123];
+      function color(c){pdf.setTextColor.apply(pdf,c);}
+      function font(size,bold,c){pdf.setFont('helvetica',bold?'bold':'normal');pdf.setFontSize(size);color(c||ink);}
+      function clean(t){return t.replace(/\u2011/g,'-').replace(/\u201c|\u201d|\u2033/g,'"').replace(/\u2018|\u2019/g,"'").replace(/\u2212/g,'-');}
+      function lines(text,w,size,bold){font(size,bold);return pdf.splitTextToSize(clean(text),w);}
+      function footer(){font(8,false,muted);pdf.text('Heirloom Roofing | Production Work Order',left,770);pdf.text(String(page),right,770,{align:'right'});}
+      function next(){footer();pdf.addPage();page++;y=40;font(9,true,blue);pdf.text('HEIRLOOM ROOFING | PRODUCTION WORK ORDER',left,y);y+=22;}
+      function need(h){if(y+h>bottom)next();}
+      function text(ls,x,yy,size,bold,c){font(size,bold,c);pdf.text(ls,x,yy,{lineHeightFactor:1.3});}
+      function rule(){pdf.setDrawColor(220,228,233);pdf.setLineWidth(.5);pdf.line(left,y,right,y);}
+      // Genuine original logo paths, never an embedded bitmap.
+      var logoW=96,logoH=55.3,lx=(612-logoW)/2,ly=y;
+      pdf.setFillColor.apply(pdf,blue);pdf.roundedRect(lx-9,ly-5,logoW+18,logoH+10,8,8,'F');
+      var ops=[],ti=0,scale=logoW/125;
+      while(ti<tokens.length){var cmd=tokens[ti++],n=cmd==='C'?6:2,c=[];for(var j=0;j<n;j++)c.push((j%2?ly:lx)+Number(tokens[ti++])*scale);ops.push({op:cmd==='M'?'m':cmd==='L'?'l':'c',c:c});}
+      pdf.setFillColor(255,255,255);pdf.path(ops).fillEvenOdd();
+      y+=83;
+      font(17,true,blue);pdf.text('PRODUCTION WORK ORDER',306,y,{align:'center'});
+      y+=18;font(9,false,muted);pdf.text('Heirloom Roofing LLC | '+new Date().toLocaleDateString([], {year:'numeric',month:'long',day:'numeric'}),306,y,{align:'center'});y+=17;rule();y+=18;
+      var nodes=Array.from(paper.children).filter(function(e){return !e.classList.contains('wohead');});
+      for(var ni=0;ni<nodes.length;ni++){
+        var el=nodes[ni],value=el.innerText.trim();if(!value)continue;
+        if(el.classList.contains('secbar')){need(60);pdf.setFillColor.apply(pdf,blue);pdf.roundedRect(left,y,width,25,5,5,'F');text(value.toUpperCase(),left+10,y+17,11,true,[255,255,255]);y+=37;continue;}
+        if(el.tagName==='H3'){need(58);text(value.toUpperCase(),left,y+11,10,true,blue);y+=19;rule();y+=7;continue;}
+        if(el.tagName==='TABLE'){
+          var rows=Array.from(el.rows);
+          for(var ri=0;ri<rows.length;ri++){
+            var row=rows[ri],cells=Array.from(row.cells);
+            if(row.querySelector('.inote')){var note=lines(row.querySelector('.inote').innerText, width-66,9,false);for(var nn=0;nn<note.length;nn++){need(14);text(note[nn],left+62,y+9,9,false,muted);y+=12;}y+=7;continue;}
+            if(row.classList.contains('wline')){
+              var qty=lines(cells[0].innerText,43,9,true),name=lines(cells[1].innerText,width-110,10,true),unit=lines(cells[2].innerText,30,8,false);
+              var h=Math.max(25,name.length*13+9,qty.length*12+8);
+              var following=rows[ri+1]&&rows[ri+1].querySelector('.inote');
+              var noteReserve=following?Math.min(36,lines(following.innerText,width-66,9,false).length*12+7):0;
+              need(h+noteReserve);pdf.setFillColor(239,247,253);pdf.setDrawColor(1,97,168);pdf.roundedRect(left+2,y+2,45,Math.max(18,qty.length*12+5),4,4,'FD');
+              text(qty,left+7,y+14,9,true,blue);text(name,left+62,y+13,10,true,ink);text(unit,right-30,y+13,8,false,muted);y+=h;
+            }else{
+              if(cells.length===1){var all=lines(cells[0].innerText,width-16,10,false);for(var z=0;z<all.length;z++){need(15);text(all[z],left+8,y+11,10,false);y+=14;}y+=7;continue;}
+              var key=lines(cells[0].innerText,173,9,true),values=lines(cells[1].innerText,width-201,10,false),rh=Math.max(key.length*12,values.length*13)+12;
+              need(Math.min(rh,50));for(var vl=0;vl<Math.max(key.length,values.length);vl++){need(15);if(key[vl])text(key[vl],left+4,y+11,9,true,muted);if(values[vl])text(values[vl],left+194,y+11,10,false);y+=13;}y+=12;rule();y+=3;
+            }
           }
-          pdf.setFillColor(255,255,255);
-          pdf.path(ops).fillEvenOdd();
+          y+=10;continue;
         }
+        var isWarning=value.indexOf('DRAFT - REVIEW')===0;
+        var ls=lines(value,width-20,el.classList.contains('foot')?8:10,isWarning);
+        if(isWarning){need(ls.length*13+20);pdf.setFillColor(255,249,235);pdf.setDrawColor(181,120,0);pdf.rect(left,y,width,ls.length*13+16,'FD');text(ls,left+10,y+13,10,true,[112,72,0]);y+=ls.length*13+30;}
+        else{for(var li=0;li<ls.length;li++){need(15);text(ls[li],left+6,y+10,el.classList.contains('foot')?8:10,false,muted);y+=14;}y+=12;}
       }
+      footer();
       var name=(val('customer')||'Work Order').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'Work-Order';
-      return {pdf:pdf, name:(outputScope==='top'?'Heirloom-On-Site-Checklist-':'Heirloom-Work-Order-')+name+'.pdf'};
-    }catch(e){toast('Could not create PDF - try again'); return null;}
-    finally{
-      w.style.width='';w.style.maxWidth='';
-      wasOpen.forEach(function(x,i){document.querySelectorAll('#form details.group')[i].open=x;});
-    }
+      return {pdf:pdf,name:(outputScope==='top'?'Heirloom-On-Site-Checklist-':'Heirloom-Work-Order-')+name+'.pdf'};
+    }catch(e){console.error(e);toast('Could not create PDF - try again');return null;}
   }
   document.getElementById('sharepdfbtn').addEventListener('click', async function(){
     if(pdfActionBusy) return; pdfActionBusy=true;
