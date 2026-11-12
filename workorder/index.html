@@ -343,6 +343,7 @@
   // The "install" work line follows the roof system being installed
   function wiName(gi,ii){
     var it=WORK[gi].items[ii];
+    if(it[0]==='Rooftop HVAC'){var action=chipVal('accrane');return action||it[0];}
     if(gi===1&&ii===1){
       var m={'Architectural Shingle':'Install Architectural Shingles','3-Tab Shingle':'Install 3-Tab Shingles','Tile':'Install Tile Roofing','Modified Bitumen':'Install Modified Bitumen Roofing','SPF / Coating':'Install SPF / Coating','Slate':'Install Slate Roofing','Stone-Coated Steel':'Install Stone-Coated Steel Roofing','Composite / Synthetic':'Install Composite Roofing'};
       return m[chipVal('roofsystem')]||'Install New Roof System';
