@@ -112,7 +112,7 @@
 </head>
 <body>
 <div class="band no-print">
-  <img src="heirloom-logo-white.png" alt="Heirloom Roofing logo">
+  <img src="/start/logo.svg" alt="Heirloom Roofing logo">
   <div class="t">Production Work Order</div>
 </div>
 <main>
@@ -666,7 +666,7 @@
 
   function buildOutput(){
     var today = new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'});
-    var h = '<div class="wohead"><img src="heirloom-logo-white.png" alt="" style="background:#0161A8;border-radius:10px;padding:6px 10px"><div class="wt">PRODUCTION WORK ORDER</div><div class="wd">Heirloom Roofing LLC &bull; '+today+'</div></div>';
+    var h = '<div class="wohead"><img src="/start/logo.svg" alt="" style="background:#0161A8;border-radius:10px;padding:6px 10px"><div class="wt">PRODUCTION WORK ORDER</div><div class="wd">Heirloom Roofing LLC &bull; '+today+'</div></div>';
     if(state.review) h += '<div style="border:2px solid #b57800;padding:12px;margin:16px 0;color:#704800"><b>DRAFT - REVIEW BEFORE PRODUCTION</b><br>'+(pendingMessage().match(/PENDING/g)||[]).length+' pending choices or quantities. Full review list is after the order below.</div>';
     function sec(title, rows){ return rows ? '<h3>'+title+'</h3><table>'+rows+'</table>' : ''; }
     h += sec('Project Manager', rowKV('Heirloom Project Manager', val('pm')) + rowPhone('Phone Number', val('pmphone')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')));
