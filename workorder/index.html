@@ -182,27 +182,6 @@
 <h2>Work Items</h2>
 <div class="sub">Every line needs an answer - set 0 for not needed, add a note to any line if helpful.</div>
 <div id="workitems"></div>
-</div><div class="card">
-<h2>Roof System Being Installed</h2>
-<label class="f">Roof System</label>
-<div class="chips" data-f="roofsystem">
-<button class="chip" data-v="Architectural Shingle">Architectural Shingle</button><button class="chip" data-v="3-Tab Shingle">3-Tab Shingle</button><button class="chip" data-v="Tile">Tile</button><button class="chip" data-v="Modified Bitumen">Modified Bitumen</button><button class="chip" data-v="SPF / Coating">SPF / Coating</button><button class="chip" data-v="Slate">Slate</button><button class="chip" data-v="Stone-Coated Steel">Stone-Coated Steel</button><button class="chip" data-v="Composite / Synthetic">Composite / Synthetic</button><button class="chip" data-v="Other">Other</button>
-</div>
-<label class="f">Job Type</label>
-<div class="chips" data-f="jobtype">
-<button class="chip" data-v="Retail">Retail</button><button class="chip" data-v="Insurance">Insurance</button>
-</div>
-<label class="f" for="tileprofile" id="tileprofilelabel" style="display:none">Tile Profile (Eagle)</label><select data-f="tileprofile" id="tileprofile" style="display:none">
-<option value="">Choose</option>
-<option>Bel Air</option><option>Ponderosa</option><option>Tapered Slate</option><option>Malibu</option><option>Capistrano</option><option>Other / Special Order</option>
-</select><label class="f" for="steelprofile" id="steelprofilelabel" style="display:none">Stone-Coated Steel Profile (Unified Steel)</label><select data-f="steelprofile" id="steelprofile" style="display:none">
-<option value="">Choose</option>
-<option>PINE-CREST Shake</option><option>COTTAGE Shingle</option><option>GRANITE-RIDGE Shingle</option><option>BARREL-VAULT Tile</option><option>PACIFIC Tile</option><option>Other / Special Order</option>
-</select><label class="f" for="compositeproduct" id="compositeproductlabel" style="display:none">Composite Product (DaVinci)</label><select data-f="compositeproduct" id="compositeproduct" style="display:none">
-<option value="">Choose</option>
-<option>Multi-Width Slate</option><option>Single-Width Slate</option><option>Province Slate</option><option>Multi-Width Shake</option><option>Single-Width Shake</option><option>Select Shake</option><option>Other / Special Order</option>
-</select>
-
 </div><div class="card big5">
 <h2>The Big 5</h2>
 <label class="f">1. Layers</label>
@@ -259,7 +238,28 @@
 <button class="chip" data-v="Yes - Pets / Children On Site">Pets / Children On Site</button><button class="chip" data-v="Yes - Protect Vehicles / Outdoor Items">Protect Vehicles / Outdoor Items</button></div>
 <label class="f" for="otherinstr">Other / Special Instructions</label>
 <textarea data-f="otherinstr" id="otherinstr" placeholder='Required - enter "None" if no other instructions'></textarea>
-</div><div class="no-print" style="margin:14px 0 2px;text-align:center"><button class="btn primary" id="genbtn2" type="button" style="width:min(340px,100%)">Generate Initial Job Checklist PDF</button><div class="hint">Selling visit: includes only the sections above.</div></div><div class="card"><h2>New Roof Details</h2><label class="f" id="malarkeylabel">Malarkey Product</label><div class="chips" data-f="malarkey" id="malarkeychips">
+</div><div class="no-print" style="margin:14px 0 2px;text-align:center"><button class="btn primary" id="genbtn2" type="button" style="width:min(340px,100%)">Generate Initial Job Checklist PDF</button><div class="hint">Selling visit: includes only the sections above.</div></div><div class="card">
+<h2>Roof System Being Installed</h2>
+<label class="f">Roof System</label>
+<div class="chips" data-f="roofsystem">
+<button class="chip" data-v="Architectural Shingle">Architectural Shingle</button><button class="chip" data-v="3-Tab Shingle">3-Tab Shingle</button><button class="chip" data-v="Tile">Tile</button><button class="chip" data-v="Modified Bitumen">Modified Bitumen</button><button class="chip" data-v="SPF / Coating">SPF / Coating</button><button class="chip" data-v="Slate">Slate</button><button class="chip" data-v="Stone-Coated Steel">Stone-Coated Steel</button><button class="chip" data-v="Composite / Synthetic">Composite / Synthetic</button><button class="chip" data-v="Other">Other</button>
+</div>
+<label class="f">Job Type</label>
+<div class="chips" data-f="jobtype">
+<button class="chip" data-v="Retail">Retail</button><button class="chip" data-v="Insurance">Insurance</button>
+</div>
+<label class="f" for="tileprofile" id="tileprofilelabel" style="display:none">Tile Profile (Eagle)</label><select data-f="tileprofile" id="tileprofile" style="display:none">
+<option value="">Choose</option>
+<option>Bel Air</option><option>Ponderosa</option><option>Tapered Slate</option><option>Malibu</option><option>Capistrano</option><option>Other / Special Order</option>
+</select><label class="f" for="steelprofile" id="steelprofilelabel" style="display:none">Stone-Coated Steel Profile (Unified Steel)</label><select data-f="steelprofile" id="steelprofile" style="display:none">
+<option value="">Choose</option>
+<option>PINE-CREST Shake</option><option>COTTAGE Shingle</option><option>GRANITE-RIDGE Shingle</option><option>BARREL-VAULT Tile</option><option>PACIFIC Tile</option><option>Other / Special Order</option>
+</select><label class="f" for="compositeproduct" id="compositeproductlabel" style="display:none">Composite Product (DaVinci)</label><select data-f="compositeproduct" id="compositeproduct" style="display:none">
+<option value="">Choose</option>
+<option>Multi-Width Slate</option><option>Single-Width Slate</option><option>Province Slate</option><option>Multi-Width Shake</option><option>Single-Width Shake</option><option>Select Shake</option><option>Other / Special Order</option>
+</select>
+
+</div><div class="card"><h2>New Roof Details</h2><label class="f" id="malarkeylabel">Malarkey Product</label><div class="chips" data-f="malarkey" id="malarkeychips">
 <button class="chip" data-v="Highlander AR">Highlander AR</button><button class="chip" data-v="Vista AR">Vista AR</button><button class="chip" data-v="Legacy Scotchgard">Legacy Scotchgard</button>
 </div><label class="f" for="shinglecolor" id="shinglecolorlabel">Shingle Color</label><select data-f="shinglecolor" id="shinglecolor">
 <option value="">Choose</option>
@@ -625,11 +625,12 @@
     ['accrane'],['fascia'],
     ['fasciasize', function(){ var f=chipVal('fascia'); return f==='Partial Fascia Replacement'||f==='Full Fascia Replacement'; }],
     ['special'],
-    ['currentsystem'],['currentsystemother', function(){ return chipVal('currentsystem')==='Other'; }],['roofsystem'],['jobtype'],
+    ['currentsystem'],['currentsystemother', function(){ return chipVal('currentsystem')==='Other'; }],
     ['pitch'],['stories'],['access'],['complex'],['equipment'],['occupied'],
     ['otherinstr']
   ];
   var REQUIRED_BELOW = [
+    ['roofsystem'],['jobtype'],
     ['pm'],['jt'],['pmnotes'],
     ['address'],
     ['gate', function(){ return !gateNA(); }],
@@ -719,7 +720,6 @@
     h += sec('Current Roof Details', rowKV('Roof System', currentSystemVal()));
     // Follow the form: upper work items precede roof system and conditions.
     h += '<div class="secbar">Work Items</div>'+itemRows('workitems');
-    h += sec('Roof System Being Installed', rowKV('Roof System', val('roofsystem')) + rowKV('Job Type', val('jobtype')));
     h += sec('The Big 5', rowKV('1. Layers', layersVal())
       + rowKV('2. Decking / Redeck', deckingVal())
       + rowKV('3. A/C / Crane', val('accrane') + (val('acnotes')? ' - Notes: '+val('acnotes'):''))
@@ -746,6 +746,7 @@
     }
     var lowerItems=topOnly?'':itemRows('workitems2');
     if(!topOnly){
+    h += sec('Roof System Being Installed', rowKV('Roof System', val('roofsystem')) + rowKV('Job Type', val('jobtype')));
       h += sec('New Roof Details', rowKV('Malarkey Product', val('malarkey')) + rowKV('Tile Profile', val('tileprofile')) + rowKV('Stone-Coated Steel Profile', val('steelprofile')) + rowKV('Composite Product', val('compositeproduct')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Approx. Tear-Off (Roofing squares)', val('tearoff')) + rowKV('Approx. Install (Roofing squares)', val('install')));
       if(lowerItems) h += '<div class="secbar">Work Items</div>'+lowerItems;
     }
