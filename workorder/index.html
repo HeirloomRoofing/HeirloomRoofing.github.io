@@ -221,7 +221,7 @@
 </div>
 <label class="f">Complex Roof Design?</label>
 <div class="chips aligned-choices" data-f="complex">
-<button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Multiple Elevations">Multiple Elevations</button><button class="chip" data-v="Yes - Cut-Up Roof">Cut-Up Roof</button><button class="chip" data-v="Yes - Dormers / Transitions">Dormers / Transitions</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
+<button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Multiple Elevations">Multiple Elevations</button><button class="chip" data-v="Yes - Cut-Up Roof">Cut-Up Roof</button><button class="chip" data-v="Yes - Dormers / Transitions">Dormers / Transitions</button><button class="chip" data-v="Yes - Valleys / Drainage Areas">Valleys / Drainage Areas</button>
 </div>
 <label class="f">Special Equipment?</label>
 <div class="chips aligned-choices" data-f="equipment">
@@ -530,6 +530,11 @@
       if(d.fields){ Object.keys(d.fields).forEach(function(k){ if(LEGACY[d.fields[k]]) d.fields[k]=LEGACY[d.fields[k]]; }); }
       if(d.items){ Object.keys(d.items).forEach(function(k){ var it=d.items[k]; if(it&&LEGACY[it.size]) it.size=LEGACY[it.size]; }); }
       if(d.items){ Object.keys(d.items).forEach(function(k){ if(state.items[k]) state.items[k]=Object.assign({qty:null, note:'', size:'', sizeqty:{}, soldate:''}, d.items[k]); }); }
+      if(d.fields && d.fields.complex==='Yes - Multiple'){
+        var legacyComplex='Previous complex roof design selection: Multiple. Confirm specific crew conditions.';
+        if((d.fields.otherinstr||'').indexOf(legacyComplex)<0) d.fields.otherinstr=((d.fields.otherinstr||'')+'\n'+legacyComplex).trim();
+        d.fields.complex='';
+      }
       if(d.fields){ Object.keys(d.fields).forEach(function(k){
         var el = document.querySelector('[data-f="'+k+'"]');
         if(!el) return;
