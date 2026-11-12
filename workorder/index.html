@@ -193,7 +193,7 @@
 </div>
 <label class="f">3. A/C / Crane</label>
 <div class="chips" data-f="accrane" data-multi="1">
-<button class="chip" data-v="Work Around A/C">Work Around A/C</button><button class="chip" data-v="Crane Will Be Required">Crane Will Be Required</button><button class="chip" data-v="Swamp Cooler">Swamp Cooler</button>
+<button class="chip" data-v="Work Around A/C">Work Around A/C</button><button class="chip" data-v="Crane Will Be Required">Crane Will Be Required</button><button class="chip" data-v="Swamp Cooler">Swamp Cooler</button><button class="chip" data-v="No Crane Required - No A/C">No Crane Required - No A/C</button>
 </div>
 <label class="f" for="acnotes">Notes</label>
 <input data-f="acnotes" id="acnotes" type="text"/>
@@ -323,9 +323,9 @@
     c.addEventListener('click', function(e){
       var b = e.target.closest('.chip'); if(!b) return;
       if(c.hasAttribute('data-multi')){
-        var none = b.getAttribute('data-v')==='None Expected';
+        var none = b.getAttribute('data-v')==='None Expected' || b.getAttribute('data-v')==='No Crane Required - No A/C';
         if(b.classList.contains('on')){ b.classList.remove('on'); }
-        else { c.querySelectorAll('.chip').forEach(function(x){ if(none || x.getAttribute('data-v')==='None Expected') x.classList.remove('on'); }); b.classList.add('on'); }
+        else { c.querySelectorAll('.chip').forEach(function(x){ if(none || x.getAttribute('data-v')==='None Expected' || x.getAttribute('data-v')==='No Crane Required - No A/C') x.classList.remove('on'); }); b.classList.add('on'); }
         save(); return;
       }
       c.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
