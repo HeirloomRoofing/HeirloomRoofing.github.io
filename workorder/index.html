@@ -259,7 +259,7 @@
 <button class="chip" data-v="Yes - Pets / Children On Site">Pets / Children On Site</button><button class="chip" data-v="Yes - Protect Vehicles / Outdoor Items">Protect Vehicles / Outdoor Items</button></div>
 <label class="f" for="otherinstr">Other / Special Instructions</label>
 <textarea data-f="otherinstr" id="otherinstr" placeholder='Required - enter "None" if no other instructions'></textarea>
-</div><div class="no-print" style="margin:14px 0 2px;text-align:center"><button class="btn primary" id="genbtn2" type="button" style="width:min(340px,100%)">Generate PDF</button></div><div class="card"><h2>New Roof Details</h2><label class="f" id="malarkeylabel">Malarkey Product</label><div class="chips" data-f="malarkey" id="malarkeychips">
+</div><div class="no-print" style="margin:14px 0 2px;text-align:center"><button class="btn primary" id="genbtn2" type="button" style="width:min(340px,100%)">Generate Initial Job Checklist PDF</button><div class="hint">Selling visit: includes only the sections above.</div></div><div class="card"><h2>New Roof Details</h2><label class="f" id="malarkeylabel">Malarkey Product</label><div class="chips" data-f="malarkey" id="malarkeychips">
 <button class="chip" data-v="Highlander AR">Highlander AR</button><button class="chip" data-v="Vista AR">Vista AR</button><button class="chip" data-v="Legacy Scotchgard">Legacy Scotchgard</button>
 </div><label class="f" for="shinglecolor" id="shinglecolorlabel">Shingle Color</label><select data-f="shinglecolor" id="shinglecolor">
 <option value="">Choose</option>
@@ -709,9 +709,10 @@
   var outputScope = "all", pdfActionBusy = false;
   function buildOutput(scope){
     var topOnly = scope==='top';
+    var documentTitle=topOnly?'INITIAL JOB CHECKLIST':'PRODUCTION WORK ORDER';
     var today = new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'});
-    var h = '<div class="wohead"><img src="/start/logo.svg" alt="" style="background:#0161A8;border-radius:10px;padding:6px 10px"><div class="wt">PRODUCTION WORK ORDER</div><div class="wd">Heirloom Roofing LLC &bull; '+today+'</div></div>';
-    if(state.review) h += '<div style="border:2px solid #b57800;padding:12px;margin:16px 0;color:#704800"><b>DRAFT - REVIEW BEFORE PRODUCTION</b><br>'+(pendingMessage(scope).match(/PENDING/g)||[]).length+' pending choices or quantities. Full review list is after the order below.</div>';
+    var h = '<div class="wohead"><img src="/start/logo.svg" alt="" style="background:#0161A8;border-radius:10px;padding:6px 10px"><div class="wt">'+documentTitle+'</div><div class="wd">Heirloom Roofing LLC &bull; '+today+'</div></div>';
+    if(state.review) h += '<div style="border:2px solid #b57800;padding:12px;margin:16px 0;color:#704800"><b>DRAFT - REVIEW BEFORE '+(topOnly?'USE':'PRODUCTION')+'</b><br>'+(pendingMessage(scope).match(/PENDING/g)||[]).length+' pending choices or quantities. Full review list is below.</div>';
     function sec(title, rows){ return rows ? '<h3>'+title+'</h3><table>'+rows+'</table>' : ''; }
     h += sec('Project Manager', rowKV('Heirloom Project Manager', val('pm')) + rowPhone('Phone Number', val('pmphone')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')));
     h += sec('Job Info', rowKV('Customer', val('customer')) + rowPhone('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', gateVal()));
@@ -750,7 +751,7 @@
     }
     if(!topOnly && val('addnotes')) h += '<h3>Additional Notes</h3><table><tr><td>'+esc(val('addnotes')).replace(/\n/g,'<br>')+'</td></tr></table>';
     if(state.review) h += '<h3>Pending Choices and Review Notes</h3><div style="white-space:pre-line;border:1px solid #b57800;padding:12px">'+esc(pendingMessage(scope))+'</div>';
-    h += '<div class="foot">Any unexpected conditions or additional work must be reported to the PM before proceeding.</div>';
+    h += '<div class="foot">'+(topOnly?'Selling-visit job checklist. This is not the final production work order.':'Any unexpected conditions or additional work must be reported to the PM before proceeding.')+'</div>';
     return h;
   }
 
@@ -801,17 +802,19 @@
     eb.setAttribute('data-copied', m.copied ? '1' : '');
     eb.setAttribute('data-full', m.copied ? m.full : '');
     eb.textContent = 'Send email to Nick and Erik';
+    eb.style.display=outputScope==='top'?'none':'';
     document.getElementById('form').style.display='none';
     document.getElementById('savebar').style.display='none';
     document.getElementById('output').style.display='block';
     window.scrollTo(0,0);
+    return true;
   }
   document.getElementById('genbtn').addEventListener('click', function(){ generateOrder(); });
-  document.getElementById('genbtn2').addEventListener('click', function(){ generateOrder('top'); });
+  document.getElementById('genbtn2').addEventListener('click', function(){ if(generateOrder('top')) document.getElementById('sharepdfbtn').click(); });
   document.getElementById('editbtn').addEventListener('click', function(){
     document.getElementById('output').style.display='none';
     document.getElementById('form').style.display='block';
-    document.getElementById('savebar').style.display='flex';
+    document.getElementById('savebar').style.display='';
     window.scrollTo(0,0);
   });
   var RKEY = 'hr-workorder-recipients';
@@ -885,13 +888,15 @@
       var tokens=svg.querySelector('path').getAttribute('d').match(/[MLC]|-?(?:\d*\.)?\d+(?:e[-+]?\d+)?/g);
       var pdf=new window.jspdf.jsPDF({unit:'pt',format:'letter'});
       var left=38,right=574,width=536,y=38,bottom=748,page=1;
+      var pdfTitle=outputScope==='top'?'INITIAL JOB CHECKLIST':'PRODUCTION WORK ORDER';
+      var pdfLabel=outputScope==='top'?'Initial Job Checklist':'Production Work Order';
       var blue=[1,97,168],ink=[32,48,60],muted=[94,111,123];
       function color(c){pdf.setTextColor.apply(pdf,c);}
       function font(size,bold,c){pdf.setFont('helvetica',bold?'bold':'normal');pdf.setFontSize(size);color(c||ink);}
       function clean(t){return t.replace(/\u2011/g,'-').replace(/\u201c|\u201d|\u2033/g,'"').replace(/\u2018|\u2019/g,"'").replace(/\u2212/g,'-');}
       function lines(text,w,size,bold){font(size,bold);return pdf.splitTextToSize(clean(text),w);}
-      function footer(){font(8,false,muted);pdf.text('Heirloom Roofing | Production Work Order',left,770);pdf.text(String(page),right,770,{align:'right'});}
-      function next(){footer();pdf.addPage();page++;y=40;font(9,true,blue);pdf.text('HEIRLOOM ROOFING | PRODUCTION WORK ORDER',left,y);y+=22;}
+      function footer(){font(8,false,muted);pdf.text('Heirloom Roofing | '+pdfLabel,left,770);pdf.text(String(page),right,770,{align:'right'});}
+      function next(){footer();pdf.addPage();page++;y=40;font(9,true,blue);pdf.text('HEIRLOOM ROOFING | '+pdfTitle,left,y);y+=22;}
       function need(h){if(y+h>bottom)next();}
       function text(ls,x,yy,size,bold,c){font(size,bold,c);pdf.text(ls,x,yy,{lineHeightFactor:1.3});}
       function rule(){pdf.setDrawColor(220,228,233);pdf.setLineWidth(.5);pdf.line(left,y,right,y);}
@@ -902,7 +907,7 @@
       while(ti<tokens.length){var cmd=tokens[ti++],n=cmd==='C'?6:2,c=[];for(var j=0;j<n;j++)c.push((j%2?ly:lx)+Number(tokens[ti++])*scale);ops.push({op:cmd==='M'?'m':cmd==='L'?'l':'c',c:c});}
       pdf.setFillColor(255,255,255);pdf.path(ops).fillEvenOdd();
       y+=83;
-      font(17,true,blue);pdf.text('PRODUCTION WORK ORDER',306,y,{align:'center'});
+      font(17,true,blue);pdf.text(pdfTitle,306,y,{align:'center'});
       y+=18;font(9,false,muted);pdf.text('Heirloom Roofing LLC | '+new Date().toLocaleDateString([], {year:'numeric',month:'long',day:'numeric'}),306,y,{align:'center'});y+=17;rule();y+=18;
       var nodes=Array.from(paper.children).filter(function(e){return !e.classList.contains('wohead');});
       for(var ni=0;ni<nodes.length;ni++){
@@ -936,7 +941,7 @@
       }
       footer();
       var name=(val('customer')||'Work Order').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'Work-Order';
-      return {pdf:pdf,name:(outputScope==='top'?'Heirloom-On-Site-Checklist-':'Heirloom-Work-Order-')+name+'.pdf'};
+      return {pdf:pdf,name:(outputScope==='top'?'Heirloom-Initial-Job-Checklist-':'Heirloom-Work-Order-')+name+'.pdf'};
     }catch(e){console.error(e);toast('Could not create PDF - try again');return null;}
   }
   document.getElementById('sharepdfbtn').addEventListener('click', async function(){
@@ -946,7 +951,7 @@
     var blob = r.pdf.output('blob');
     var file = new File([blob], r.name, {type:'application/pdf'});
     if(navigator.canShare && navigator.canShare({files:[file]})){
-      await navigator.share({files:[file], title:'Production Work Order'}).catch(function(){});
+      await navigator.share({files:[file], title:outputScope==='top'?'Initial Job Checklist':'Production Work Order'}).catch(function(){});
     } else {
       r.pdf.save(r.name);
       toast('PDF saved - attach it from your Files');
