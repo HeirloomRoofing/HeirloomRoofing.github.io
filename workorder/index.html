@@ -104,6 +104,32 @@
   .outbtns { display:grid; gap:10px; margin-top:14px; }
   .outbtns > .btn.primary { width:min(340px,92%); margin:0 auto; text-align:center; }
   .toast { position:fixed; bottom:76px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:10px 18px; border-radius:999px; font-size:13.5px; font-weight:600; display:none; z-index:20; }
+
+  /* Aligned choice tiles: short answers share a row; longer lists stay easy to scan. */
+  .chips { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .chip { min-width:0; min-height:46px; border-radius:10px; padding:11px 12px; line-height:1.35; text-align:center; }
+  .chips > .chip:last-child:nth-child(odd) { grid-column:1 / -1; }
+  @media (min-width:380px) {
+    .chips[data-f="layers"], .chips[data-f="stories"], .chips[data-f="fascia"] { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .chips[data-f="layers"] > .chip:last-child:nth-child(odd), .chips[data-f="stories"] > .chip:last-child:nth-child(odd), .chips[data-f="fascia"] > .chip:last-child:nth-child(odd) { grid-column:auto; }
+  }
+  .chips[data-multi], .chips[data-f="decking"] { grid-template-columns:1fr; }
+  .chips[data-multi] .chip { display:flex; align-items:center; justify-content:flex-start; gap:11px; text-align:left; padding:12px; }
+  .chips[data-multi] .chip::before { content:""; display:block; flex:0 0 19px; height:19px; border:1.5px solid #aebdca; border-radius:5px; background:#fff; }
+  .chips[data-multi] .chip.on::before { content:"✓"; color:var(--brand); border-color:#fff; text-align:center; font:700 15px/18px Arial,sans-serif; }
+  .chips[data-multi] .chip:first-child { grid-column:auto; }
+  .chips[data-f="special"] .chip:last-child { margin-top:4px; border-style:dashed; }
+  .big5 > label.f:not([for]) { border-top:1px solid var(--line); padding-top:20px; margin-top:22px; font-size:12px; letter-spacing:.035em; line-height:1.5; color:var(--ink); }
+  .big5 > h2 + label.f { border-top:0; margin-top:14px; padding-top:0; }
+  .card > .chips + label.f { margin-top:20px; }
+  .savebar { display:grid; grid-template-columns:minmax(0,528px); gap:6px; padding:8px 16px calc(10px + env(safe-area-inset-bottom,0px)); }
+  .savebar .status { text-align:center; font-size:11px; line-height:1.4; white-space:normal; }
+  .savebar .btn.primary { width:100%; max-width:none; min-height:48px; padding:12px 16px; font-size:16px; white-space:nowrap; }
+  main { padding-bottom:calc(124px + env(safe-area-inset-bottom,0px)); }
+  .toast { bottom:calc(100px + env(safe-area-inset-bottom,0px)); }
+  @media (min-width:480px) {
+    .chips[data-multi], .chips[data-f="decking"] { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  }
   @media print {
     body { background:#fff; }
     .band, #form, .savebar, .outbtns, .privacy, .toast, .no-print { display:none !important; }
@@ -177,7 +203,7 @@
 <option>Multi-Width Slate</option><option>Single-Width Slate</option><option>Province Slate</option><option>Multi-Width Shake</option><option>Single-Width Shake</option><option>Select Shake</option><option>Other / Special Order</option>
 </select>
 
-</div><div class="card">
+</div><div class="card big5">
 <h2>The Big 5</h2>
 <label class="f">1. Layers</label>
 <div class="chips" data-f="layers">
