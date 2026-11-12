@@ -241,8 +241,8 @@
 </select><label class="f">Drip Edge Color</label><div class="chips" data-f="dripedge">
 <button class="chip" data-v="White">White</button><button class="chip" data-v="Black">Black</button><button class="chip" data-v="Brown">Brown</button><button class="chip" data-v="Bronze">Bronze</button><button class="chip" data-v="Almond">Almond</button><button class="chip" data-v="Clay">Clay</button><button class="chip" data-v="Gray">Gray</button><button class="chip" data-v="Galvanized">Galvanized</button><button class="chip" data-v="Other">Other</button><button class="chip" data-v="Match shingles">Match Shingles</button><button class="chip" data-v="Match trim / fascia">Match Trim / Fascia</button>
 </div><label class="f" for="flatcolor">Flat Roof Color</label><select data-f="flatcolor" id="flatcolor"><option value="">Choose a flat roof color</option><option>Buff</option><option>Grey Slate</option><option>Black</option><option>Heatherblend</option><option>Chestnut</option><option>Oak</option><option>Pine Green</option><option>Weatherwood</option><option>Red Blend</option><option>White</option><option>Bright White</option><option>Polyfresko (Highly Reflective White)</option><option>Tan</option><option>Gray</option><option>Match Original</option><option>Match New Shingles</option><option>Other</option><option>N/A - No Flat Roof</option><option>Not Included in This Job</option></select><div class="row2">
-<div><label class="f" for="tearoff">Approx. Tear-Off (SQ)</label><input data-f="tearoff" id="tearoff" inputmode="decimal" max="100" min="0" step="any" type="number"/></div>
-<div><label class="f" for="install">Approx. Install (SQ)</label><input data-f="install" id="install" inputmode="decimal" max="100" min="0" step="any" type="number"/></div>
+<div><label class="f" for="tearoff">Approx. Tear-Off (Roofing squares)</label><input data-f="tearoff" id="tearoff" inputmode="decimal" max="100" min="0" step="any" type="number"/></div>
+<div><label class="f" for="install">Approx. Install (Roofing squares)</label><input data-f="install" id="install" inputmode="decimal" max="100" min="0" step="any" type="number"/></div>
 </div></div><div class="card"><h2>Work Items</h2><div id="workitems2"></div></div><div class="card">
 <h2>Additional Notes</h2>
 <textarea data-f="addnotes" id="addnotes" placeholder='Required - enter "None" if nothing else'></textarea>
@@ -271,12 +271,12 @@
 <script>
 (function(){
   var WORK = [
-    {g:"SITE PROTECTION", items:[["Protect Landscaping / Plants / Trees","LS",1,"w"],["Protect Windows / Walls / Driveway / Hardscape","LS",1,"w"]]},
-    {g:"ROOFING", items:[["Tear Off & Dispose Existing Roofing","SQ",0,"w"],["Install Architectural Shingles","SQ",0,"m"],["Install Underlayment","SQ",0,"m"],["Ice & Water Barrier at Valley","LF",0,"m"],["Install Drip Edge","LF",0,"m"],["Install Ridge Cap","LF",0,"m"],["Flat Roof Restoration","SQ",0,"m"]]},
-    {g:"ACCESSORIES", items:[["Replace Pipe Jacks","EA",0,"m",["1\"","2\"","3\"","4\"","No Size"],null,"multi"],["Replace Turbine Vents","EA",0,"m"],["Replace T-Top Vents","EA",0,"m",["4\"","7\""],null,"multi"],["Replace B-Vent Flashing","EA",0,"m"],["Replace Split Pipe Boots","EA",0,"m",["1\"","2\"","3\"","4\"","Not Verified"]],["Replace Dormer Vents","EA",0,"m"],["Replace O'Hagin Vents","EA",0,"m"],["Satellite Realignment after Roof Completion","EA",0,"w"],["Straighten A/C Condenser Fins","EA",0,"w"],["Skylights","EA",0,"m"]]},
-    {g:"DECKING", removed:true, items:[["Backup 4' x 8' Decking Sheets","EA",0,"m"]]},
-    {g:"SPECIAL CONDITIONS", items:[["Rooftop HVAC","LS",0,"w"],["Take Extra Care at Pitched / Flat Roof Transition","",0,"w",null,null,null,null,"yn"],["Shingle Moulding","Linear feet",0,"m"],["Fascia Replacement","LF",0,"m",null,true],["Do Not Disturb Patio Flat Roof or Shed Roofs","LS",0,"w"],["Dispose of Swamp Cooler and Patch Deck","EA",0,"w"],["Solar DnR Will Be Needed.","",0,"w",null,null,null,"date"]]},
-    {g:"CLOSEOUT", items:[["Remove All Debris","EA",1,"w",null,null,null,null,"yn"],["Final Magnetic Sweep","EA",1,"w",null,null,null,null,"yn"],["Final Roof Inspection","EA",1,"w",null,null,null,null,"yn"],["Completion Photos","EA",1,"w",null,null,null,null,"yn"]]}
+    {g:"SITE PROTECTION", items:[["Protect Landscaping / Plants / Trees","Lump sum",1,"w"],["Protect Windows / Walls / Driveway / Hardscape","Lump sum",1,"w"]]},
+    {g:"ROOFING", items:[["Tear Off & Dispose Existing Roofing","Roofing squares",0,"w"],["Install Architectural Shingles","Roofing squares",0,"m"],["Install Underlayment","Roofing squares",0,"m"],["Ice & Water Barrier at Valley","Linear feet",0,"m"],["Install Drip Edge","Linear feet",0,"m"],["Install Ridge Cap","Linear feet",0,"m"],["Flat Roof Restoration","Roofing squares",0,"m"]]},
+    {g:"ACCESSORIES", items:[["Replace Pipe Jacks","Each",0,"m",["1\"","2\"","3\"","4\"","No Size"],null,"multi"],["Replace Turbine Vents","Each",0,"m"],["Replace T-Top Vents","Each",0,"m",["4\"","7\""],null,"multi"],["Replace B-Vent Flashing","Each",0,"m"],["Replace Split Pipe Boots","Each",0,"m",["1\"","2\"","3\"","4\"","Not Verified"]],["Replace Dormer Vents","Each",0,"m"],["Replace O'Hagin Vents","Each",0,"m"],["Satellite Realignment after Roof Completion","Each",0,"w"],["Straighten A/C Condenser Fins","Each",0,"w"],["Skylights","Each",0,"m"]]},
+    {g:"DECKING", removed:true, items:[["Backup 4' x 8' Decking Sheets","Each",0,"m"]]},
+    {g:"SPECIAL CONDITIONS", items:[["Rooftop HVAC","Lump sum",0,"w"],["Take Extra Care at Pitched / Flat Roof Transition","",0,"w",null,null,null,null,"yn"],["Shingle Moulding","Linear feet",0,"m"],["Fascia Replacement","Linear feet",0,"m",null,true],["Do Not Disturb Patio Flat Roof or Shed Roofs","Lump sum",0,"w"],["Dispose of Swamp Cooler and Patch Deck","Each",0,"w"],["Solar DnR Will Be Needed.","",0,"w",null,null,null,"date"]]},
+    {g:"CLOSEOUT", items:[["Remove All Debris","Each",1,"w",null,null,null,null,"yn"],["Final Magnetic Sweep","Each",1,"w",null,null,null,null,"yn"],["Final Roof Inspection","Each",1,"w",null,null,null,null,"yn"],["Completion Photos","Each",1,"w",null,null,null,null,"yn"]]}
   ];
   var KEY = 'hr-workorder-draft-v1';
   var state = { fields:{}, items:{} };
@@ -373,7 +373,7 @@
       show('steelprofilelabel',s==='Stone-Coated Steel'); show('steelprofile',s==='Stone-Coated Steel');
       show('compositeproductlabel',s==='Composite / Synthetic'); show('compositeproduct',s==='Composite / Synthetic');
       var wi=document.querySelector('input[data-item="1-1"]');
-      if(wi){ var nm=wi.closest('.item').querySelector('.nm'); if(nm) nm.innerHTML=wiName(1,1)+' <span class="unit">SQ</span>'; }
+      if(wi){ var nm=wi.closest('.item').querySelector('.nm'); if(nm) nm.innerHTML=wiName(1,1)+' <span class="unit">Roofing squares</span>'; }
     };
     rc.addEventListener('click', function(){ setTimeout(window.syncSystemProducts,0); });
     window.syncSystemProducts();
@@ -472,7 +472,7 @@
   }
 
 
-  var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmphone": "Project Manager Phone", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "gate": "Gate Code", "currentsystem": "Current Roof System", "currentsystemother": "Current Roof System (Other)", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "tileprofile": "Tile Profile", "steelprofile": "Stone-Coated Steel Profile", "compositeproduct": "Composite Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approx. Tear-Off (SQ)", "install": "Approx. Install (SQ)", "layers": "Layers", "decking": "Decking / Redeck", "layersother": "Layers (Other)", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "acnotes": "A/C / Crane Notes", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
+  var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmphone": "Project Manager Phone", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "gate": "Gate Code", "currentsystem": "Current Roof System", "currentsystemother": "Current Roof System (Other)", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "tileprofile": "Tile Profile", "steelprofile": "Stone-Coated Steel Profile", "compositeproduct": "Composite Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approx. Tear-Off (Roofing squares)", "install": "Approx. Install (Roofing squares)", "layers": "Layers", "decking": "Decking / Redeck", "layersother": "Layers (Other)", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "acnotes": "A/C / Crane Notes", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
   function pendingMessage(scope){
     if(!state.review) return '';
     var a=[];
@@ -707,7 +707,7 @@
     }
     var lowerItems=topOnly?'':itemRows('workitems2');
     if(!topOnly){
-      h += sec('New Roof Details', rowKV('Malarkey Product', val('malarkey')) + rowKV('Tile Profile', val('tileprofile')) + rowKV('Stone-Coated Steel Profile', val('steelprofile')) + rowKV('Composite Product', val('compositeproduct')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Approx. Tear-Off (SQ)', val('tearoff')) + rowKV('Approx. Install (SQ)', val('install')));
+      h += sec('New Roof Details', rowKV('Malarkey Product', val('malarkey')) + rowKV('Tile Profile', val('tileprofile')) + rowKV('Stone-Coated Steel Profile', val('steelprofile')) + rowKV('Composite Product', val('compositeproduct')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Approx. Tear-Off (Roofing squares)', val('tearoff')) + rowKV('Approx. Install (Roofing squares)', val('install')));
       if(lowerItems) h += '<div class="secbar">Work Items</div>'+lowerItems;
     }
     if(!topOnly && val('addnotes')) h += '<h3>Additional Notes</h3><table><tr><td>'+esc(val('addnotes')).replace(/\n/g,'<br>')+'</td></tr></table>';
@@ -724,7 +724,7 @@
     p('PM', val('pm')); p('PM Phone', fmtPhone(val('pmphone'))); p('Request JT PM', val('jt')); if(val('pmnotes')) p('PM Notes', val('pmnotes'));
     p('Customer', val('customer')); p('Phone', fmtPhone(val('phone'))); p('Address', val('address')); p('Gate Code', gateVal());
     L.push('');
-    p('Current Roof System', currentSystemVal()); p('Roof System Being Installed', val('roofsystem')); p('Malarkey Product', val('malarkey')); p('Tile Profile', val('tileprofile')); p('Steel Profile', val('steelprofile')); p('Composite Product', val('compositeproduct')); p('Shingle Color', val('shinglecolor')); p('Drip Edge', val('dripedge')); p('Flat Roof Color', val('flatcolor')); p('Job Type', val('jobtype')); p('Approx. Tear-Off (SQ)', val('tearoff')); p('Approx. Install (SQ)', val('install'));
+    p('Current Roof System', currentSystemVal()); p('Roof System Being Installed', val('roofsystem')); p('Malarkey Product', val('malarkey')); p('Tile Profile', val('tileprofile')); p('Steel Profile', val('steelprofile')); p('Composite Product', val('compositeproduct')); p('Shingle Color', val('shinglecolor')); p('Drip Edge', val('dripedge')); p('Flat Roof Color', val('flatcolor')); p('Job Type', val('jobtype')); p('Approx. Tear-Off (Roofing squares)', val('tearoff')); p('Approx. Install (Roofing squares)', val('install'));
     L.push(''); L.push('BIG 5:');
     p('Layers', layersVal());
     p('Decking', deckingVal());
@@ -877,12 +877,12 @@
             var row=rows[ri],cells=Array.from(row.cells);
             if(row.querySelector('.inote')){var note=lines(row.querySelector('.inote').innerText, width-66,9,false);for(var nn=0;nn<note.length;nn++){need(14);text(note[nn],left+62,y+9,9,false,muted);y+=12;}y+=7;continue;}
             if(row.classList.contains('wline')){
-              var qty=lines(cells[0].innerText,43,9,true),name=lines(cells[1].innerText,width-110,10,true),unit=lines(cells[2].innerText,30,8,false);
-              var h=Math.max(25,name.length*13+9,qty.length*12+8);
+              var qty=lines(cells[0].innerText,43,9,true),name=lines(cells[1].innerText,width-180,10,true),unit=lines(cells[2].innerText,90,8,false);
+              var h=Math.max(25,name.length*13+9,qty.length*12+8,unit.length*10+9);
               var following=rows[ri+1]&&rows[ri+1].querySelector('.inote');
               var noteReserve=following?Math.min(36,lines(following.innerText,width-66,9,false).length*12+7):0;
               need(h+noteReserve);pdf.setFillColor(239,247,253);pdf.setDrawColor(1,97,168);pdf.roundedRect(left+2,y+2,45,Math.max(18,qty.length*12+5),4,4,'FD');
-              text(qty,left+7,y+14,9,true,blue);text(name,left+62,y+13,10,true,ink);text(unit,right-30,y+13,8,false,muted);y+=h;
+              text(qty,left+7,y+14,9,true,blue);text(name,left+62,y+13,10,true,ink);text(unit,right-90,y+13,8,false,muted);y+=h;
             }else{
               if(cells.length===1){var all=lines(cells[0].innerText,width-16,10,false);for(var z=0;z<all.length;z++){need(15);text(all[z],left+8,y+11,10,false);y+=14;}y+=7;continue;}
               var key=lines(cells[0].innerText,173,9,true),values=lines(cells[1].innerText,width-201,10,false),rh=Math.max(key.length*12,values.length*13)+12;
