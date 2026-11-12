@@ -321,7 +321,7 @@
       if(it[5]) return;
       var id = gi+'-'+ii;
       var row = document.createElement('div'); row.className='item';
-      row.innerHTML = (it[0]==='Replace Pipe Jacks'?'<img src="./visuals/pipe-jack.svg" alt="Pipe jack example: vent pipe with rubber boot and metal flashing" width="88" height="88" style="width:88px;height:88px;object-fit:cover;border-radius:8px;flex:none" loading="lazy">':'')+'<span class="nm">'+wiName(gi,ii)+(it[1]?' <span class="unit">'+it[1]+'</span>':'')+'</span>'+
+      row.innerHTML = (it[0]==='Replace Pipe Jacks'||it[0]==='Replace T-Top Vents'?'<img src="./visuals/'+(it[0]==='Replace Pipe Jacks'?'pipe-jack-photo.jpg':'t-top-photo.jpg')+'" alt="'+(it[0]==='Replace Pipe Jacks'?'Real pipe jack photo: vent pipe, rubber boot and metal flashing':'Real T-top roof vent photo')+'" width="112" height="140" style="width:112px;height:140px;object-fit:contain;background:#eee;border-radius:8px;flex:none" loading="lazy">':'')+'<span class="nm">'+wiName(gi,ii)+(it[1]?' <span class="unit">'+it[1]+'</span>':'')+'</span>'+
         (it[6]==='multi'?'':it[8]==='yn'?'<span class="step yn" data-yn="'+id+'"><button type="button" class="ynbtn" data-ynv="1">Yes</button><button type="button" class="ynbtn" data-ynv="0">No</button></span>':'<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
         '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="0" placeholder="0">'+
         '<button type="button" data-d="1" aria-label="increase">+</button></span>')+
