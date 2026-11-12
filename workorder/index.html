@@ -37,6 +37,9 @@
   select { appearance:none; background:#fbfaf7 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230161A8' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 14px center; }
   .chips { display:flex; flex-wrap:wrap; gap:8px; }
   .chip { border:1.5px solid #cfd9e0; background:#fbfaf7; color:var(--ink); border-radius:999px; padding:10px 16px; font-size:15px; font-weight:600; font-family:inherit; cursor:pointer; transition:.15s; }
+  .chips.aligned-choices { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .aligned-choices .chip { width:100%; min-height:46px; padding:10px 12px; line-height:1.3; display:flex; align-items:center; justify-content:center; text-align:center; }
+  .aligned-choices .chip:first-child { grid-column:1 / -1; }
   .chip.on { background:var(--brand); border-color:var(--brand); color:#fff; }
   .row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .hint { font-size:12px; color:var(--muted); margin-top:5px; }
@@ -213,19 +216,19 @@
 <button class="chip" data-v="1 Story">1 Story</button><button class="chip" data-v="2 Stories">2 Stories</button><button class="chip" data-v="3+ Stories">3+ Stories</button>
 </div>
 <label class="f">Limited Access?</label>
-<div class="chips" data-f="access">
+<div class="chips aligned-choices" data-f="access">
 <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Tight Driveway">Tight Driveway</button><button class="chip" data-v="Yes - Restricted Equipment Access">Restricted Equipment</button><button class="chip" data-v="Yes - Long Material Carry">Long Material Carry</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
 </div>
 <label class="f">Complex Roof Design?</label>
-<div class="chips" data-f="complex">
+<div class="chips aligned-choices" data-f="complex">
 <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Multiple Elevations">Multiple Elevations</button><button class="chip" data-v="Yes - Cut-Up Roof">Cut-Up Roof</button><button class="chip" data-v="Yes - Dormers / Transitions">Dormers / Transitions</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
 </div>
 <label class="f">Special Equipment?</label>
-<div class="chips" data-f="equipment">
+<div class="chips aligned-choices" data-f="equipment">
 <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - Lift">Lift</button><button class="chip" data-v="Yes - Scaffolding">Scaffolding</button><button class="chip" data-v="Yes - Additional Fall Protection">Additional Fall Protection</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
 </div>
 <label class="f">Occupied / Restricted Property?</label>
-<div class="chips" data-f="occupied">
+<div class="chips aligned-choices" data-f="occupied">
 <button class="chip" data-v="No">No</button><button class="chip" data-v="Yes - HOA Restrictions">HOA Restrictions</button><button class="chip" data-v="Yes - Limited Work Hours">Limited Work Hours</button><button class="chip" data-v="Yes - Sensitive Landscape / Hardscape">Sensitive Landscape</button><button class="chip" data-v="Yes - Multiple">Multiple</button>
 </div>
 <label class="f" for="otherinstr">Other / Special Instructions</label>
