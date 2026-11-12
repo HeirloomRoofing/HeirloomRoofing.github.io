@@ -142,7 +142,7 @@
 <body>
 <div class="band no-print">
   <img src="/start/logo.svg" alt="Heirloom Roofing logo">
-  <div class="t">Production Work Order</div>
+  <div class="t">Initial Production Checklist</div>
 </div>
 <main>
   <div id="form">
@@ -238,7 +238,7 @@
 <button class="chip" data-v="Yes - Pets / Children On Site">Pets / Children On Site</button><button class="chip" data-v="Yes - Protect Vehicles / Outdoor Items">Protect Vehicles / Outdoor Items</button></div>
 <label class="f" for="otherinstr">Other / Special Instructions</label>
 <textarea data-f="otherinstr" id="otherinstr" placeholder='Required - enter "None" if no other instructions'></textarea>
-</div><div class="no-print" style="margin:14px 0 2px;text-align:center"><button class="btn primary" id="genbtn2" type="button" style="width:min(340px,100%)">Generate Initial Job Checklist PDF</button><div class="hint">Save PDF in Roofr</div></div><div class="card">
+</div><div class="no-print" style="margin:14px 0 2px;text-align:center"><button class="btn primary" id="genbtn2" type="button" style="width:min(340px,100%)">Generate Initial Production Checklist PDF</button><div class="hint">Save PDF in Roofr</div></div><div class="card">
 <h2>Roof System Being Installed</h2>
 <label class="f">Roof System</label>
 <div class="chips" data-f="roofsystem">
@@ -721,7 +721,7 @@
   var outputScope = "all", pdfActionBusy = false;
   function buildOutput(scope){
     var topOnly = scope==='top';
-    var documentTitle=topOnly?'INITIAL JOB CHECKLIST':'PRODUCTION WORK ORDER';
+    var documentTitle=topOnly?'INITIAL PRODUCTION CHECKLIST':'PRODUCTION WORK ORDER';
     var today = new Date().toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'});
     var h = '<div class="wohead"><img src="/start/logo.svg" alt="" style="background:#0161A8;border-radius:10px;padding:6px 10px"><div class="wt">'+documentTitle+'</div><div class="wd">Heirloom Roofing LLC &bull; '+today+'</div></div>';
     if(state.review) h += '<div style="border:2px solid #b57800;padding:12px;margin:16px 0;color:#704800"><b>DRAFT - REVIEW BEFORE '+(topOnly?'USE':'PRODUCTION')+'</b><br>'+(pendingMessage(scope).match(/PENDING/g)||[]).length+' pending choices or quantities. Full review list is below.</div>';
@@ -900,8 +900,8 @@
       var tokens=svg.querySelector('path').getAttribute('d').match(/[MLC]|-?(?:\d*\.)?\d+(?:e[-+]?\d+)?/g);
       var pdf=new window.jspdf.jsPDF({unit:'pt',format:'letter'});
       var left=38,right=574,width=536,y=38,bottom=748,page=1;
-      var pdfTitle=outputScope==='top'?'INITIAL JOB CHECKLIST':'PRODUCTION WORK ORDER';
-      var pdfLabel=outputScope==='top'?'Initial Job Checklist':'Production Work Order';
+      var pdfTitle=outputScope==='top'?'INITIAL PRODUCTION CHECKLIST':'PRODUCTION WORK ORDER';
+      var pdfLabel=outputScope==='top'?'Initial Production Checklist':'Production Work Order';
       var blue=[1,97,168],ink=[32,48,60],muted=[94,111,123];
       function color(c){pdf.setTextColor.apply(pdf,c);}
       function font(size,bold,c){pdf.setFont('helvetica',bold?'bold':'normal');pdf.setFontSize(size);color(c||ink);}
@@ -953,7 +953,7 @@
       }
       footer();
       var name=(val('customer')||'Work Order').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'Work-Order';
-      return {pdf:pdf,name:(outputScope==='top'?'Heirloom-Initial-Job-Checklist-':'Heirloom-Work-Order-')+name+'.pdf'};
+      return {pdf:pdf,name:(outputScope==='top'?'Heirloom-Initial-Production-Checklist-':'Heirloom-Work-Order-')+name+'.pdf'};
     }catch(e){console.error(e);toast('Could not create PDF - try again');return null;}
   }
   document.getElementById('sharepdfbtn').addEventListener('click', async function(){
@@ -963,7 +963,7 @@
     var blob = r.pdf.output('blob');
     var file = new File([blob], r.name, {type:'application/pdf'});
     if(navigator.canShare && navigator.canShare({files:[file]})){
-      await navigator.share({files:[file], title:outputScope==='top'?'Initial Job Checklist':'Production Work Order'}).catch(function(){});
+      await navigator.share({files:[file], title:outputScope==='top'?'Initial Production Checklist':'Production Work Order'}).catch(function(){});
     } else {
       r.pdf.save(r.name);
       toast('PDF saved - attach it from your Files');
