@@ -844,7 +844,23 @@
     var w=document.getElementById('wopaper');
     w.style.width='680px';w.style.maxWidth='none';
     try{
-      var cv=await html2canvas(w,{backgroundColor:'#ffffff',scale:2,useCORS:true,logging:false});
+      // Keep the logo out of the page bitmap, then paint its original paths
+      // directly into the PDF. Other content keeps the existing page layout.
+      var logo=w.querySelector('.wohead img');
+      await logo.decode();
+      var response=await fetch(logo.getAttribute('src'));
+      if(!response.ok) throw new Error('Vector logo unavailable');
+      var svg=new DOMParser().parseFromString(await response.text(),'image/svg+xml');
+      var logoPath=svg.querySelector('path');
+      if(!logoPath) throw new Error('Vector logo missing');
+      var pathData=logoPath.getAttribute('d');
+      if(/[A-BD-KN-Za-z]/.test(pathData)) throw new Error('Unsupported logo geometry');
+      var tokens=pathData.match(/[MLC]|-?(?:\d*\.)?\d+(?:e[-+]?\d+)?/g);
+      var lr=logo.getBoundingClientRect(),wr=w.getBoundingClientRect(),ls=getComputedStyle(logo);
+      var lp={x:lr.left-wr.left,y:lr.top-wr.top,w:lr.width,h:lr.height,
+        px:parseFloat(ls.paddingLeft),py:parseFloat(ls.paddingTop)};
+      var cv=await html2canvas(w,{backgroundColor:'#ffffff',scale:2,useCORS:true,logging:false,
+        onclone:function(doc){doc.querySelector('#wopaper .wohead img').style.visibility='hidden';}});
       var pdf=new window.jspdf.jsPDF({unit:'pt',format:'letter'});
       var pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight(),m=28,imgw=pw-2*m;
       var pageH=Math.floor(cv.width*(ph-2*m)/imgw); // canvas px that fit on one page
@@ -903,6 +919,22 @@
         var ctx=piece.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,piece.width,piece.height);
         ctx.drawImage(cv,0,y0,cv.width,h,0,0,cv.width,h);
         pdf.addImage(piece.toDataURL('image/jpeg',0.92),'JPEG',m,m,imgw,h*imgw/cv.width);
+        if(p===0){
+          var unit=imgw/w.offsetWidth;
+          pdf.setFillColor(1,97,168);
+          pdf.roundedRect(m+lp.x*unit,m+lp.y*unit,lp.w*unit,lp.h*unit,10*unit,10*unit,'F');
+          var scale=Math.min((lp.w-2*lp.px)/125,(lp.h-2*lp.py)/72);
+          var ox=m+(lp.x+(lp.w-125*scale)/2)*unit;
+          var oy=m+(lp.y+(lp.h-72*scale)/2)*unit;
+          var ops=[],ti=0;
+          while(ti<tokens.length){
+            var cmd=tokens[ti++],n=cmd==='C'?6:2,coords=[];
+            for(var j=0;j<n;j++) coords.push((j%2?oy:ox)+Number(tokens[ti++])*scale*unit);
+            ops.push({op:cmd==='M'?'m':cmd==='L'?'l':'c',c:coords});
+          }
+          pdf.setFillColor(255,255,255);
+          pdf.path(ops).fillEvenOdd();
+        }
       }
       var name=(val('customer')||'Work Order').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'Work-Order';
       return {pdf:pdf, name:(outputScope==='top'?'Heirloom-On-Site-Checklist-':'Heirloom-Work-Order-')+name+'.pdf'};
