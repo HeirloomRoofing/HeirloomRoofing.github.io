@@ -280,7 +280,7 @@
   ];
   var KEY = 'hr-workorder-draft-v1';
   var state = { fields:{}, items:{} };
-  WORK.forEach(function(g,gi){ g.items.forEach(function(it,ii){ state.items[gi+'-'+ii] = {qty:null, note:'', size:'', sizeqty:{}, soldate:''}; }); });
+  WORK.forEach(function(g,gi){ g.items.forEach(function(it,ii){ state.items[gi+'-'+ii] = {qty:it[8]==='yn'?null:0, note:'', size:'', sizeqty:{}, soldate:''}; }); });
 
   // Build work item UI
   var wi = document.getElementById('workitems'); var wi2 = document.getElementById('workitems2');
@@ -297,10 +297,10 @@
       var row = document.createElement('div'); row.className='item';
       row.innerHTML = '<span class="nm">'+wiName(gi,ii)+(it[1]?' <span class="unit">'+it[1]+'</span>':'')+'</span>'+
         (it[6]==='multi'?'':it[8]==='yn'?'<span class="step yn" data-yn="'+id+'"><button type="button" class="ynbtn" data-ynv="1">Yes</button><button type="button" class="ynbtn" data-ynv="0">No</button></span>':'<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
-        '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="" placeholder="-">'+
+        '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="0" placeholder="0">'+
         '<button type="button" data-d="1" aria-label="increase">+</button></span>')+
         (it[7]==='date'?'<label class="sizeq">Reset Date (Optional): <input type="date" data-datefor="'+id+'" aria-label="Solar reset date"></label>':'')+
-        (it[4]&&it[6]==='multi'?'<span class="sizeqs'+((it[0]==='Replace Pipe Jacks'||it[0]==='Replace T-Top Vents')?' pipeqs':'')+'">'+it[4].map(function(z){return '<label class="sizeq">'+(z==='No Size'?'4-in-1':z)+((it[0]==='Replace Pipe Jacks'||it[0]==='Replace T-Top Vents')?' <span class="step"><button type="button" data-sqd="-1" aria-label="Decrease size quantity">&minus;</button>':' ')+'<input type="number" min="0" step="1" inputmode="numeric" data-sq="'+id+'" data-sz="'+z+'" value="" placeholder="-">'+((it[0]==='Replace Pipe Jacks'||it[0]==='Replace T-Top Vents')?'<button type="button" data-sqd="1" aria-label="Increase size quantity">+</button></span>':'')+'</label>';}).join('')+'</span>':
+        (it[4]&&it[6]==='multi'?'<span class="sizeqs'+((it[0]==='Replace Pipe Jacks'||it[0]==='Replace T-Top Vents')?' pipeqs':'')+'">'+it[4].map(function(z){return '<label class="sizeq">'+(z==='No Size'?'4-in-1':z)+((it[0]==='Replace Pipe Jacks'||it[0]==='Replace T-Top Vents')?' <span class="step"><button type="button" data-sqd="-1" aria-label="Decrease size quantity">&minus;</button>':' ')+'<input type="number" min="0" step="1" inputmode="numeric" data-sq="'+id+'" data-sz="'+z+'" value="0" placeholder="0">'+((it[0]==='Replace Pipe Jacks'||it[0]==='Replace T-Top Vents')?'<button type="button" data-sqd="1" aria-label="Increase size quantity">+</button></span>':'')+'</label>';}).join('')+'</span>':
         it[4]?'<select data-sizefor="'+id+'" aria-label="Size"><option value="">Size</option>'+it[4].map(function(z){return '<option>'+z+'</option>';}).join('')+'</select>':'')+
         '<button type="button" class="notebtn" data-notebtn="'+id+'">'+(['Replace Pipe Jacks','Replace B-Vent Flashing','Replace Split Pipe Boots','Tear Off & Dispose Existing Roofing','Install Architectural Shingles','Install Underlayment','Ice & Water Barrier at Valley','Install Drip Edge','Protect Landscaping / Plants / Trees','Protect Windows / Walls / Driveway / Hardscape','Remove All Debris','Final Magnetic Sweep','Final Roof Inspection','Completion Photos','Satellite Realignment after Roof Completion','Straighten A/C Condenser Fins'].indexOf(it[0])>=0?'+ Notes':'+ Measurement')+'</button>'+
         '<textarea data-notefor="'+id+'" placeholder="'+(it[0]==='Skylights'?'Measurements for skylights':'Note for this line')+'" style="display:none;flex-basis:100%"></textarea>';
@@ -541,10 +541,10 @@
         }
       }); }
       Object.keys(state.items).forEach(function(k){
-        var inp = document.querySelector('input[data-item="'+k+'"]'); if(inp){ inp.value = state.items[k].qty==null?'':state.items[k].qty; if(state.review) inp.placeholder='Pending'; }
+        var inp = document.querySelector('input[data-item="'+k+'"]'); if(inp){ if(state.items[k].qty==null && !state.review) state.items[k].qty=0; inp.value = state.items[k].qty==null?'':state.items[k].qty; if(state.review) inp.placeholder='Pending'; }
         var ta = document.querySelector('textarea[data-notefor="'+k+'"]'); if(ta && state.items[k].note){ ta.value = state.items[k].note; ta.style.display='block'; }
         var sz = document.querySelector('select[data-sizefor="'+k+'"]'); if(sz && state.items[k].size) sz.value = state.items[k].size;
-        document.querySelectorAll('input[data-sq="'+k+'"]').forEach(function(b){ var v=state.items[k].sizeqty&&state.items[k].sizeqty[b.getAttribute('data-sz')]; b.value=(v==null?'':v); });
+        document.querySelectorAll('input[data-sq="'+k+'"]').forEach(function(b){ var v=state.items[k].sizeqty&&state.items[k].sizeqty[b.getAttribute('data-sz')]; b.value=(v==null?'0':v); });
         var di = document.querySelector('input[data-datefor="'+k+'"]'); if(di && state.items[k].soldate) di.value = state.items[k].soldate;
         var yw2 = document.querySelector('[data-yn="'+k+'"]'); if(yw2){ var yq=state.items[k].qty; yw2.querySelectorAll('.ynbtn').forEach(function(x){ x.classList.toggle('on', yq!=null && String(yq)===x.getAttribute('data-ynv')); }); }
       });
