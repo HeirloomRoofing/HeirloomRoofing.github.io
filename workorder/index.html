@@ -635,7 +635,13 @@
 
   function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-  function rowKV(k,v){ return v ? '<tr><td class="k">'+esc(k)+'</td><td>'+esc(v)+'</td></tr>' : ''; }
+  function rowKV(k,v){
+    if(['Complex Roof Design','5. Special Conditions','Special Equipment','Occupied / Restricted'].indexOf(k)>=0 && v && v!=='No'){
+      var plain={'Yes - Multiple Elevations':'Multiple roof elevations','Yes - Valleys / Drainage Areas':'Roof valleys and drainage areas','Yes - Mixed Roof Pitches':'Different roof pitches','Yes - Chimneys / Wall Intersections':'Chimneys and wall intersections','Skylights / Penetrations':'Skylights and roof penetrations','Sensitive Landscaping / Property Protection':'Protect sensitive landscaping and property','Yes - Additional Fall Protection':'Additional fall protection required','Yes - Sensitive Landscape / Hardscape':'Protect sensitive landscaping and hardscape'};
+      v=v.split(', ').map(function(x){return plain[x]||x.replace(/^Yes - /,'');}).join('\n');
+    }
+    return v ? '<tr><td class="k">'+esc(k)+'</td><td>'+esc(v).replace(/\n/g,'<br>')+'</td></tr>' : '';
+  }
   function splitExt(v){ var m=String(v).match(/^(.*?)\s*(?:ext\.?|extension|x)\s*[:.]?\s*(\d+)$/i); if(m && m[1].replace(/\D/g,'').length>=7) return [m[1].trim(), ' ext '+m[2]]; return [String(v).trim(), '']; }
   function fmtPhone(raw){ var v=String(raw||'').trim(); if(!v) return v; var se=splitExt(v), base=se[0], ext=se[1]; if(base.indexOf('+')>=0) return base+ext; var d=base.replace(/\D/g,''); if(d.length===10) return d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6)+ext; if(d.length===11 && d.charAt(0)==='1') return '1-'+d.slice(1,4)+'-'+d.slice(4,7)+'-'+d.slice(7)+ext; return base+ext; }
   function telHref(raw){ var v=String(raw||'').trim(); if(!v) return ''; var se=splitExt(v), base=se[0], d=base.replace(/\D/g,''); if(!d) return ''; var num; if(base.indexOf('+')>=0) num='+'+d; else if(d.length===10) num='+1'+d; else if(d.length===11 && d.charAt(0)==='1') num='+'+d; else return ''; if(se[1]) num+=';ext='+se[1].replace(/\D/g,''); return 'tel:'+num; }
