@@ -648,7 +648,7 @@
   function rowPhone(k,v){ if(!v) return ''; var h=telHref(v), label=esc(fmtPhone(v)); var disp=h?'<a href="'+h+'" style="color:inherit;white-space:nowrap">'+label+'</a>':'<span style="white-space:nowrap">'+label+'</span>'; return '<tr><td class="k">'+esc(k)+'</td><td>'+disp+'</td></tr>'; }
 
 
-  function sizeBreakdown(st){ var parts=Object.keys(st.sizeqty||{}).filter(function(z){return st.sizeqty[z]>0;}).map(function(z){return (z==='No Size'?'4-in-1':z+'-inch')+': Qty '+st.sizeqty[z];}); return parts.length?' <span class="unit">('+parts.join('; ')+')</span>':''; }
+  function sizeBreakdown(st){ var parts=Object.keys(st.sizeqty||{}).filter(function(z){return st.sizeqty[z]>0;}).map(function(z){return (z==='No Size'?'4-in-1':z.replace(/"$/,'')+'-inch')+': Qty '+st.sizeqty[z];}); return parts.length?' <span class="unit">('+parts.join('; ')+')</span>':''; }
   function currentSystemVal(){ var v=chipVal('currentsystem'); var o=val('currentsystemother'); return v==='Other' && o ? 'Other - '+o : v; }
   function layersVal(){ return chipVal('layers') || val('layersother'); }
   function deckingVal(){ var d=val('decking'); if(d==='Solid Decking / No Decking Needed') return 'No Decking Needed'; if(!d) return d; if(val('deckqty')) d+=' - Qty: '+val('deckqty')+' sheets'; if(val('deckthick')) d+=' - Thickness: '+val('deckthick'); return d; }
