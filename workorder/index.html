@@ -329,7 +329,7 @@
   var MATERIAL_PHOTOS={'Architectural Shingle':'architectural','3-Tab Shingle':'3tab','Tile':'tile','Modified Bitumen':'bitumen','Slate':'slate','Wood Shake':'wood-shake','Composite / Synthetic':'composite','Stone-Coated Steel':'stone-steel','SPF / Coating':'spf-coating'};
   var ITEM_PHOTOS={'Replace Pipe Jacks':'pipe-jack-photo','Replace T-Top Vents':'t-top-photo','Install Architectural Shingles':'architectural','Install Underlayment':'underlayment','Replace Turbine Vents':'turbine','Skylights':'skylight','Flat Roof Restoration':'spf-coating','Ice & Water Barrier at Valley':'ice-water','Install Ridge Cap':'ridge-cap','Install Drip Edge':'drip-edge',"Backup 4' x 8' Decking Sheets":'plywood'};
   function itemPhoto(name){var key=ITEM_PHOTOS[name];return key?'<button type="button" class="photo-thumb" data-photo="'+key+'" aria-label="Enlarge photo: '+name+'"><img src="./visuals/'+key+'.jpg" alt="'+name+' real-photo example" loading="lazy" width="64" height="64"></button>':'';}
-  document.querySelectorAll('.chips[data-f="currentsystem"],.chips[data-f="roofsystem"]').forEach(function(group){group.classList.add('photo-choices');group.querySelectorAll('.chip').forEach(function(chip){var key=MATERIAL_PHOTOS[chip.dataset.v];if(!key)return;var img=document.createElement('img');img.src='./visuals/'+key+'.jpg';img.alt='';img.width=48;img.height=48;img.loading='lazy';chip.prepend(img);});});
+  document.querySelectorAll('.chips[data-f="currentsystem"],.chips[data-f="roofsystem"]').forEach(function(group){group.classList.add('photo-choices');group.querySelectorAll('.chip').forEach(function(chip){var key=MATERIAL_PHOTOS[chip.dataset.v];if(!key)return;var img=document.createElement('img');img.src='./visuals/'+key+'.jpg'+(key==='3tab'?'?v=20261112b':'');img.alt='';img.width=48;img.height=48;img.loading='lazy';chip.prepend(img);});});
 
   // Build work item UI
   var wi = document.getElementById('workitems'); var wi2 = document.getElementById('workitems2');
@@ -360,7 +360,7 @@
   });
 
   var photoDialog=document.createElement('dialog');photoDialog.className='photo-view';photoDialog.innerHTML='<form method="dialog"><button class="btn" style="padding:7px 16px">Close photo</button></form><img alt=""><p style="font-size:12px;color:#526474">Reference photo, not an exact product or color specification.</p><a href="./visuals/photo-credits.html" target="_blank" rel="noopener" style="font-size:12px">Photo sources and credits</a>';document.body.appendChild(photoDialog);
-  document.addEventListener('click',function(e){var b=e.target.closest('[data-photo]');if(!b)return;var img=photoDialog.querySelector('img');img.src='./visuals/'+b.dataset.photo+'.jpg';img.alt=b.getAttribute('aria-label');photoDialog.showModal();});
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-photo]');if(!b)return;var img=photoDialog.querySelector('img');img.src='./visuals/'+b.dataset.photo+'.jpg'+(b.dataset.photo==='3tab'?'?v=20261112b':'');img.alt=b.getAttribute('aria-label');photoDialog.showModal();});
 
   function updateCounts(){
     WORK.forEach(function(g,gi){
@@ -425,7 +425,7 @@
       show('steelprofilelabel',s==='Stone-Coated Steel'); show('steelprofile',s==='Stone-Coated Steel');
       show('compositeproductlabel',s==='Composite / Synthetic'); show('compositeproduct',s==='Composite / Synthetic');
       var wi=document.querySelector('input[data-item="1-1"]');
-      if(wi){ var row=wi.closest('.item'), nm=row.querySelector('.nm'); if(nm) nm.innerHTML=wiName(1,1)+' <span class="unit">Roofing squares</span>'; var oldPhoto=row.querySelector('.photo-thumb');if(oldPhoto)oldPhoto.remove();var key=MATERIAL_PHOTOS[s];if(key){var b=document.createElement('button');b.type='button';b.className='photo-thumb';b.dataset.photo=key;b.setAttribute('aria-label','Enlarge photo: '+s);b.innerHTML='<img src="./visuals/'+key+'.jpg" alt="'+s+' real-photo example" width="64" height="64" loading="lazy">';row.prepend(b);} }
+      if(wi){ var row=wi.closest('.item'), nm=row.querySelector('.nm'); if(nm) nm.innerHTML=wiName(1,1)+' <span class="unit">Roofing squares</span>'; var oldPhoto=row.querySelector('.photo-thumb');if(oldPhoto)oldPhoto.remove();var key=MATERIAL_PHOTOS[s];if(key){var b=document.createElement('button');b.type='button';b.className='photo-thumb';b.dataset.photo=key;b.setAttribute('aria-label','Enlarge photo: '+s);b.innerHTML='<img src="./visuals/'+key+'.jpg'+(key==='3tab'?'?v=20261112b':'')+'" alt="'+s+' real-photo example" width="64" height="64" loading="lazy">';row.prepend(b);} }
     };
     rc.addEventListener('click', function(){ setTimeout(window.syncSystemProducts,0); });
     window.syncSystemProducts();
