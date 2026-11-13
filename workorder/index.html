@@ -328,7 +328,7 @@
 
   var MATERIAL_PHOTOS={'Architectural Shingle':'architectural','3-Tab Shingle':'3tab','Tile':'tile','Modified Bitumen':'bitumen','Slate':'slate','Wood Shake':'wood-shake','Composite / Synthetic':'composite','Stone-Coated Steel':'stone-steel','SPF / Coating':'spf-coating'};
   var ITEM_PHOTOS={'Replace Pipe Jacks':'pipe-jack-photo','Replace T-Top Vents':'t-top-photo','Install Architectural Shingles':'architectural','Install Underlayment':'underlayment','Replace Turbine Vents':'turbine','Skylights':'skylight','Flat Roof Restoration':'spf-coating','Ice & Water Barrier at Valley':'ice-water','Install Ridge Cap':'ridge-cap','Install Drip Edge':'drip-edge',"Backup 4' x 8' Decking Sheets":'plywood'};
-  function itemPhoto(name){var key=ITEM_PHOTOS[name];return key?'<button type="button" class="photo-thumb" data-photo="'+key+'" aria-label="Enlarge photo: '+name+'"><img src="./visuals/'+key+'.jpg" alt="'+name+' real-photo example" loading="lazy" width="64" height="64"></button>':'';}
+  function itemPhoto(name){var key=ITEM_PHOTOS[name];return key?'<button type="button" class="photo-thumb" data-photo="'+key+'" aria-label="Enlarge photo: '+name+'"><img src="./visuals/'+key+'.jpg'+((key==='ridge-cap'||key==='ice-water')?'?v=20261113crop':'')+'" alt="'+name+' real-photo example" loading="lazy" width="64" height="64"></button>':'';}
   document.querySelectorAll('.chips[data-f="currentsystem"],.chips[data-f="roofsystem"]').forEach(function(group){group.classList.add('photo-choices');group.querySelectorAll('.chip').forEach(function(chip){var key=MATERIAL_PHOTOS[chip.dataset.v];if(!key)return;var img=document.createElement('img');img.src='./visuals/'+key+'.jpg'+((key==='3tab'||key==='architectural'||key==='wood-fascia')?'?v=20261112c':'');img.alt='';img.width=48;img.height=48;img.loading='lazy';chip.prepend(img);});});
 
   // Build work item UI
@@ -360,7 +360,7 @@
   });
 
   var photoDialog=document.createElement('dialog');photoDialog.className='photo-view';photoDialog.innerHTML='<form method="dialog"><button class="btn" style="padding:7px 16px">Close photo</button></form><img alt=""><p style="font-size:12px;color:#526474">Reference photo, not an exact product or color specification.</p><a href="./visuals/photo-credits.html" target="_blank" rel="noopener" style="font-size:12px">Photo sources and credits</a>';document.body.appendChild(photoDialog);
-  document.addEventListener('click',function(e){var b=e.target.closest('[data-photo]');if(!b)return;var img=photoDialog.querySelector('img');img.src='./visuals/'+b.dataset.photo+'.jpg'+((b.dataset.photo==='3tab'||b.dataset.photo==='architectural'||b.dataset.photo==='wood-fascia')?'?v=20261112c':'');img.alt=b.getAttribute('aria-label');photoDialog.showModal();});
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-photo]');if(!b)return;var img=photoDialog.querySelector('img');img.src='./visuals/'+b.dataset.photo+'.jpg'+((b.dataset.photo==='ridge-cap'||b.dataset.photo==='ice-water')?'?v=20261113crop':((b.dataset.photo==='3tab'||b.dataset.photo==='architectural'||b.dataset.photo==='wood-fascia')?'?v=20261112c':''));img.alt=b.getAttribute('aria-label');photoDialog.showModal();});
 
   function updateCounts(){
     WORK.forEach(function(g,gi){
