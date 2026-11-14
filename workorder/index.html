@@ -166,7 +166,7 @@
   body:has(#form:not([style*="display: none"])) .band img {height:32px;width:auto;}
   body:has(#form:not([style*="display: none"])) .band .t {font-size:16px;margin-top:5px;}
   body:has(#form:not([style*="display: none"])) main {margin-top:0;}
-  #form > .card:has(> .form-section) {margin:5px 0;padding:10px 14px;border-radius:11px;}
+  #form > .card:has(> .form-section) {margin:4px 0;padding:8px 14px;border-radius:11px;}
   #form .section-tab {min-height:19px;}
   #form .section-tab h2 {font-size:14px;line-height:19px;flex:1;min-width:0;}
   #form .section-count {font-size:10px;line-height:13px;color:var(--muted);text-align:right;max-width:82px;flex:none;}
@@ -174,11 +174,32 @@
   #form .section-count.ready {color:#19713a;}
   #form > .card:has(> #resetbtn) {padding:9px 12px;margin:5px 0 8px;}
   #form #resetbtn {padding:5px 10px;font-size:11px;}
-  #form > .card:has(> #resetbtn) > .hint {font-size:10px;line-height:1.2;margin-top:4px;}
+  #form > .card:has(> #resetbtn) > .hint {display:none;}
   #form > .no-print:has(> #genbtn2) {margin:7px 0!important;}
   #form #genbtn2 {font-size:12px;padding:8px 10px;}
   #form > .no-print:has(> #genbtn2) .hint {font-size:10px;margin-top:2px;}
   #form .privacy {font-size:10px;margin-top:8px;}
+  .area-photo {border-top:1px solid #d4dfe7;padding:12px 0;}
+  .area-photo>summary {min-height:24px;cursor:pointer;font-size:14px;color:var(--brand);font-weight:700;}
+  .area-photo-body {padding:6px 0 4px;}
+  .area-photo .job-gallery {margin-top:12px;}
+  .job-assessment {width:100%;border-top:1px dashed #cbd9e3;padding-top:14px;margin-top:14px;}
+  .job-assessment h4 {font-size:14px;color:var(--brand);margin:0 0 8px;}
+  .assessment-row {margin:15px 0;}
+  .assessment-row>label {display:block;font-size:12px;font-weight:700;margin:0 0 7px;}
+  .assessment-row>input,.assessment-row>select {width:100%;box-sizing:border-box;}
+  .photo-actions {display:flex;gap:9px;margin-top:8px;flex-wrap:wrap;}
+  .job-camera,.job-library {display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:0 12px;border:1px solid #bfd0de;border-radius:9px;color:var(--brand);font-size:12px;font-weight:700;cursor:pointer;}
+  .job-camera:focus-within,.job-library:focus-within {outline:2px solid var(--brand);}
+  .job-gallery {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+  .job-photo {margin:0;border:1px solid #d4dfe7;border-radius:10px;padding:7px;min-width:0;}
+  .job-photo img {width:100%;height:110px;object-fit:contain;background:#edf2f5;border-radius:6px;}
+  .job-photo figcaption {font-size:11px;margin:5px 0;}
+  .job-photo input {box-sizing:border-box;width:100%;font-size:12px;padding:8px;}
+  .job-photo button {font-size:11px;min-height:40px;margin-top:6px;}
+  #jobphotostatus {padding:12px;border:1px solid #b57800;border-radius:10px;margin-top:10px;font-size:12px;}
+  #jobphotostatus[hidden] {display:none;}
+  #jobphotostatus button {margin:8px 6px 0 0;min-height:40px;}
   .size-first {width:100%;}
   .size-options {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0 12px;}
   .size-pick {width:100%;min-height:44px;border:1px solid #bfd0de;border-radius:10px;background:white;color:var(--brand);font-weight:700;font-size:16px;}
@@ -378,7 +399,7 @@
     {g:"CLOSEOUT", items:[["Remove All Debris","Each",1,"w",null,null,null,null,"yn"],["Final Magnetic Sweep","Each",1,"w",null,null,null,null,"yn"],["Final Roof Inspection","Each",1,"w",null,null,null,null,"yn"],["Completion Photos","Each",1,"w",null,null,null,null,"yn"]]}
   ];
   var KEY = 'hr-workorder-draft-v1';
-  var state = { fields:{}, items:{} };
+  var state = { fields:{}, items:{}, photoIds:[], photoJob:null };
   WORK.forEach(function(g,gi){ g.items.forEach(function(it,ii){ state.items[gi+'-'+ii] = {qty:(it[8]==='yn'||it[0]==='Replace Furnace Vent')?null:0, note:'', size:'', sizeqty:{}, soldate:''}; }); });
 
   var MATERIAL_PHOTOS={'Architectural Shingle':'architectural','3-Tab Shingle':'3tab','Tile':'tile','Modified Bitumen':'bitumen','Slate':'slate','Wood Shake':'wood-shake','Composite / Synthetic':'composite','Stone-Coated Steel':'stone-steel','SPF / Coating':'spf-coating'};
@@ -387,6 +408,10 @@
 
   document.querySelectorAll('.chips[data-f="currentsystem"],.chips[data-f="roofsystem"]').forEach(function(group){group.classList.add('photo-choices');group.querySelectorAll('.chip').forEach(function(chip){var key=MATERIAL_PHOTOS[chip.dataset.v];if(!key)return;var img=document.createElement('img');img.src='./visuals/'+key+'.jpg'+((key==='3tab'||key==='architectural'||key==='wood-fascia')?'?v=20261112c':'');img.alt='';img.width=48;img.height=48;img.loading='lazy';chip.prepend(img);});});
 
+  function assessmentUI(id){
+    var camera='<svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h4l2-3h6l2 3h4v15H3z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13" r="4" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
+    return '<div class="job-assessment" data-assessment="'+id+'"><h4>Observed condition &amp; job photos</h4><p class="hint">Your observations, separate from replacement quantity. Blank means not recorded.</p>'+[['potential','Potentially damaged - qty'],['undamaged','Not damaged - qty'],['painted','Painted?']].map(function(pair){var key=pair[0];return '<div class="assessment-row"><label for="assessment-'+id+'-'+key+'">'+pair[1]+'</label>'+(key==='painted'?'<select id="assessment-'+id+'-'+key+'" data-observe="'+id+'" data-kind="'+key+'"><option value="">Not recorded</option><option>Yes</option><option>No</option><option>Not verified</option></select>':'<input id="assessment-'+id+'-'+key+'" type="number" min="0" step="any" inputmode="decimal" data-observe="'+id+'" data-kind="'+key+'" placeholder="Not recorded">')+'<div class="photo-actions"><label class="job-camera">'+camera+' Take photo<input type="file" accept="image/*" capture="environment" data-jobphoto="'+id+'" data-kind="'+key+'" hidden></label><label class="job-library">Choose photos<input type="file" accept="image/*" multiple data-jobphoto="'+id+'" data-kind="'+key+'" hidden></label></div></div>';}).join('')+'<p class="hint">Job photos save only in this browser on this device. Export the PDF for a backup. Photos are resized for the PDF; keep the originals. Clearing browser data can erase saved copies. Reference images above are never included as job photos.</p><div class="job-gallery" data-gallery="'+id+'"></div></div>';
+  }
   // Build work item UI
   var wi = document.getElementById('workitems'); var wi2 = document.getElementById('workitems2');
   WORK.forEach(function(g,gi){
@@ -416,6 +441,7 @@
       while(row.firstChild)body.appendChild(row.firstChild);
       var count=body.querySelector(':scope > .step,:scope > .yn');if(count){var label=document.createElement('label');label.className='item-field-label';label.textContent=it[8]==='yn'?'Scope required':'Quantity';var input=count.querySelector('input');if(input){input.id='qty-'+id;input.setAttribute('aria-label',wiName(gi,ii)+' quantity');label.htmlFor=input.id;}body.insertBefore(label,count);}
       var note=body.querySelector('textarea');if(note)note.setAttribute('aria-label',wiName(gi,ii)+' notes or measurements');
+      body.insertAdjacentHTML('beforeend',assessmentUI(id));
       detail.appendChild(head);detail.appendChild(body);row.appendChild(detail);
       det.appendChild(row);
     });
@@ -592,20 +618,12 @@
   });
 
   var saveTimer=null;
-  function save(){
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(function(){
-      var f={};
-      document.querySelectorAll('[data-f]').forEach(function(el){
-        if(el.classList.contains('chips')){ f[el.getAttribute('data-f')] = chipVal(el.getAttribute('data-f')); }
-        else if(el.type==='checkbox'){ f[el.getAttribute('data-f')] = el.checked ? 'Yes' : ''; }
-        else if(!el.hasAttribute('data-nosave')){ f[el.getAttribute('data-f')] = el.value; }
-      });
-      state.fields = f; refreshDraftNotice();
-      try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
-      var s=document.getElementById('savestatus'); s.textContent='Draft saved on this device '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
-    }, 350);
+  function persistDraft(){
+    var f={};document.querySelectorAll('[data-f]').forEach(function(el){if(el.classList.contains('chips'))f[el.dataset.f]=chipVal(el.dataset.f);else if(el.type==='checkbox')f[el.dataset.f]=el.checked?'Yes':'';else if(!el.hasAttribute('data-nosave'))f[el.dataset.f]=el.value;});
+    state.fields=f;localStorage.setItem(KEY,JSON.stringify(state));
+    document.getElementById('savestatus').textContent='Draft saved on this device '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
   }
+  function save(){clearTimeout(saveTimer);saveTimer=setTimeout(function(){refreshDraftNotice();try{persistDraft();}catch(e){document.getElementById('savestatus').textContent='Not saved - device storage unavailable. Keep this page open and export a PDF.';toast('Draft could not save. Keep this page open.');}},350);}
 
 
   var FIELD_LABELS={"pm": "Project Manager", "jt": "Request JT Project Manager", "pmphone": "Project Manager Phone", "pmnotes": "Project Manager Notes", "customer": "Customer", "phone": "Customer Phone", "address": "Job Address", "gate": "Gate Code", "currentsystem": "Current Roof System", "currentsystemother": "Current Roof System (Other)", "roofsystem": "Roof System", "malarkey": "Malarkey Product", "tileprofile": "Tile Profile", "steelprofile": "Stone-Coated Steel Profile", "compositeproduct": "Composite Product", "shinglecolor": "Shingle Color", "dripedge": "Drip Edge Color", "flatcolor": "Flat Roof Color", "jobtype": "Job Type", "tearoff": "Approx. Tear-Off (Roofing squares)", "install": "Approx. Install (Roofing squares)", "layers": "Layers", "decking": "Decking / Redeck", "layersother": "Layers (Other)", "deckqty": "Decking Sheet Quantity", "deckthick": "Decking Thickness", "accrane": "A/C / Crane", "acnotes": "A/C / Crane Notes", "fascia": "Fascia Replacement", "fasciasize": "Fascia Board Size", "special": "Special Conditions", "pitch": "Steep Pitch", "stories": "Stories / Roof Height", "access": "Limited Access", "complex": "Complex Roof Design", "equipment": "Special Equipment", "occupied": "Occupied / Restricted Property", "otherinstr": "Other Instructions", "addnotes": "Additional Notes"};
@@ -619,7 +637,7 @@
   function refreshDraftNotice(){var n=document.getElementById('draftnotice'); if(!n)return; n.style.display=state.review?'block':'none';if(state.review){var msg=pendingMessage();var count=(msg.match(/PENDING/g)||[]).length;n.innerHTML='<b>DRAFT - review before sending</b><br>'+count+' pending choices or quantities. Confirmed answers are below.<details style="margin-top:8px"><summary>Review all pending choices and notes</summary><div style="white-space:pre-line;margin-top:8px">'+esc(msg)+'</div></details><button type="button" class="btn ghost" id="finishreview" style="width:100%;margin-top:10px">Finish review - everything is filled in</button>';}}
   function validateDraft(d){
     if(!d||typeof d!=='object'||Array.isArray(d))throw Error('Expected a draft object.');
-    Object.keys(d).forEach(function(k){if(['fields','items','review','version'].indexOf(k)<0)throw Error('Unexpected draft key: '+k);});
+    Object.keys(d).forEach(function(k){if(['fields','items','review','version','photoIds','photoJob'].indexOf(k)<0)throw Error('Unexpected draft key: '+k);});
     if(!d.fields||typeof d.fields!=='object'||Array.isArray(d.fields)||!d.items||typeof d.items!=='object'||Array.isArray(d.items))throw Error('Draft must have fields and items objects.');
     var out={fields:{},items:{},review:{pending:[],notes:''}};
     document.querySelectorAll('[data-f]').forEach(function(el){if(!el.hasAttribute('data-nosave'))out.fields[el.getAttribute('data-f')]='';});
@@ -635,13 +653,14 @@
     Object.keys(d.items).forEach(function(k){
       if(!Object.prototype.hasOwnProperty.call(out.items,k))throw Error('Unknown work item: '+k);
       var x=d.items[k];if(!x||typeof x!=='object'||Array.isArray(x))throw Error('Invalid item: '+k);
-      Object.keys(x).forEach(function(a){if(['qty','note','size','sizeqty','soldate'].indexOf(a)<0)throw Error('Unexpected item field.');});
+      Object.keys(x).forEach(function(a){if(['qty','note','size','sizeqty','soldate','observed'].indexOf(a)<0)throw Error('Unexpected item field.');});
       if(x.qty!=null&&(typeof x.qty!=='number'||!Number.isFinite(x.qty)||x.qty<0||x.qty>100000))throw Error('Invalid quantity: '+k);
       if(x.note!=null&&(typeof x.note!=='string'||x.note.length>10000))throw Error('Invalid note: '+k);
       if(x.size!=null){ var xk=k.split('-'), xit=WORK[+xk[0]].items[+xk[1]]; if(typeof x.size!=='string'||!xit[4]||xit[4].indexOf(x.size)<0)throw Error('Invalid size: '+k); }
       if(x.sizeqty!=null){ var xk2=k.split('-'), xit2=WORK[+xk2[0]].items[+xk2[1]]; if(typeof x.sizeqty!=='object'||Array.isArray(x.sizeqty)||!xit2[4]||xit2[6]!=='multi'||Object.keys(x.sizeqty).some(function(z){return (z!=='Unassigned'&&xit2[4].indexOf(z)<0&&xit2[4].indexOf(z+'"')<0)||(x.sizeqty[z]!=null&&(typeof x.sizeqty[z]!=='number'||x.sizeqty[z]<0||x.sizeqty[z]>100000));}))throw Error('Invalid size quantities: '+k); }
       if(x.soldate!=null&&(typeof x.soldate!=='string'||x.soldate.length>40))throw Error('Invalid solar date: '+k);
-      out.items[k]={qty:x.qty==null?null:x.qty,note:x.note||'',size:x.size||'',sizeqty:x.sizeqty||{},soldate:x.soldate||''};
+      if(x.observed!=null){if(typeof x.observed!=='object'||Array.isArray(x.observed)||Object.keys(x.observed).some(function(z){return ['potential','undamaged','painted'].indexOf(z)<0||typeof x.observed[z]!=='string'||x.observed[z].length>40;}))throw Error('Invalid observation: '+k);}
+      out.items[k]={observed:x.observed||{},qty:x.qty==null?null:x.qty,note:x.note||'',size:x.size||'',sizeqty:x.sizeqty||{},soldate:x.soldate||''};
     });
     if(d.review){
       if(typeof d.review!=='object'||Array.isArray(d.review))throw Error('Invalid review metadata.');
@@ -661,7 +680,7 @@
     var raw; try{ raw = localStorage.getItem(KEY); }catch(e){ return; }
     if(!raw) return;
     try{
-      var d = JSON.parse(raw); if(d.review) state.review=d.review;
+      var d = JSON.parse(raw);state.photoIds=Array.isArray(d.photoIds)?d.photoIds:[];state.photoJob=d.photoJob||null; if(d.review) state.review=d.review;
       var LEGACY={"Other / Verify":"Not Verified","Need to verify":"Not Verified"};
       if(d.fields){ Object.keys(d.fields).forEach(function(k){ if(LEGACY[d.fields[k]]) d.fields[k]=LEGACY[d.fields[k]]; }); }
       if(d.items){ Object.keys(d.items).forEach(function(k){ var it=d.items[k]; if(it&&LEGACY[it.size]) it.size=LEGACY[it.size]; }); }
@@ -689,6 +708,7 @@
         }
       }); }
       Object.keys(state.items).forEach(function(k){
+        document.querySelectorAll('[data-observe="'+k+'"]').forEach(function(el){el.value=(state.items[k].observed||{})[el.dataset.kind]||'';});
         var itemDef=WORK[+k.split('-')[0]].items[+k.split('-')[1]],st=state.items[k];
         if(itemDef[4]){Object.keys(st.sizeqty).forEach(function(z){if(itemDef[4].indexOf(z)<0&&itemDef[4].indexOf(z+'"')>=0){st.sizeqty[z+'"']=st.sizeqty[z];delete st.sizeqty[z];}});if(!Object.keys(st.sizeqty).length&&st.qty>0){if(st.size&&itemDef[4].indexOf(st.size)>=0)st.sizeqty[st.size]=st.qty;else st.sizeqty.Unassigned=st.qty;}syncSizeUI(k);}
         var inp = document.querySelector('input[data-item="'+k+'"]'); if(inp){ if(state.items[k].qty==null && !state.review && k!=='2-10') state.items[k].qty=0; inp.value = state.items[k].qty==null?'':state.items[k].qty; if(state.review) inp.placeholder='Pending'; }
@@ -918,6 +938,7 @@
     hideReqErrors();
     outputScope=scope==='top'?'top':'all';
     document.getElementById('wopaper').innerHTML = buildOutput(outputScope);
+    var evidenceNotice=document.getElementById('evidence-notice');if(!evidenceNotice){evidenceNotice=document.createElement('p');evidenceNotice.id='evidence-notice';evidenceNotice.className='no-print hint';document.getElementById('wopaper').before(evidenceNotice);}evidenceNotice.textContent=(photoRecords.length?photoRecords.length+' saved job photos plus any recorded conditions will be appended after the checklist pages in the downloaded PDF.':'Recorded item conditions, if entered, will be appended after the checklist pages in the downloaded PDF.');
     var eb = document.getElementById('emailbtn');
     var m = buildMailto();
     eb.href = m.url;
@@ -1002,6 +1023,9 @@
 
   async function buildPDF(){
     if(!window.jspdf){toast('PDF library did not load - try again');return null;}
+    if(photoBusy){toast('Photos are still saving. Wait for the saved message before creating the PDF.');return null;}
+    if(photoFailure){toast('A photo was not saved. Retry it or explicitly exclude it before creating the PDF.');var status=document.getElementById('jobphotostatus');for(var ancestor=status.parentElement;ancestor;ancestor=ancestor.parentElement){if(ancestor.tagName==='DETAILS')ancestor.open=true;}status.scrollIntoView();return null;}
+    await photoReady;
     var paper=document.getElementById('wopaper');
     paper.innerHTML=buildOutput(outputScope);
     try{
@@ -1062,9 +1086,10 @@
         else{for(var li=0;li<ls.length;li++){need(15);text(ls[li],left+6,y+10,el.classList.contains('foot')?8:10,false,muted);y+=14;}y+=12;}
       }
       footer();
+      await appendJobEvidence(pdf,{left:left,right:right,width:width,blue:blue,ink:ink,muted:muted,clean:clean});
       var name=(val('customer')||'Work Order').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'Work-Order';
       return {pdf:pdf,name:(outputScope==='top'?'Heirloom-Initial-Production-Checklist-':'Heirloom-Work-Order-')+name+'.pdf'};
-    }catch(e){console.error(e);toast('Could not create PDF - try again');return null;}
+    }catch(e){console.error(e);toast('Could not create complete PDF: '+(e.message||'try again'));return null;}
   }
   document.getElementById('sharepdfbtn').addEventListener('click', async function(){
     if(pdfActionBusy) return; pdfActionBusy=true;
@@ -1082,15 +1107,49 @@
   });
   document.getElementById('resetbtn').addEventListener('click', function(){
     if(!confirm('Reset the form? This clears every answer saved on this device and cannot be undone.')) return;
-    try{ localStorage.removeItem(KEY); }catch(e){}
+    try{localStorage.removeItem(KEY);}catch(e){alert('Could not clear saved draft. Nothing was reset.');return;}
     location.reload();
   });
   document.getElementById('newbtn').addEventListener('click', function(){
     if(!confirm('Start a new work order? This clears the saved draft on this device.')) return;
-    try{ localStorage.removeItem(KEY); }catch(e){}
+    try{localStorage.removeItem(KEY);}catch(e){alert('Could not clear saved draft. Nothing was reset.');return;}
     location.reload();
   });
 
+
+  // User-selected job evidence is stored in this browser, never uploaded to a server.
+  var photoDB=null,photoRecords=[],photoBusy=false,photoFailure=null,photoReady=Promise.resolve(),photoURLs=[];
+  var KIND_LABELS={general:'Job photo',potential:'Potential damage observation',undamaged:'Not damaged observation',painted:'Painted status'};
+  var photoStatus=document.createElement('div');photoStatus.id='jobphotostatus';photoStatus.hidden=true;photoStatus.setAttribute('role','status');document.getElementById('workitems').prepend(photoStatus);
+  function photoMessage(message,error){photoStatus.hidden=false;photoStatus.replaceChildren();var p=document.createElement('div');p.textContent=message;photoStatus.appendChild(p);if(error){photoStatus.setAttribute('role','alert');if(photoFailure&&photoFailure.files){var retry=document.createElement('button');retry.type='button';retry.className='btn';retry.textContent='Retry unsaved photos';retry.onclick=function(){var f=photoFailure;photoFailure=null;addJobPhotos(f.files,f.item,f.kind);};photoStatus.appendChild(retry);}var omit=document.createElement('button');omit.type='button';omit.className='btn ghost';omit.textContent='Exclude unsaved or missing photos';omit.onclick=function(){if(!confirm('Continue without the unsaved or missing photos? Existing saved photos stay.'))return;var old=state.photoIds.slice();state.photoIds=photoRecords.map(function(r){return r.id;});try{persistDraft();photoFailure=null;photoMessage(photoRecords.length+' job photos saved on this device.');}catch(e){state.photoIds=old;photoMessage('Could not update saved draft. Keep this page open and free device storage.',true);}};photoStatus.appendChild(omit);}else{photoStatus.setAttribute('role','status');}}
+  function openPhotoDB(){if(photoDB)return Promise.resolve(photoDB);return new Promise(function(resolve,reject){if(!window.indexedDB)return reject(Error('This browser does not allow local photo storage.'));var req=indexedDB.open('heirloom-job-evidence-v1',1);req.onupgradeneeded=function(){req.result.createObjectStore('photos',{keyPath:'id'});};req.onerror=function(){reject(req.error||Error('Photo storage unavailable.'));};req.onblocked=function(){reject(Error('Close other checklist tabs, then reload to enable photo storage.'));};req.onsuccess=function(){photoDB=req.result;resolve(photoDB);};});}
+  async function photoStore(mode,run){var db=await openPhotoDB();return new Promise(function(resolve,reject){var tx=db.transaction('photos',mode),req=run(tx.objectStore('photos'));tx.oncomplete=function(){resolve(req&&req.result);};tx.onerror=function(){reject(tx.error||Error('Device photo storage is full or unavailable.'));};tx.onabort=function(){reject(tx.error||Error('Photo save was interrupted.'));};});}
+  async function loadJobPhotos(){if(!state.photoIds.length)return;try{var records=[];for(var id of state.photoIds){var r=await photoStore('readonly',function(store){return store.get(id);});if(r)records.push(r);}photoRecords=records;renderJobPhotos();if(records.length!==state.photoIds.length)throw Error('Some saved photo files are missing from this browser. Re-add them, or explicitly exclude missing photos.');photoMessage(records.length+' job photos restored on this device.');}catch(e){photoFailure={missing:true};photoMessage(e.message,true);}}
+  function renderJobPhotos(){photoURLs.forEach(function(u){URL.revokeObjectURL(u);});photoURLs=[];document.querySelectorAll('[data-gallery]').forEach(function(g){g.replaceChildren();});photoRecords.forEach(function(r){var galleries=document.querySelectorAll('[data-gallery="'+r.item+'"]');galleries.forEach(function(g){var fig=document.createElement('figure');fig.className='job-photo';var img=document.createElement('img'),u=URL.createObjectURL(r.blob);photoURLs.push(u);img.src=u;img.alt='Job photo: '+KIND_LABELS[r.kind];var cap=document.createElement('figcaption');cap.textContent=KIND_LABELS[r.kind];var caption=document.createElement('input');caption.type='text';caption.maxLength=200;caption.placeholder='Location / caption (optional)';caption.setAttribute('aria-label',jobPhotoItemName(r.item)+' photo caption');caption.value=r.caption||'';caption.onchange=async function(){photoBusy=true;var prior=r.caption;r.caption=caption.value;try{await photoStore('readwrite',function(store){return store.put(r);});}catch(e){r.caption=prior;caption.value=prior||'';alert('Caption was not saved. Existing photo and caption are unchanged. Try again after freeing storage.');}finally{photoBusy=false;}};var remove=document.createElement('button');remove.className='btn ghost';remove.type='button';remove.textContent='Remove photo';remove.onclick=async function(){if(photoBusy||!confirm('Remove this job photo from this draft?'))return;var prior=state.photoIds.slice();state.photoIds=prior.filter(function(id){return id!==r.id;});try{persistDraft();photoRecords=photoRecords.filter(function(x){return x.id!==r.id;});renderJobPhotos();await photoStore('readwrite',function(store){return store.delete(r.id);});photoMessage(photoRecords.length+' job photos saved on this device.');}catch(e){state.photoIds=prior;photoMessage('Photo removal did not finish. Reload before continuing.',true);photoFailure={missing:true};}};fig.append(img,cap,caption,remove);g.appendChild(fig);});});updateSectionCounts();}
+  async function prepareJobImage(file){if(!file.type.startsWith('image/')&&!/\.(heic|heif|jpe?g|png|webp)$/i.test(file.name))throw Error('Choose an image file.');var u=URL.createObjectURL(file);try{var img=await new Promise(function(resolve,reject){var i=new Image();i.onload=function(){resolve(i);};i.onerror=function(){reject(Error('This photo format could not be opened. Choose a JPEG or PNG copy.'));};i.src=u;});var scale=Math.min(1,2400/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*scale);c.height=Math.round(img.naturalHeight*scale);var ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(img,0,0,c.width,c.height);var blob=await new Promise(function(resolve){c.toBlob(resolve,'image/jpeg',.9);});if(!blob)throw Error('Photo could not be prepared. Choose a smaller image.');return {blob:blob,width:c.width,height:c.height};}finally{URL.revokeObjectURL(u);}}
+  function currentPhotoJob(){return {customer:val('customer'),address:val('address')};}
+  function samePhotoJob(){var j=currentPhotoJob();return !state.photoJob||(j.customer===state.photoJob.customer&&j.address===state.photoJob.address);}
+  async function addJobPhotos(files,item,kind){if(photoBusy){alert('Wait for the current photos to finish saving.');return;}if(photoFailure){alert('Retry or exclude the previous unsaved photos first.');return;}photoBusy=true;var remaining=Array.from(files);photoMessage('Preparing and saving '+remaining.length+' job photo(s). Keep this page open.');try{await photoReady;await openPhotoDB();while(remaining.length){var data=await prepareJobImage(remaining[0]);var record={id:(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2)),item:item,kind:kind,caption:'',blob:data.blob,width:data.width,height:data.height};await photoStore('readwrite',function(store){return store.put(record);});var old=state.photoIds.slice(),job=state.photoJob;state.photoIds.push(record.id);if(!state.photoJob)state.photoJob=currentPhotoJob();try{persistDraft();}catch(e){state.photoIds=old;state.photoJob=job;await photoStore('readwrite',function(store){return store.delete(record.id);});throw Error('Device draft storage is unavailable. Existing saved photos are safe. Free storage and retry.');}photoRecords.push(record);remaining.shift();renderJobPhotos();}toast(photoRecords.length+' job photos saved on this device');photoMessage(photoRecords.length+' job photos saved on this device. They will be labeled and included after the checklist pages in the PDF.');}catch(e){photoFailure={files:remaining,item:item,kind:kind};photoMessage('Not all selected photos were saved: '+e.message+' Existing saved photos and answers are unchanged.',true);}finally{photoBusy=false;}}
+  document.getElementById('form').addEventListener('change',function(e){var f=e.target.closest('[data-jobphoto]');if(f){var files=Array.from(f.files||[]);if(files.length)addJobPhotos(files,f.dataset.jobphoto,f.dataset.kind);f.value='';return;}var observed=e.target.closest('[data-observe]');if(observed){var st=state.items[observed.dataset.observe];if(!st.observed)st.observed={};if(observed.type==='number'&&observed.value!=='')observed.value=Math.max(0,parseFloat(observed.value)||0);st.observed[observed.dataset.kind]=observed.value;save();}});
+  document.getElementById('form').addEventListener('input',function(e){var el=e.target.closest('[data-observe]');if(!el)return;var st=state.items[el.dataset.observe];if(!st.observed)st.observed={};if(el.type==='number'&&el.value!==''&&+el.value<0)el.value='0';st.observed[el.dataset.kind]=el.value;save();});
+  function observationText(st){var o=st.observed||{},parts=[];if(o.potential!=='undefined'&&o.potential!=null&&o.potential!=='')parts.push('Potentially damaged: '+o.potential);if(o.undamaged!=null&&o.undamaged!=='')parts.push('Not damaged: '+o.undamaged);if(o.painted)parts.push('Painted: '+o.painted);return parts.join(' | ');}
+  async function appendJobEvidence(pdf,c){
+    await photoReady;if(photoFailure||photoBusy||state.photoIds.length!==photoRecords.length)throw Error('Job photos are not all saved and ready. Return to the form to retry or exclude missing files.');
+    if(photoRecords.length&&!samePhotoJob()){if(!confirm('The job name or address changed after these photos were added. These photos were added for '+(state.photoJob.customer||'unnamed customer')+' at '+(state.photoJob.address||'no address')+'. Confirm they belong to the current job before including them.'))throw Error('Photo job identity was not confirmed.');state.photoJob=currentPhotoJob();persistDraft();}
+    var observations=[];WORK.forEach(function(g,gi){if(g.removed)return;g.items.forEach(function(it,ii){if(it[5])return;var text=observationText(state.items[gi+'-'+ii]);if(text)observations.push({item:wiName(gi,ii),text:text});});});
+    function label(text,x,y,size,bold,color){pdf.setFont('helvetica',bold?'bold':'normal');pdf.setFontSize(size);pdf.setTextColor.apply(pdf,color||c.ink);pdf.text(c.clean(String(text)),x,y);}
+    function wrap(text,w,size,bold){pdf.setFont('helvetica',bold?'bold':'normal');pdf.setFontSize(size);return pdf.splitTextToSize(c.clean(String(text)),w);}
+    function heading(title){pdf.addPage();label('HEIRLOOM ROOFING | '+title,c.left,40,12,true,c.blue);var job=[val('customer'),val('address')].filter(Boolean).join(' | ');var ls=wrap(job,c.width,9,false);label(ls,c.left,58,9,false,c.muted);return 72+ls.length*10;}
+    function evidenceFooter(){var n=pdf.internal.getNumberOfPages();label('Heirloom Roofing | Job evidence',c.left,770,8,false,c.muted);label(String(n),c.right-12,770,8,false,c.muted);}
+    if(observations.length){var y=heading('RECORDED ITEM CONDITIONS');label('Entered by the form user. Not an automatic damage determination.',c.left,y,9,false,c.muted);y+=25;for(var o of observations){var title=wrap(o.item,c.width,10,true),body=wrap(o.text,c.width,10,false),h=(title.length+body.length)*14+20;if(y+h>740){evidenceFooter();y=heading('RECORDED ITEM CONDITIONS');}label(title,c.left,y,10,true,c.blue);y+=title.length*14+4;label(body,c.left,y,10,false);y+=body.length*14+16;}evidenceFooter();}
+    for(var i=0;i<photoRecords.length;i++){var r=photoRecords[i];var y=heading('JOB PHOTOS');var item=jobPhotoItemName(r.item),title=wrap((i+1)+' of '+photoRecords.length+' | '+item,c.width,11,true);label(title,c.left,y,11,true,c.blue);y+=title.length*14+7;label(KIND_LABELS[r.kind]+' | User-selected job photo',c.left,y,9,false,c.muted);y+=17;if(r.caption){var cap=wrap(r.caption,c.width,10,false);label(cap,c.left,y,10,false);y+=cap.length*13+8;}var h=738-y,scale=Math.min(c.width/r.width,h/r.height),w=r.width*scale,ih=r.height*scale;var bytes=new Uint8Array(await r.blob.arrayBuffer());pdf.addImage(bytes,'JPEG',c.left+(c.width-w)/2,y,w,ih,undefined,'FAST');evidenceFooter();}
+  }
+
+  var PHOTO_AREAS=[['front','Front of house'],['left','Left side of house'],['right','Right side of house'],['back','Backside of house'],['fascia','Fascia'],['corners','360 degree roof photos from every corner'],['proof','Proof of Damage'],['ac','AC unit']];
+  function jobPhotoItemName(id){if(id.indexOf('area-')===0){var area=PHOTO_AREAS.find(function(a){return 'area-'+a[0]===id;});return area?area[1]:'Job photo';}return wiName.apply(null,id.split('-').map(Number));}
+  function areaPhotoUI(id,title,hint){return '<details class="area-photo"><summary>'+title+'</summary><div class="area-photo-body">'+(hint?'<p class="hint">'+hint+'</p>':'')+'<div class="photo-actions"><label class="job-camera"><svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h4l2-3h6l2 3h4v15H3z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13" r="4" fill="none" stroke="currentColor" stroke-width="2"/></svg> Take photo<input type="file" accept="image/*" capture="environment" data-jobphoto="'+id+'" data-kind="general" hidden></label><label class="job-library">Choose photos<input type="file" accept="image/*" multiple data-jobphoto="'+id+'" data-kind="general" hidden></label></div><div class="job-gallery" data-gallery="'+id+'"></div></div></details>';}
+  var photosCard=document.createElement('div');photosCard.className='card';photosCard.innerHTML='<h2>PHOTOS</h2><p class="hint">Add job photos by category. All saved job photos, including accessory photos, are labeled and included after the checklist in the same PDF. Photos stay on this device only. Save the PDF for a backup; keep original images for full detail.</p>'+PHOTO_AREAS.filter(function(a){return a[0]!=='ac';}).map(function(a){return areaPhotoUI('area-'+a[0],a[1],a[0]==='corners'?'Add views from every roof corner, and label each corner in its caption.':a[0]==='proof'?'Add your supporting photos here. This label does not automatically determine damage.':'');}).join('')+'<details class="area-photo"><summary>Accessories</summary><div class="area-photo-body">'+areaPhotoUI('area-ac','AC unit','')+WORK[2].items.map(function(it,ii){return areaPhotoUI('2-'+ii,wiName(2,ii),'Photos added here also appear with this work item.');}).join('')+'</div></details>';
+  document.getElementById('form').insertBefore(photosCard,document.querySelector('#form > .privacy'));
 
   // Top-level form headings are collapsible; inputs stay in their original DOM order.
   document.querySelectorAll('#form > .card').forEach(function(card){
@@ -1109,12 +1168,13 @@
       else el=document.querySelector('[data-f="'+key+'"]');
       var section=el&&el.closest('.form-section'),idx=sections.indexOf(section);if(idx>=0)counts[idx]+=n;
     });
-    sections.forEach(function(section,i){var badge=section.querySelector(':scope > summary .section-count');var initial=!!(section.compareDocumentPosition(document.getElementById('genbtn2'))&Node.DOCUMENT_POSITION_FOLLOWING);badge.textContent=initial?(counts[i]===0?'Ready':counts[i]+' left'):'Not needed for initial';badge.className='section-count'+(initial?(counts[i]?' pending':' ready'):'');});
+    sections.forEach(function(section,i){var badge=section.querySelector(':scope > summary .section-count');var initial=!!(section.compareDocumentPosition(document.getElementById('genbtn2'))&Node.DOCUMENT_POSITION_FOLLOWING);badge.textContent=section.querySelector('h2').textContent==='PHOTOS'?(photoRecords.length?photoRecords.length+' photos':'Optional'):initial?(counts[i]===0?'Ready':counts[i]+' left'):'Not needed for initial';badge.className='section-count'+(initial?(counts[i]?' pending':' ready'):'');});
   }
   ['input','change','click','toggle'].forEach(function(event){document.getElementById('form').addEventListener(event,function(){setTimeout(updateSectionCounts,0);},true);});
   restore();
   updateCounts();
   updateSectionCounts();
+  photoReady=loadJobPhotos();
 })();
 </script>
 </body>
