@@ -179,6 +179,17 @@
   #form #genbtn2 {font-size:12px;padding:8px 10px;}
   #form > .no-print:has(> #genbtn2) .hint {font-size:10px;margin-top:2px;}
   #form .privacy {font-size:10px;margin-top:8px;}
+  .size-first {width:100%;}
+  .size-options {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0 12px;}
+  .size-pick {width:100%;min-height:44px;border:1px solid #bfd0de;border-radius:10px;background:white;color:var(--brand);font-weight:700;font-size:16px;}
+  .size-pick[aria-expanded="true"] {background:var(--brand);color:white;}
+  .size-quantity {padding:10px 0 0;}
+  .size-quantity[hidden],.size-legacy[hidden] {display:none;}
+  .size-quantity label {display:block;font-size:11px;margin-bottom:6px;}
+  .size-quantity .step {display:flex;}
+  .size-quantity .step input {width:56px;min-width:0;}
+  .size-quantity .step button {width:38px;}
+  .size-legacy {padding:12px;border:1px solid #b57800;border-radius:10px;margin-top:10px;font-size:12px;}
   /* Form-only item accordions. Generated order and PDF retain their existing templates. */
   #form details.group > summary {cursor:pointer;}
   #form details.group > summary::after {content:'\25BE';font-size:14px;}
@@ -361,7 +372,7 @@
   var WORK = [
     {g:"SITE PROTECTION", items:[["Protect Landscaping / Plants / Trees","Lump sum",1,"w"],["Protect Windows / Walls / Driveway / Hardscape","Lump sum",1,"w"]]},
     {g:"ROOFING", items:[["Tear Off & Dispose Existing Roofing","Roofing squares",0,"w"],["Install Architectural Shingles","Roofing squares",0,"m"],["Install Underlayment","Roofing squares",0,"m"],["Ice & Water Barrier at Valley","Linear feet",0,"m"],["Install Drip Edge","Linear feet",0,"m"],["Install Ridge Cap","Linear feet",0,"m"],["Flat Roof Restoration","Roofing squares",0,"m"]]},
-    {g:"ACCESSORIES", items:[["Replace Pipe Jacks","Each",0,"m",["1\"","2\"","3\"","4\"","No Size"],null,"multi"],["Replace Turbine Vents","Each",0,"m"],["Replace T-Top Vents","Each",0,"m",["4\"","7\""],null,"multi"],["Replace B-Vent Flashing","Each",0,"m"],["Replace Split Pipe Boots","Each",0,"m",["1\"","2\"","3\"","4\"","Not Verified"]],["Replace Dormer Vents","Each",0,"m"],["Replace O'Hagin Vents","Each",0,"m"],["Satellite Realignment after Roof Completion","Each",0,"w"],["Straighten A/C Condenser Fins","Each",0,"w"],["Skylights","Each",0,"m"],["Replace Furnace Vent","Each",0,"m"]]},
+    {g:"ACCESSORIES", items:[["Replace Pipe Jacks","Each",0,"m",["1\"","2\"","3\"","4\"","No Size"],null,"multi"],["Replace Turbine Vents","Each",0,"m"],["Replace T-Top Vents","Each",0,"m",["4\"","7\""],null,"multi"],["Replace B-Vent Flashing","Each",0,"m"],["Replace Split Pipe Boots","Each",0,"m",["1\"","2\"","3\"","4\"","Not Verified"],null,"multi"],["Replace Dormer Vents","Each",0,"m"],["Replace O'Hagin Vents","Each",0,"m"],["Satellite Realignment after Roof Completion","Each",0,"w"],["Straighten A/C Condenser Fins","Each",0,"w"],["Skylights","Each",0,"m"],["Replace Furnace Vent","Each",0,"m"]]},
     {g:"DECKING", removed:true, items:[["Backup 4' x 8' Decking Sheets","Each",0,"m"]]},
     {g:"SPECIAL CONDITIONS", items:[["Rooftop HVAC","Lump sum",0,"w"],["Take Extra Care at Pitched / Flat Roof Transition","",0,"w",null,null,null,null,"yn"],["Shingle Moulding","Linear feet",0,"m"],["Fascia Replacement","Linear feet",0,"m",null,true],["Do Not Disturb Patio Flat Roof or Shed Roofs","Lump sum",0,"w"],["Dispose of Swamp Cooler and Patch Deck","Each",0,"w"],["Solar DnR Will Be Needed.","",0,"w",null,null,null,"date"]]},
     {g:"CLOSEOUT", items:[["Remove All Debris","Each",1,"w",null,null,null,null,"yn"],["Final Magnetic Sweep","Each",1,"w",null,null,null,null,"yn"],["Final Roof Inspection","Each",1,"w",null,null,null,null,"yn"],["Completion Photos","Each",1,"w",null,null,null,null,"yn"]]}
@@ -393,8 +404,7 @@
         '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="'+(it[0]==='Replace Furnace Vent'?'':'0')+'" placeholder="'+(it[0]==='Replace Furnace Vent'?'Pending':'0')+'">'+
         '<button type="button" data-d="1" aria-label="increase">+</button></span>')+
         (it[7]==='date'?'<label class="sizeq">Reset Date: <input type="date" data-datefor="'+id+'" aria-label="Solar reset date"></label>':'')+
-        (it[4]&&it[6]==='multi'?'<span class="sizeqs'+((it[0]==='Replace Pipe Jacks'||it[0]==='Replace T-Top Vents')?' pipeqs':'')+'">'+it[4].map(function(z){return '<label class="sizeq">'+(z==='No Size'?'4-in-1':z)+((it[0]==='Replace Pipe Jacks'||it[0]==='Replace T-Top Vents')?' <span class="step"><button type="button" data-sqd="-1" aria-label="Decrease size quantity">&minus;</button>':' ')+'<input type="number" min="0" step="1" inputmode="numeric" data-sq="'+id+'" data-sz="'+z+'" value="0" placeholder="0">'+((it[0]==='Replace Pipe Jacks'||it[0]==='Replace T-Top Vents')?'<button type="button" data-sqd="1" aria-label="Increase size quantity">+</button></span>':'')+'</label>';}).join('')+'</span>':
-        it[4]?'<label class="f" for="size-'+id+'" style="flex-basis:100%;margin-bottom:0">Size</label><select id="size-'+id+'" data-sizefor="'+id+'" aria-label="Size"><option value="">None</option>'+it[4].map(function(z){return '<option>'+z+'</option>';}).join('')+'</select>':'')+
+        (it[4]?'<div class="size-first" data-sizeitem="'+id+'"><label class="item-field-label">Choose a size, then enter its quantity</label><div class="size-options">'+it[4].map(function(z,zi){return '<div class="size-choice"><button class="size-pick" type="button" data-picksize="'+id+'" data-sz="'+z.replace(/"/g,'&quot;')+'" aria-expanded="false" aria-controls="sizebox-'+id+'-'+zi+'">'+(z==='No Size'?'4-in-1':z)+'</button><div class="size-quantity" id="sizebox-'+id+'-'+zi+'" hidden><label>Quantity for '+(z==='No Size'?'4-in-1':z)+'</label><span class="step"><button type="button" data-sqd="-1" aria-label="Decrease size quantity">&minus;</button><input type="number" min="0" step="1" inputmode="numeric" data-sq="'+id+'" data-sz="'+z.replace(/"/g,'&quot;')+'" value="" placeholder="Pending" aria-label="'+wiName(gi,ii)+' '+(z==='No Size'?'4-in-1':z.replace(/"/g,'&quot;'))+' quantity"><button type="button" data-sqd="1" aria-label="Increase size quantity">+</button></span></div></div>';}).join('')+'</div><button type="button" class="size-none btn ghost" data-sizenone="'+id+'">None needed</button><div class="size-legacy" hidden><label>Saved total - size not assigned. Reduce this total as you assign quantities to sizes.</label><input type="number" min="0" step="1" data-sq="'+id+'" data-sz="Unassigned" aria-label="Saved unassigned quantity"></div></div>':'')+
         '<button type="button" class="notebtn" data-notebtn="'+id+'">'+(['Take Extra Care at Pitched / Flat Roof Transition','Replace Pipe Jacks','Replace B-Vent Flashing','Replace Split Pipe Boots','Tear Off & Dispose Existing Roofing','Install Architectural Shingles','Install Underlayment','Ice & Water Barrier at Valley','Install Drip Edge','Protect Landscaping / Plants / Trees','Protect Windows / Walls / Driveway / Hardscape','Remove All Debris','Final Magnetic Sweep','Final Roof Inspection','Completion Photos','Satellite Realignment after Roof Completion','Straighten A/C Condenser Fins'].indexOf(it[0])>=0?'+ Notes':'+ Measurement')+'</button>'+
         '<textarea data-notefor="'+id+'" placeholder="'+(it[0]==='Skylights'?'Measurements for skylights':'Notes for this line')+'" style="display:'+(it[0]==='Take Extra Care at Pitched / Flat Roof Transition'?'block':'none')+';flex-basis:100%"></textarea>';
       var detail=document.createElement('details');detail.className='item-details';
@@ -419,7 +429,7 @@
   function updateCounts(){
     WORK.forEach(function(g,gi){
       if(g.removed) return;
-      var n=0; g.items.forEach(function(it,ii){ if(it[5]){ n++; return; } var st=state.items[gi+'-'+ii]; if(st.qty!=null && (!it[4] || it[6]==='multi' || st.qty==0 || st.size)) n++; });
+      var n=0; g.items.forEach(function(it,ii){ if(it[5]){ n++; return; } var st=state.items[gi+'-'+ii]; if(st.qty!=null && (!it[4] || !sizedMissing(st))) n++; });
       var el=document.getElementById('cnt-'+gi); el.textContent = (g.items.length-n)+' unanswered';
     });
   }
@@ -530,8 +540,21 @@
     el.addEventListener('change', save);
   });
 
+  function sizedMissing(st){return st.qty==null || Object.keys(st.sizeqty||{}).some(function(z){return st.sizeqty[z]==null || (z==='Unassigned'&&st.sizeqty[z]>0);});}
+  function syncSizeUI(id){
+    var st=state.items[id],root=document.querySelector('[data-sizeitem="'+id+'"]');if(!root)return;
+    root.querySelectorAll('input[data-sq]').forEach(function(input){var z=input.dataset.sz,v=st.sizeqty[z];input.value=v==null?'':v;
+      if(z==='Unassigned'){input.closest('.size-legacy').hidden=!(v>0);return;}
+      var chosen=Object.prototype.hasOwnProperty.call(st.sizeqty,z),box=input.closest('.size-quantity'),button=box.parentElement.querySelector('.size-pick');box.hidden=!chosen;button.setAttribute('aria-expanded',String(chosen));
+    });
+  }
+  function sumSizes(id){var st=state.items[id],keys=Object.keys(st.sizeqty);st.qty=keys.some(function(z){return st.sizeqty[z]==null;})?null:keys.reduce(function(n,z){return n+st.sizeqty[z];},0);}
   // Steppers
   document.getElementById('form').addEventListener('click', function(e){
+    var pick=e.target.closest('[data-picksize]');
+    if(pick){var id=pick.dataset.picksize,z=pick.dataset.sz,st=state.items[id];if(!Object.prototype.hasOwnProperty.call(st.sizeqty,z))st.sizeqty[z]=null;syncSizeUI(id);sumSizes(id);var input=pick.parentElement.querySelector('input');input.focus();updateCounts();save();return;}
+    var none=e.target.closest('[data-sizenone]');
+    if(none){var id=none.dataset.sizenone,st=state.items[id];if((st.qty>0||Object.keys(st.sizeqty).length)&&!confirm('Set this item to none needed and clear its size quantities?'))return;st.sizeqty={};st.qty=0;st.size='';syncSizeUI(id);updateCounts();save();return;}
     var sb = e.target.closest('.step button[data-sqd]');
     if(sb){
       var si=sb.parentElement.querySelector('input[data-sq]');
@@ -560,10 +583,7 @@
     var sq = e.target.closest('input[data-sq]');
     if(sq){
       var st=state.items[sq.getAttribute('data-sq')];
-      var boxes=document.querySelectorAll('input[data-sq="'+sq.getAttribute('data-sq')+'"]');
-      var any=false, sum=0;
-      boxes.forEach(function(b){ var v=b.value.trim(); if(v===''){ delete st.sizeqty[b.getAttribute('data-sz')]; return; } var n=Math.max(0,parseInt(v,10)||0); st.sizeqty[b.getAttribute('data-sz')]=n; sum+=n; any=true; });
-      st.qty = any ? sum : null; updateCounts(); save(); return;
+      var z=sq.dataset.sz,v=sq.value.trim();st.sizeqty[z]=v===''?null:Math.max(0,parseInt(v,10)||0);sumSizes(sq.dataset.sq);updateCounts();save();return;
     }
     var inp = e.target.closest('input[data-item]');
     if(inp){ var n=parseFloat(inp.value); state.items[inp.getAttribute('data-item')].qty = (inp.value.trim()===''||isNaN(n))?null:Math.max(0,Math.round(n*100)/100); updateCounts(); save(); return; }
@@ -593,7 +613,7 @@
     if(!state.review) return '';
     var a=[];
     (state.review.pending||[]).forEach(function(k){var el=document.querySelector('[data-f="'+k+'"]'); if(scope==='top' && el && !(el.compareDocumentPosition(document.getElementById('genbtn2')) & Node.DOCUMENT_POSITION_FOLLOWING)) return; if(el && !(k==='layers' ? layersVal() : val(k))){var label=document.querySelector('label[for="'+k+'"]');a.push((FIELD_LABELS[k]||(label?label.textContent:k))+': PENDING');}});
-    Object.keys(state.items).forEach(function(k){if(state.items[k].qty==null){var x=k.split('-');var g=WORK[+x[0]];if(!g||g.removed||g.items[+x[1]][5]||(scope==='top'&&!document.querySelector('#workitems details.group[data-gi="'+x[0]+'"]')))return;a.push(wiName(+x[0],+x[1])+': PENDING quantity / scope');}});
+    Object.keys(state.items).forEach(function(k){if(state.items[k].qty==null || (state.items[k].sizeqty&&state.items[k].sizeqty.Unassigned>0)){var x=k.split('-');var g=WORK[+x[0]];if(!g||g.removed||g.items[+x[1]][5]||(scope==='top'&&!document.querySelector('#workitems details.group[data-gi="'+x[0]+'"]')))return;a.push(wiName(+x[0],+x[1])+': PENDING quantity / scope');}});
     return (a.length?a.join('\n'):'All listed choices entered. Still a draft for review.')+(scope!=='top'&&state.review.notes?'\nReview notes: '+state.review.notes:'');
   }
   function refreshDraftNotice(){var n=document.getElementById('draftnotice'); if(!n)return; n.style.display=state.review?'block':'none';if(state.review){var msg=pendingMessage();var count=(msg.match(/PENDING/g)||[]).length;n.innerHTML='<b>DRAFT - review before sending</b><br>'+count+' pending choices or quantities. Confirmed answers are below.<details style="margin-top:8px"><summary>Review all pending choices and notes</summary><div style="white-space:pre-line;margin-top:8px">'+esc(msg)+'</div></details><button type="button" class="btn ghost" id="finishreview" style="width:100%;margin-top:10px">Finish review - everything is filled in</button>';}}
@@ -619,7 +639,7 @@
       if(x.qty!=null&&(typeof x.qty!=='number'||!Number.isFinite(x.qty)||x.qty<0||x.qty>100000))throw Error('Invalid quantity: '+k);
       if(x.note!=null&&(typeof x.note!=='string'||x.note.length>10000))throw Error('Invalid note: '+k);
       if(x.size!=null){ var xk=k.split('-'), xit=WORK[+xk[0]].items[+xk[1]]; if(typeof x.size!=='string'||!xit[4]||xit[4].indexOf(x.size)<0)throw Error('Invalid size: '+k); }
-      if(x.sizeqty!=null){ var xk2=k.split('-'), xit2=WORK[+xk2[0]].items[+xk2[1]]; if(typeof x.sizeqty!=='object'||Array.isArray(x.sizeqty)||!xit2[4]||xit2[6]!=='multi'||Object.keys(x.sizeqty).some(function(z){return xit2[4].indexOf(z)<0||typeof x.sizeqty[z]!=='number'||x.sizeqty[z]<0||x.sizeqty[z]>100000;}))throw Error('Invalid size quantities: '+k); }
+      if(x.sizeqty!=null){ var xk2=k.split('-'), xit2=WORK[+xk2[0]].items[+xk2[1]]; if(typeof x.sizeqty!=='object'||Array.isArray(x.sizeqty)||!xit2[4]||xit2[6]!=='multi'||Object.keys(x.sizeqty).some(function(z){return (z!=='Unassigned'&&xit2[4].indexOf(z)<0&&xit2[4].indexOf(z+'"')<0)||(x.sizeqty[z]!=null&&(typeof x.sizeqty[z]!=='number'||x.sizeqty[z]<0||x.sizeqty[z]>100000));}))throw Error('Invalid size quantities: '+k); }
       if(x.soldate!=null&&(typeof x.soldate!=='string'||x.soldate.length>40))throw Error('Invalid solar date: '+k);
       out.items[k]={qty:x.qty==null?null:x.qty,note:x.note||'',size:x.size||'',sizeqty:x.sizeqty||{},soldate:x.soldate||''};
     });
@@ -669,10 +689,12 @@
         }
       }); }
       Object.keys(state.items).forEach(function(k){
+        var itemDef=WORK[+k.split('-')[0]].items[+k.split('-')[1]],st=state.items[k];
+        if(itemDef[4]){Object.keys(st.sizeqty).forEach(function(z){if(itemDef[4].indexOf(z)<0&&itemDef[4].indexOf(z+'"')>=0){st.sizeqty[z+'"']=st.sizeqty[z];delete st.sizeqty[z];}});if(!Object.keys(st.sizeqty).length&&st.qty>0){if(st.size&&itemDef[4].indexOf(st.size)>=0)st.sizeqty[st.size]=st.qty;else st.sizeqty.Unassigned=st.qty;}syncSizeUI(k);}
         var inp = document.querySelector('input[data-item="'+k+'"]'); if(inp){ if(state.items[k].qty==null && !state.review && k!=='2-10') state.items[k].qty=0; inp.value = state.items[k].qty==null?'':state.items[k].qty; if(state.review) inp.placeholder='Pending'; }
         var ta = document.querySelector('textarea[data-notefor="'+k+'"]'); if(ta && state.items[k].note){ ta.value = state.items[k].note; ta.style.display='block'; }
         var sz = document.querySelector('select[data-sizefor="'+k+'"]'); if(sz && state.items[k].size) sz.value = state.items[k].size;
-        document.querySelectorAll('input[data-sq="'+k+'"]').forEach(function(b){ var v=state.items[k].sizeqty&&state.items[k].sizeqty[b.getAttribute('data-sz')]; b.value=(v==null?'0':v); });
+        document.querySelectorAll('input[data-sq="'+k+'"]').forEach(function(b){ var v=state.items[k].sizeqty&&state.items[k].sizeqty[b.getAttribute('data-sz')]; b.value=(v==null?'':v); });
         var di = document.querySelector('input[data-datefor="'+k+'"]'); if(di && state.items[k].soldate) di.value = state.items[k].soldate;
         var yw2 = document.querySelector('[data-yn="'+k+'"]'); if(yw2){ var yq=state.items[k].qty; yw2.querySelectorAll('.ynbtn').forEach(function(x){ x.classList.toggle('on', yq!=null && String(yq>0?1:0)===x.getAttribute('data-ynv')); }); }
       });
@@ -702,7 +724,7 @@
   function rowPhone(k,v){ if(!v) return ''; var h=telHref(v), label=esc(fmtPhone(v)); var disp=h?'<a href="'+h+'" style="color:inherit;white-space:nowrap">'+label+'</a>':'<span style="white-space:nowrap">'+label+'</span>'; return '<tr><td class="k">'+esc(k)+'</td><td>'+disp+'</td></tr>'; }
 
 
-  function sizeBreakdown(st){ var parts=Object.keys(st.sizeqty||{}).filter(function(z){return st.sizeqty[z]>0;}).map(function(z){return (z==='No Size'?'4-in-1':z.replace(/"$/,'')+'-inch')+': Qty '+st.sizeqty[z];}); return parts.length?' <span class="unit">('+parts.join('; ')+')</span>':''; }
+  function sizeBreakdown(st){ var parts=Object.keys(st.sizeqty||{}).filter(function(z){return st.sizeqty[z]>0;}).map(function(z){return (z==='No Size'?'4-in-1':z==='Not Verified'?'Not Verified':z==='Unassigned'?'Size unassigned':z.replace(/"$/,'')+'-inch')+': Qty '+st.sizeqty[z];}); return parts.length?' <span class="unit">('+parts.join('; ')+')</span>':''; }
   function currentSystemVal(){ var v=chipVal('currentsystem'); var o=val('currentsystemother'); return v==='Other' && o ? 'Other - '+o : v; }
   function layersVal(){ return chipVal('layers') || val('layersother'); }
   function deckingVal(){ var d=val('decking'); if(d==='Solid Decking / No Decking Needed') return 'No Decking Needed'; if(!d) return d; if(val('deckqty')) d+=' - Qty: '+val('deckqty')+' sheets'; if(val('deckthick')) d+=' - Thickness: '+val('deckthick'); return d; }
@@ -752,7 +774,7 @@
       if(g.removed) return;
       if(scope==='top' && !document.querySelector('#workitems details.group[data-gi="'+gi+'"]')) return;
       var n=0;
-      g.items.forEach(function(it,ii){ if(it[5]) return; var st=state.items[gi+'-'+ii]; if(!st || st.qty==null || (it[4] && it[6]!=='multi' && st.qty>0 && !st.size)) n++; });
+      g.items.forEach(function(it,ii){ if(it[5]) return; var st=state.items[gi+'-'+ii]; if(!st || st.qty==null || (it[4] && sizedMissing(st))) n++; });
       if(n) miss.push('__wi'+gi+':'+n);
     });
     return miss;
@@ -773,7 +795,7 @@
         if(det){ det.open=true; det.classList.add('miss'); }
         WORK[gi].items.forEach(function(it,ii){
           var st=state.items[gi+'-'+ii];
-          if(!st || st.qty==null || (it[4] && st.qty>0 && !st.size)){ var inp=document.querySelector('input[data-item="'+gi+'-'+ii+'"],[data-yn="'+gi+'-'+ii+'"]'); if(inp && inp.closest('.item')) inp.closest('.item').classList.add('miss');var itemDetails=inp&&inp.closest('.item-details');if(itemDetails)itemDetails.open=true; }
+          if(!st || st.qty==null || (it[4] && st.qty>0 && !st.size)){ var inp=document.querySelector('input[data-item="'+gi+'-'+ii+'"],[data-yn="'+gi+'-'+ii+'"],[data-sizeitem="'+gi+'-'+ii+'"]'); if(inp && inp.closest('.item')) inp.closest('.item').classList.add('miss');var itemDetails=inp&&inp.closest('.item-details');if(itemDetails)itemDetails.open=true; }
         });
         return;
       }
