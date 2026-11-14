@@ -656,6 +656,7 @@
   function gateVal(){ return val('gate') || (gateNA() ? 'None' : ''); }
 
   // Every field needs a real answer before a finished order is generated.
+  // Backup-sheet quantity and thickness can stay unknown until the site visit.
   // Conditional rules keep answers honest: not-applicable is chosen explicitly
   // (No gate code box, N/A flat color), never faked.
   // The top Generate PDF button only needs the on-site checklist above it
@@ -663,8 +664,8 @@
   // Generate Work Order button still needs every field below filled in too.
   var REQUIRED_TOP = [
     ['layersother', function(){ return !chipVal('layers'); }],['decking'],
-    ['deckqty', function(){ return !!chipVal('decking') && chipVal('decking')!=='Solid Decking / No Decking Needed'; }],
-    ['deckthick', function(){ return !!chipVal('decking') && (parseInt(val('deckqty'),10)||0)>0; }],
+    ['deckqty', function(){ return !!chipVal('decking') && ['Solid Decking / No Decking Needed','Solid Decking / Backup Sheets Only'].indexOf(chipVal('decking'))<0; }],
+    ['deckthick', function(){ return !!chipVal('decking') && chipVal('decking')!=='Solid Decking / Backup Sheets Only' && (parseInt(val('deckqty'),10)||0)>0; }],
     ['accrane'],['fascia'],
     ['fasciasize', function(){ var f=chipVal('fascia'); return f==='Partial Fascia Replacement'||f==='Full Fascia Replacement'; }],
     ['special'],
