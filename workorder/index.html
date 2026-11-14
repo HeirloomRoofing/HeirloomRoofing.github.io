@@ -154,6 +154,25 @@
   dialog.photo-view { max-width:min(90vw,800px);border:0;border-radius:12px;padding:14px;background:white; }
   dialog.photo-view::backdrop { background:rgba(0,0,0,.7); }
   .photo-view img { max-width:100%;max-height:70vh;display:block;object-fit:contain;margin:8px auto; }
+
+  /* Form-only item accordions. Generated order and PDF retain their existing templates. */
+  #form details.group > summary {cursor:pointer;}
+  #form details.group > summary::after {content:'\25BE';font-size:14px;}
+  #form details.group:not([open]) > summary::after {content:'\25B8';}
+  #form .item {display:block;}
+  #form .item-details {width:100%;border:0;margin:0;padding:0;}
+  #form .item-heading {display:flex;align-items:center;gap:10px;list-style:none;cursor:pointer;padding:4px 0;}
+  #form .item-heading::-webkit-details-marker {display:none;}
+  #form .item-heading .nm {flex:1;min-width:0;}
+  #form .item-arrow {font-size:11px;color:var(--muted);flex:none;}
+  #form .item-arrow::after {content:' \25BE';}
+  #form .item-details[open]>.item-heading .item-arrow::after {content:' \25B4';}
+  #form .item-body {display:flex;flex-wrap:wrap;gap:10px;align-items:center;border-top:1px solid #e3e8ec;margin-top:10px;padding:14px 0 4px;}
+  #form .item-field-label {flex-basis:100%;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);}
+  #form .item-reference {display:flex;flex-wrap:wrap;gap:4px;width:68px;flex:none;}
+  #form .item-reference:has(button:nth-of-type(2)) {width:68px;}
+  #form .item-reference:has(button:nth-of-type(2)) .photo-thumb,#form .item-reference:has(button:nth-of-type(2)) img {width:32px;height:64px;}
+  #form .item-reference small {font-size:9px;letter-spacing:normal;line-height:1.2;color:var(--muted);width:100%;text-align:center;}
 </style>
 </head>
 <body>
@@ -317,18 +336,19 @@
   var WORK = [
     {g:"SITE PROTECTION", items:[["Protect Landscaping / Plants / Trees","Lump sum",1,"w"],["Protect Windows / Walls / Driveway / Hardscape","Lump sum",1,"w"]]},
     {g:"ROOFING", items:[["Tear Off & Dispose Existing Roofing","Roofing squares",0,"w"],["Install Architectural Shingles","Roofing squares",0,"m"],["Install Underlayment","Roofing squares",0,"m"],["Ice & Water Barrier at Valley","Linear feet",0,"m"],["Install Drip Edge","Linear feet",0,"m"],["Install Ridge Cap","Linear feet",0,"m"],["Flat Roof Restoration","Roofing squares",0,"m"]]},
-    {g:"ACCESSORIES", items:[["Replace Pipe Jacks","Each",0,"m",["1\"","2\"","3\"","4\"","No Size"],null,"multi"],["Replace Turbine Vents","Each",0,"m"],["Replace T-Top Vents","Each",0,"m",["4\"","7\""],null,"multi"],["Replace B-Vent Flashing","Each",0,"m"],["Replace Split Pipe Boots","Each",0,"m",["1\"","2\"","3\"","4\"","Not Verified"]],["Replace Dormer Vents","Each",0,"m"],["Replace O'Hagin Vents","Each",0,"m"],["Satellite Realignment after Roof Completion","Each",0,"w"],["Straighten A/C Condenser Fins","Each",0,"w"],["Skylights","Each",0,"m"]]},
+    {g:"ACCESSORIES", items:[["Replace Pipe Jacks","Each",0,"m",["1\"","2\"","3\"","4\"","No Size"],null,"multi"],["Replace Turbine Vents","Each",0,"m"],["Replace T-Top Vents","Each",0,"m",["4\"","7\""],null,"multi"],["Replace B-Vent Flashing","Each",0,"m"],["Replace Split Pipe Boots","Each",0,"m",["1\"","2\"","3\"","4\"","Not Verified"]],["Replace Dormer Vents","Each",0,"m"],["Replace O'Hagin Vents","Each",0,"m"],["Satellite Realignment after Roof Completion","Each",0,"w"],["Straighten A/C Condenser Fins","Each",0,"w"],["Skylights","Each",0,"m"],["Replace Furnace Vent","Each",0,"m"]]},
     {g:"DECKING", removed:true, items:[["Backup 4' x 8' Decking Sheets","Each",0,"m"]]},
     {g:"SPECIAL CONDITIONS", items:[["Rooftop HVAC","Lump sum",0,"w"],["Take Extra Care at Pitched / Flat Roof Transition","",0,"w",null,null,null,null,"yn"],["Shingle Moulding","Linear feet",0,"m"],["Fascia Replacement","Linear feet",0,"m",null,true],["Do Not Disturb Patio Flat Roof or Shed Roofs","Lump sum",0,"w"],["Dispose of Swamp Cooler and Patch Deck","Each",0,"w"],["Solar DnR Will Be Needed.","",0,"w",null,null,null,"date"]]},
     {g:"CLOSEOUT", items:[["Remove All Debris","Each",1,"w",null,null,null,null,"yn"],["Final Magnetic Sweep","Each",1,"w",null,null,null,null,"yn"],["Final Roof Inspection","Each",1,"w",null,null,null,null,"yn"],["Completion Photos","Each",1,"w",null,null,null,null,"yn"]]}
   ];
   var KEY = 'hr-workorder-draft-v1';
   var state = { fields:{}, items:{} };
-  WORK.forEach(function(g,gi){ g.items.forEach(function(it,ii){ state.items[gi+'-'+ii] = {qty:it[8]==='yn'?null:0, note:'', size:'', sizeqty:{}, soldate:''}; }); });
+  WORK.forEach(function(g,gi){ g.items.forEach(function(it,ii){ state.items[gi+'-'+ii] = {qty:(it[8]==='yn'||it[0]==='Replace Furnace Vent')?null:0, note:'', size:'', sizeqty:{}, soldate:''}; }); });
 
   var MATERIAL_PHOTOS={'Architectural Shingle':'architectural','3-Tab Shingle':'3tab','Tile':'tile','Modified Bitumen':'bitumen','Slate':'slate','Wood Shake':'wood-shake','Composite / Synthetic':'composite','Stone-Coated Steel':'stone-steel','SPF / Coating':'spf-coating'};
-  var ITEM_PHOTOS={'Replace Pipe Jacks':'pipe-jack-photo','Replace T-Top Vents':'t-top-photo','Install Architectural Shingles':'architectural','Install Underlayment':'underlayment','Replace Turbine Vents':'turbine','Skylights':'skylight','Flat Roof Restoration':'spf-coating','Ice & Water Barrier at Valley':'ice-water','Install Ridge Cap':'ridge-cap','Install Drip Edge':'drip-edge',"Backup 4' x 8' Decking Sheets":'plywood'};
-  function itemPhoto(name){var key=ITEM_PHOTOS[name];return key?'<button type="button" class="photo-thumb" data-photo="'+key+'" aria-label="Enlarge photo: '+name+'"><img src="./visuals/'+key+'.jpg'+((key==='ridge-cap'||key==='ice-water')?'?v=20261113crop':'')+'" alt="'+name+' real-photo example" loading="lazy" width="64" height="64"></button>':'';}
+  var ITEM_PHOTOS={'Replace Pipe Jacks':['pipe-jack-screened-aidan','pipe-jack-open-aidan'],'Replace T-Top Vents':'t-top-photo','Install Architectural Shingles':'architectural','Install Underlayment':'underlayment','Replace Turbine Vents':'turbine-aidan','Replace Furnace Vent':'furnace-vent-aidan','Skylights':'skylight','Flat Roof Restoration':'spf-coating','Ice & Water Barrier at Valley':'ice-water','Install Ridge Cap':'ridge-cap','Install Drip Edge':'drip-edge',"Backup 4' x 8' Decking Sheets":'plywood'};
+  function itemPhoto(name){var keys=ITEM_PHOTOS[name];if(!keys)return '';if(!Array.isArray(keys))keys=[keys];return '<span class="item-reference">'+keys.map(function(key,i){return '<button type="button" class="photo-thumb" data-photo="'+key+'" aria-label="Enlarge reference photo: '+name+(keys.length>1?' example '+(i+1):'')+'"><img src="./visuals/'+key+'.jpg'+((key==='ridge-cap'||key==='ice-water')?'?v=20261113crop':'')+'" alt="'+name+' reference example" loading="lazy" width="64" height="64"></button>';}).join('')+'<small>Reference only</small></span>';}
+
   document.querySelectorAll('.chips[data-f="currentsystem"],.chips[data-f="roofsystem"]').forEach(function(group){group.classList.add('photo-choices');group.querySelectorAll('.chip').forEach(function(chip){var key=MATERIAL_PHOTOS[chip.dataset.v];if(!key)return;var img=document.createElement('img');img.src='./visuals/'+key+'.jpg'+((key==='3tab'||key==='architectural'||key==='wood-fascia')?'?v=20261112c':'');img.alt='';img.width=48;img.height=48;img.loading='lazy';chip.prepend(img);});});
 
   // Build work item UI
@@ -338,7 +358,6 @@
     var det = document.createElement('details'); det.className='group'; det.setAttribute('data-gi',gi); det.open=true;
     var sum = document.createElement('summary');
     sum.innerHTML = '<span>'+g.g+'</span>';
-    sum.addEventListener('click', function(e){ e.preventDefault(); });
     det.appendChild(sum);
     g.items.forEach(function(it,ii){
       if(it[5]) return;
@@ -346,21 +365,31 @@
       var row = document.createElement('div'); row.className='item';
       row.innerHTML = itemPhoto(it[0])+'<span class="nm">'+wiName(gi,ii)+(it[1]?' <span class="unit">'+it[1]+'</span>':'')+'</span>'+
         (it[6]==='multi'?'':it[8]==='yn'?'<span class="step yn" data-yn="'+id+'"><button type="button" class="ynbtn" data-ynv="1">Yes</button><button type="button" class="ynbtn" data-ynv="0">No</button></span>':'<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
-        '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="0" placeholder="0">'+
+        '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="'+(it[0]==='Replace Furnace Vent'?'':'0')+'" placeholder="'+(it[0]==='Replace Furnace Vent'?'Pending':'0')+'">'+
         '<button type="button" data-d="1" aria-label="increase">+</button></span>')+
         (it[7]==='date'?'<label class="sizeq">Reset Date: <input type="date" data-datefor="'+id+'" aria-label="Solar reset date"></label>':'')+
         (it[4]&&it[6]==='multi'?'<span class="sizeqs'+((it[0]==='Replace Pipe Jacks'||it[0]==='Replace T-Top Vents')?' pipeqs':'')+'">'+it[4].map(function(z){return '<label class="sizeq">'+(z==='No Size'?'4-in-1':z)+((it[0]==='Replace Pipe Jacks'||it[0]==='Replace T-Top Vents')?' <span class="step"><button type="button" data-sqd="-1" aria-label="Decrease size quantity">&minus;</button>':' ')+'<input type="number" min="0" step="1" inputmode="numeric" data-sq="'+id+'" data-sz="'+z+'" value="0" placeholder="0">'+((it[0]==='Replace Pipe Jacks'||it[0]==='Replace T-Top Vents')?'<button type="button" data-sqd="1" aria-label="Increase size quantity">+</button></span>':'')+'</label>';}).join('')+'</span>':
         it[4]?'<label class="f" for="size-'+id+'" style="flex-basis:100%;margin-bottom:0">Size</label><select id="size-'+id+'" data-sizefor="'+id+'" aria-label="Size"><option value="">None</option>'+it[4].map(function(z){return '<option>'+z+'</option>';}).join('')+'</select>':'')+
         '<button type="button" class="notebtn" data-notebtn="'+id+'">'+(['Take Extra Care at Pitched / Flat Roof Transition','Replace Pipe Jacks','Replace B-Vent Flashing','Replace Split Pipe Boots','Tear Off & Dispose Existing Roofing','Install Architectural Shingles','Install Underlayment','Ice & Water Barrier at Valley','Install Drip Edge','Protect Landscaping / Plants / Trees','Protect Windows / Walls / Driveway / Hardscape','Remove All Debris','Final Magnetic Sweep','Final Roof Inspection','Completion Photos','Satellite Realignment after Roof Completion','Straighten A/C Condenser Fins'].indexOf(it[0])>=0?'+ Notes':'+ Measurement')+'</button>'+
         '<textarea data-notefor="'+id+'" placeholder="'+(it[0]==='Skylights'?'Measurements for skylights':'Notes for this line')+'" style="display:'+(it[0]==='Take Extra Care at Pitched / Flat Roof Transition'?'block':'none')+';flex-basis:100%"></textarea>';
+      var detail=document.createElement('details');detail.className='item-details';
+      var head=document.createElement('summary');head.className='item-heading';
+      var photo=row.querySelector('.item-reference');if(photo)head.appendChild(photo);
+      head.appendChild(row.querySelector('.nm'));
+      var arrow=document.createElement('span');arrow.className='item-arrow';arrow.textContent='Details';head.appendChild(arrow);
+      var body=document.createElement('div');body.className='item-body';
+      while(row.firstChild)body.appendChild(row.firstChild);
+      var count=body.querySelector(':scope > .step,:scope > .yn');if(count){var label=document.createElement('label');label.className='item-field-label';label.textContent=it[8]==='yn'?'Scope required':'Quantity';var input=count.querySelector('input');if(input){input.id='qty-'+id;input.setAttribute('aria-label',wiName(gi,ii)+' quantity');label.htmlFor=input.id;}body.insertBefore(label,count);}
+      var note=body.querySelector('textarea');if(note)note.setAttribute('aria-label',wiName(gi,ii)+' notes or measurements');
+      detail.appendChild(head);detail.appendChild(body);row.appendChild(detail);
       det.appendChild(row);
     });
     var foot=document.createElement('div'); foot.className='count group-count'; foot.id='cnt-'+gi; det.appendChild(foot);
     (gi===0||gi===1||gi===5?wi2:wi).appendChild(det);
   });
 
-  var photoDialog=document.createElement('dialog');photoDialog.className='photo-view';photoDialog.innerHTML='<form method="dialog"><button class="btn" style="padding:7px 16px">Close photo</button></form><img alt=""><p style="font-size:12px;color:#526474">Reference photo, not an exact product or color specification.</p><a href="./visuals/photo-credits.html" target="_blank" rel="noopener" style="font-size:12px">Photo sources and credits</a>';document.body.appendChild(photoDialog);
-  document.addEventListener('click',function(e){var b=e.target.closest('[data-photo]');if(!b)return;var img=photoDialog.querySelector('img');img.src='./visuals/'+b.dataset.photo+'.jpg'+((b.dataset.photo==='ridge-cap'||b.dataset.photo==='ice-water')?'?v=20261113crop':((b.dataset.photo==='3tab'||b.dataset.photo==='architectural'||b.dataset.photo==='wood-fascia')?'?v=20261112c':''));img.alt=b.getAttribute('aria-label');photoDialog.showModal();});
+  var photoDialog=document.createElement('dialog');photoDialog.className='photo-view';photoDialog.innerHTML='<form method="dialog"><button class="btn" style="padding:7px 16px">Close photo</button></form><img alt=""><p style="font-size:12px;color:#526474">Reference example for identification, not a photo of this job or an exact product specification.</p><a href="./visuals/photo-credits.html" target="_blank" rel="noopener" style="font-size:12px">Photo sources and credits</a>';document.body.appendChild(photoDialog);
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-photo]');if(!b)return;e.preventDefault();var img=photoDialog.querySelector('img');img.src='./visuals/'+b.dataset.photo+'.jpg'+((b.dataset.photo==='ridge-cap'||b.dataset.photo==='ice-water')?'?v=20261113crop':((b.dataset.photo==='3tab'||b.dataset.photo==='architectural'||b.dataset.photo==='wood-fascia')?'?v=20261112c':''));img.alt=b.getAttribute('aria-label');photoDialog.showModal();});
 
   function updateCounts(){
     WORK.forEach(function(g,gi){
@@ -425,7 +454,7 @@
       show('steelprofilelabel',s==='Stone-Coated Steel'); show('steelprofile',s==='Stone-Coated Steel');
       show('compositeproductlabel',s==='Composite / Synthetic'); show('compositeproduct',s==='Composite / Synthetic');
       var wi=document.querySelector('input[data-item="1-1"]');
-      if(wi){ var row=wi.closest('.item'), nm=row.querySelector('.nm'); if(nm) nm.innerHTML=wiName(1,1)+' <span class="unit">Roofing squares</span>'; var oldPhoto=row.querySelector('.photo-thumb');if(oldPhoto)oldPhoto.remove();var key=MATERIAL_PHOTOS[s];if(key){var b=document.createElement('button');b.type='button';b.className='photo-thumb';b.dataset.photo=key;b.setAttribute('aria-label','Enlarge photo: '+s);b.innerHTML='<img src="./visuals/'+key+'.jpg'+((key==='3tab'||key==='architectural'||key==='wood-fascia')?'?v=20261112c':'')+'" alt="'+s+' real-photo example" width="64" height="64" loading="lazy">';row.prepend(b);} }
+      if(wi){ var row=wi.closest('.item'), nm=row.querySelector('.nm'); if(nm) nm.innerHTML=wiName(1,1)+' <span class="unit">Roofing squares</span>'; var oldPhoto=row.querySelector('.photo-thumb');if(oldPhoto){var oldRef=oldPhoto.closest('.item-reference');if(oldRef)oldRef.remove();else oldPhoto.remove();}var key=MATERIAL_PHOTOS[s];if(key){var b=document.createElement('button');b.type='button';b.className='photo-thumb';b.dataset.photo=key;b.setAttribute('aria-label','Enlarge photo: '+s);b.innerHTML='<img src="./visuals/'+key+'.jpg'+((key==='3tab'||key==='architectural'||key==='wood-fascia')?'?v=20261112c':'')+'" alt="'+s+' real-photo example" width="64" height="64" loading="lazy">';var ref=document.createElement('span');ref.className='item-reference';ref.appendChild(b);var cap=document.createElement('small');cap.textContent='Reference only';ref.appendChild(cap);row.querySelector('.item-heading').prepend(ref);} }
     };
     rc.addEventListener('click', function(){ setTimeout(window.syncSystemProducts,0); });
     window.syncSystemProducts();
@@ -615,7 +644,7 @@
         }
       }); }
       Object.keys(state.items).forEach(function(k){
-        var inp = document.querySelector('input[data-item="'+k+'"]'); if(inp){ if(state.items[k].qty==null && !state.review) state.items[k].qty=0; inp.value = state.items[k].qty==null?'':state.items[k].qty; if(state.review) inp.placeholder='Pending'; }
+        var inp = document.querySelector('input[data-item="'+k+'"]'); if(inp){ if(state.items[k].qty==null && !state.review && k!=='2-10') state.items[k].qty=0; inp.value = state.items[k].qty==null?'':state.items[k].qty; if(state.review) inp.placeholder='Pending'; }
         var ta = document.querySelector('textarea[data-notefor="'+k+'"]'); if(ta && state.items[k].note){ ta.value = state.items[k].note; ta.style.display='block'; }
         var sz = document.querySelector('select[data-sizefor="'+k+'"]'); if(sz && state.items[k].size) sz.value = state.items[k].size;
         document.querySelectorAll('input[data-sq="'+k+'"]').forEach(function(b){ var v=state.items[k].sizeqty&&state.items[k].sizeqty[b.getAttribute('data-sz')]; b.value=(v==null?'0':v); });
@@ -719,7 +748,7 @@
         if(det){ det.open=true; det.classList.add('miss'); }
         WORK[gi].items.forEach(function(it,ii){
           var st=state.items[gi+'-'+ii];
-          if(!st || st.qty==null || (it[4] && st.qty>0 && !st.size)){ var inp=document.querySelector('input[data-item="'+gi+'-'+ii+'"],[data-yn="'+gi+'-'+ii+'"]'); if(inp && inp.closest('.item')) inp.closest('.item').classList.add('miss'); }
+          if(!st || st.qty==null || (it[4] && st.qty>0 && !st.size)){ var inp=document.querySelector('input[data-item="'+gi+'-'+ii+'"],[data-yn="'+gi+'-'+ii+'"]'); if(inp && inp.closest('.item')) inp.closest('.item').classList.add('miss');var itemDetails=inp&&inp.closest('.item-details');if(itemDetails)itemDetails.open=true; }
         });
         return;
       }
