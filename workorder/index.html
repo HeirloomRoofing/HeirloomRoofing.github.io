@@ -424,7 +424,7 @@
       if(it[5]) return;
       var id = gi+'-'+ii;
       var row = document.createElement('div'); row.className='item';
-      row.innerHTML = itemPhoto(it[0])+'<span class="nm">'+wiName(gi,ii)+(it[1]?' <span class="unit">'+it[1]+'</span>':'')+'</span>'+
+      row.innerHTML = itemPhoto(it[0])+'<span class="nm">'+wiName(gi,ii)+'</span>'+
         (it[6]==='multi'?'':it[8]==='yn'?'<span class="step yn" data-yn="'+id+'"><button type="button" class="ynbtn" data-ynv="1">Yes</button><button type="button" class="ynbtn" data-ynv="0">No</button></span>':'<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
         '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="'+(it[0]==='Replace Furnace Vent'?'':'0')+'" placeholder="'+(it[0]==='Replace Furnace Vent'?'Pending':'0')+'">'+
         '<button type="button" data-d="1" aria-label="increase">+</button></span>')+
@@ -439,6 +439,7 @@
       var arrow=document.createElement('span');arrow.className='item-arrow';arrow.textContent='Details';head.appendChild(arrow);
       var body=document.createElement('div');body.className='item-body';
       while(row.firstChild)body.appendChild(row.firstChild);
+      if(it[1]){var unit=document.createElement('p');unit.className='item-unit';unit.innerHTML='Unit: <span class="unit">'+it[1]+'</span>';body.prepend(unit);}
       var count=body.querySelector(':scope > .step,:scope > .yn');if(count){var label=document.createElement('label');label.className='item-field-label';label.textContent=it[8]==='yn'?'Scope required':'Quantity';var input=count.querySelector('input');if(input){input.id='qty-'+id;input.setAttribute('aria-label',wiName(gi,ii)+' quantity');label.htmlFor=input.id;}body.insertBefore(label,count);}
       var note=body.querySelector('textarea');if(note)note.setAttribute('aria-label',wiName(gi,ii)+' notes or measurements');
       body.insertAdjacentHTML('beforeend',assessmentUI(id));
@@ -515,7 +516,7 @@
       show('steelprofilelabel',s==='Stone-Coated Steel'); show('steelprofile',s==='Stone-Coated Steel');
       show('compositeproductlabel',s==='Composite / Synthetic'); show('compositeproduct',s==='Composite / Synthetic');
       var wi=document.querySelector('input[data-item="1-1"]');
-      if(wi){ var row=wi.closest('.item'), nm=row.querySelector('.nm'); if(nm) nm.innerHTML=wiName(1,1)+' <span class="unit">Roofing squares</span>'; var oldPhoto=row.querySelector('.photo-thumb');if(oldPhoto){var oldRef=oldPhoto.closest('.item-reference');if(oldRef)oldRef.remove();else oldPhoto.remove();}var key=MATERIAL_PHOTOS[s];if(key){var b=document.createElement('button');b.type='button';b.className='photo-thumb';b.dataset.photo=key;b.setAttribute('aria-label','Enlarge photo: '+s);b.innerHTML='<img src="./visuals/'+key+'.jpg'+((key==='3tab'||key==='architectural'||key==='wood-fascia')?'?v=20261112c':'')+'" alt="'+s+' real-photo example" width="64" height="64" loading="lazy">';var ref=document.createElement('span');ref.className='item-reference';ref.appendChild(b);var cap=document.createElement('small');cap.textContent='Reference only';ref.appendChild(cap);row.querySelector('.item-heading').prepend(ref);} }
+      if(wi){ var row=wi.closest('.item'), nm=row.querySelector('.nm'); if(nm) nm.textContent=wiName(1,1); var oldPhoto=row.querySelector('.photo-thumb');if(oldPhoto){var oldRef=oldPhoto.closest('.item-reference');if(oldRef)oldRef.remove();else oldPhoto.remove();}var key=MATERIAL_PHOTOS[s];if(key){var b=document.createElement('button');b.type='button';b.className='photo-thumb';b.dataset.photo=key;b.setAttribute('aria-label','Enlarge photo: '+s);b.innerHTML='<img src="./visuals/'+key+'.jpg'+((key==='3tab'||key==='architectural'||key==='wood-fascia')?'?v=20261112c':'')+'" alt="'+s+' real-photo example" width="64" height="64" loading="lazy">';var ref=document.createElement('span');ref.className='item-reference';ref.appendChild(b);var cap=document.createElement('small');cap.textContent='Reference only';ref.appendChild(cap);row.querySelector('.item-heading').prepend(ref);} }
     };
     rc.addEventListener('click', function(){ setTimeout(window.syncSystemProducts,0); });
     window.syncSystemProducts();
