@@ -151,6 +151,8 @@
   .pipeqs .sizeq { display:flex;flex-direction:column;gap:3px;margin:0;font-size:12px; }
   .pipeqs .step button { width:36px;height:40px; }
   .pipeqs .step input { width:40px;height:40px;box-sizing:border-box;padding:6px 2px; }
+  .area-photo > summary {padding-right:58px;position:relative;}
+  .photo-field-count {position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:11px;font-weight:500;white-space:nowrap;}
   dialog.camera-batch {width:min(92vw,520px);max-height:85vh;overflow:auto;border:0;border-radius:14px;padding:16px;}
   dialog.camera-batch::backdrop {background:#000a;}
   #camera-batch-gallery {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0;}
@@ -1189,6 +1191,7 @@
     });
     var photoFields=Array.from(new Set(Array.from(photosCard.querySelectorAll('[data-jobphoto]')).map(function(el){return el.dataset.jobphoto;})));
     var emptyPhotoFields=photoFields.filter(function(id){return !photoRecords.some(function(r){return r.item===id;});}).length;
+    photosCard.querySelectorAll('details.area-photo').forEach(function(area){var ids=Array.from(new Set(Array.from(area.querySelectorAll('[data-jobphoto]')).map(function(el){return el.dataset.jobphoto;})));var remaining=ids.filter(function(id){return !photoRecords.some(function(r){return r.item===id;});}).length;var summary=area.querySelector(':scope > summary'),badge=summary.querySelector('.photo-field-count');if(!badge){badge=document.createElement('span');badge.className='photo-field-count';summary.appendChild(badge);}badge.textContent=remaining+' left';badge.style.color=remaining?'#a94f00':'#167137';});
     sections.forEach(function(section,i){var badge=section.querySelector(':scope > summary .section-count');var initial=!!(section.compareDocumentPosition(document.getElementById('genbtn2'))&Node.DOCUMENT_POSITION_FOLLOWING);badge.textContent=section.querySelector('h2').textContent==='PHOTOS'?(emptyPhotoFields?emptyPhotoFields+' left':'Ready'):initial?(counts[i]===0?'Ready':counts[i]+' left'):'Not needed for initial';badge.className='section-count'+(section.querySelector('h2').textContent==='PHOTOS'?(emptyPhotoFields?' pending':' ready'):initial?(counts[i]?' pending':' ready'):'');});
   }
   ['input','change','click','toggle'].forEach(function(event){document.getElementById('form').addEventListener(event,function(){setTimeout(updateSectionCounts,0);},true);});
