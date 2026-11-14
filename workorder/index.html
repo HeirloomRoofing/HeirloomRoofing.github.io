@@ -161,6 +161,24 @@
   #form .section-tab::after {content:'\25BE';font-size:16px;color:var(--brand);}
   #form .form-section[open]>.section-tab::after {content:'\25B4';}
   #form .section-fields {padding-top:16px;}
+  /* A compact initial overview keeps all ten section tabs in a phone viewport. */
+  body:has(#form:not([style*="display: none"])) .band {padding:10px 16px;}
+  body:has(#form:not([style*="display: none"])) .band img {height:32px;width:auto;}
+  body:has(#form:not([style*="display: none"])) .band .t {font-size:16px;margin-top:5px;}
+  body:has(#form:not([style*="display: none"])) main {margin-top:0;}
+  #form > .card:has(> .form-section) {margin:5px 0;padding:10px 14px;border-radius:11px;}
+  #form .section-tab {min-height:19px;}
+  #form .section-tab h2 {font-size:14px;line-height:19px;flex:1;min-width:0;}
+  #form .section-count {font-size:10px;line-height:13px;color:var(--muted);text-align:right;max-width:82px;flex:none;}
+  #form .section-count.pending {color:#9b4e00;}
+  #form .section-count.ready {color:#19713a;}
+  #form > .card:has(> #resetbtn) {padding:9px 12px;margin:5px 0 8px;}
+  #form #resetbtn {padding:5px 10px;font-size:11px;}
+  #form > .card:has(> #resetbtn) > .hint {font-size:10px;line-height:1.2;margin-top:4px;}
+  #form > .no-print:has(> #genbtn2) {margin:7px 0!important;}
+  #form #genbtn2 {font-size:12px;padding:8px 10px;}
+  #form > .no-print:has(> #genbtn2) .hint {font-size:10px;margin-top:2px;}
+  #form .privacy {font-size:10px;margin-top:8px;}
   /* Form-only item accordions. Generated order and PDF retain their existing templates. */
   #form details.group > summary {cursor:pointer;}
   #form details.group > summary::after {content:'\25BE';font-size:14px;}
@@ -1057,12 +1075,24 @@
     var heading=card.querySelector(':scope > h2');if(!heading)return;
     var section=document.createElement('details');section.className='form-section';
     var tab=document.createElement('summary');tab.className='section-tab';tab.appendChild(heading);
+    var count=document.createElement('span');count.className='section-count';count.setAttribute('aria-live','polite');tab.appendChild(count);
     var contents=document.createElement('div');contents.className='section-fields';
     while(card.firstChild)contents.appendChild(card.firstChild);
     section.appendChild(tab);section.appendChild(contents);card.appendChild(section);
   });
+  function updateSectionCounts(){
+    var sections=Array.from(document.querySelectorAll('#form .form-section')), counts=sections.map(function(){return 0;});
+    missingRequired('top').forEach(function(key){
+      var el,n=1;if(key.indexOf('__wi')===0){var parts=key.slice(4).split(':');n=+parts[1];el=document.querySelector('#workitems details.group[data-gi="'+parts[0]+'"]');}
+      else el=document.querySelector('[data-f="'+key+'"]');
+      var section=el&&el.closest('.form-section'),idx=sections.indexOf(section);if(idx>=0)counts[idx]+=n;
+    });
+    sections.forEach(function(section,i){var badge=section.querySelector(':scope > summary .section-count');var initial=!!(section.compareDocumentPosition(document.getElementById('genbtn2'))&Node.DOCUMENT_POSITION_FOLLOWING);badge.textContent=initial?(counts[i]===0?'Ready':counts[i]+' left'):'Not needed for initial';badge.className='section-count'+(initial?(counts[i]?' pending':' ready'):'');});
+  }
+  ['input','change','click','toggle'].forEach(function(event){document.getElementById('form').addEventListener(event,function(){setTimeout(updateSectionCounts,0);},true);});
   restore();
   updateCounts();
+  updateSectionCounts();
 })();
 </script>
 </body>
