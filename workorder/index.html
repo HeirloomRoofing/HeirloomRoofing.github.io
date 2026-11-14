@@ -155,6 +155,12 @@
   dialog.photo-view::backdrop { background:rgba(0,0,0,.7); }
   .photo-view img { max-width:100%;max-height:70vh;display:block;object-fit:contain;margin:8px auto; }
 
+  #form .section-tab {display:flex;justify-content:space-between;align-items:center;gap:12px;list-style:none;cursor:pointer;}
+  #form .section-tab::-webkit-details-marker {display:none;}
+  #form .section-tab h2 {margin:0;}
+  #form .section-tab::after {content:'\25BE';font-size:16px;color:var(--brand);}
+  #form .form-section[open]>.section-tab::after {content:'\25B4';}
+  #form .section-fields {padding-top:16px;}
   /* Form-only item accordions. Generated order and PDF retain their existing templates. */
   #form details.group > summary {cursor:pointer;}
   #form details.group > summary::after {content:'\25BE';font-size:14px;}
@@ -756,6 +762,7 @@
       var el=document.querySelector('[data-f="'+k+'"]'); if(el) el.classList.add('miss');
     });
     var first=miss[0].indexOf('__wi')===0 ? document.querySelector('#form details.group[data-gi="'+miss[0].slice(4).split(':')[0]+'"]') : document.querySelector('[data-f="'+miss[0]+'"]');
+    if(first){for(var parent=first.parentElement;parent;parent=parent.parentElement){if(parent.tagName==='DETAILS')parent.open=true;}}
     if(first && first.scrollIntoView) first.scrollIntoView({behavior:'smooth', block:'center'});
   }
   function hideReqErrors(){
@@ -1045,6 +1052,15 @@
   });
 
 
+  // Top-level form headings are collapsible; inputs stay in their original DOM order.
+  document.querySelectorAll('#form > .card').forEach(function(card){
+    var heading=card.querySelector(':scope > h2');if(!heading)return;
+    var section=document.createElement('details');section.className='form-section';
+    var tab=document.createElement('summary');tab.className='section-tab';tab.appendChild(heading);
+    var contents=document.createElement('div');contents.className='section-fields';
+    while(card.firstChild)contents.appendChild(card.firstChild);
+    section.appendChild(tab);section.appendChild(contents);card.appendChild(section);
+  });
   restore();
   updateCounts();
 })();
