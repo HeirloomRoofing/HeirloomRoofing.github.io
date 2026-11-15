@@ -843,7 +843,7 @@
       if(k.indexOf('__photo:')===0)return 'Photos - '+jobPhotoItemName(k.slice(8));
       return FIELD_LABELS[k]||k;
     });
-    box.innerHTML=(scope==='top'?'<b>Complete every required initial section, including Photos, before completing the checklist:</b><br>':'<b>Fill in everything before generating the work order:</b><br>')+names.join('<br>');
+    box.innerHTML=(scope==='top'?'<b>Complete every required initial section before completing the checklist:</b><br>':'<b>Fill in everything before generating the work order:</b><br>')+names.join('<br>');
     box.style.display='block';
     document.querySelectorAll('.miss').forEach(function(e){ e.classList.remove('miss'); });
     miss.forEach(function(k){
@@ -975,7 +975,7 @@
   function generateOrder(scope){
     if(scope==='top'||!state.review){
       var miss=missingRequired(scope);
-      if(scope==='top'){if(cameraBatch||photoBusy||batchPreparing||photoFailure||state.photoIds.length!==photoRecords.length)miss.push('__photoSave');Array.from(new Set(Array.from(photosCard.querySelectorAll('[data-jobphoto]')).map(function(e){return e.dataset.jobphoto;}))).forEach(function(id){if(!photoRecords.some(function(r){return r.item===id;}))miss.push('__photo:'+id);});}
+      if(scope==='top'){if(cameraBatch||photoBusy||batchPreparing||photoFailure||state.photoIds.length!==photoRecords.length)miss.push('__photoSave');}
       if(miss.length){ showReqErrors(miss, scope); return; }
     }
     hideReqErrors();
