@@ -769,7 +769,7 @@
   function rowPhone(k,v){ if(!v) return ''; var h=telHref(v), label=esc(fmtPhone(v)); var disp=h?'<a href="'+h+'" style="color:inherit;white-space:nowrap">'+label+'</a>':'<span style="white-space:nowrap">'+label+'</span>'; return '<tr><td class="k">'+esc(k)+'</td><td>'+disp+'</td></tr>'; }
 
 
-  function sizeBreakdown(st){ var parts=Object.keys(st.sizeqty||{}).filter(function(z){return st.sizeqty[z]>0;}).map(function(z){return (z==='No Size'?'4-in-1':z==='Not Verified'?'Not Verified':z==='Unassigned'?'Size unassigned':z.replace(/"$/,'')+'-inch')+': Qty '+st.sizeqty[z];}); return parts.length?' <span class="unit">('+parts.join('; ')+')</span>':''; }
+  function sizeBreakdown(st,plain){ var parts=Object.keys(st.sizeqty||{}).filter(function(z){return st.sizeqty[z]>0;}).map(function(z){var size=z==='No Size'?'4-in-1':z==='Not Verified'?'Not Verified':z==='Unassigned'?'Size unassigned':z;return '('+st.sizeqty[z]+' of the '+size+')';}); var text=parts.join(' ');return text?(plain?' '+text:' <span class="unit">'+esc(text)+'</span>'):''; }
   function currentSystemVal(){ var v=chipVal('currentsystem'); var o=val('currentsystemother'); return v==='Other' && o ? 'Other - '+o : v; }
   function layersVal(){ return chipVal('layers') || val('layersother'); }
   function deckingVal(){ var d=val('decking'); if(d==='Solid Decking / No Decking Needed') return 'No Decking Needed'; if(!d) return d; if(val('deckqty')) d+=' - Qty: '+val('deckqty')+' sheets'; if(val('deckthick')) d+=' - Thickness: '+val('deckthick'); return d; }
@@ -945,7 +945,7 @@
       if(g.removed) return;
       var lines=[];
       g.items.forEach(function(it,ii){ if(it[5]) return; var st=state.items[gi+'-'+ii];
-        if(st.qty==null || st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+wiName(gi,ii)+(it[8]==='yn'?(st.qty==null?': PENDING':(st.qty>0?': Yes':': No')):(st.qty==null?': PENDING quantity / scope':(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):'')))+(it[6]==='multi'?sizeBreakdown(st):(st.size?' - '+st.size:''))+(st.soldate?' - reset scheduled '+st.soldate:'')+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
+        if(st.qty==null || st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+wiName(gi,ii)+(it[8]==='yn'?(st.qty==null?': PENDING':(st.qty>0?': Yes':': No')):(st.qty==null?': PENDING quantity / scope':(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):'')))+(it[6]==='multi'?sizeBreakdown(st,true):(st.size?' - '+st.size:''))+(st.soldate?' - reset scheduled '+st.soldate:'')+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
       if(lines.length){ L.push(g.g+':'); lines.forEach(function(x){L.push(x);}); }
     });
     if(val('addnotes')){ L.push(''); L.push('NOTES: '+val('addnotes')); }
