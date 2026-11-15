@@ -252,6 +252,11 @@
   #form .item-reference:has(button:nth-of-type(2)) {width:68px;}
   #form .item-reference:has(button:nth-of-type(2)) .photo-thumb,#form .item-reference:has(button:nth-of-type(2)) img {width:32px;height:64px;}
   #form .item-reference small {font-size:9px;letter-spacing:normal;line-height:1.2;color:var(--muted);width:100%;text-align:center;}
+  .my-jobs {box-sizing:border-box;width:min(560px,calc(100% - 24px));max-height:85vh;border:0;border-radius:18px;padding:18px;color:var(--ink);font-family:inherit;overflow:auto;}
+  .my-jobs::backdrop {background:rgba(0,0,0,.55);}
+  .saved-job {border-top:1px solid #cfd9e0;padding:14px 0;}
+  .saved-job h3 {margin:0 0 6px;color:var(--brand);font-size:18px;overflow-wrap:anywhere;}
+  .saved-job p {margin:0 0 10px;font-size:13px;line-height:1.4;overflow-wrap:anywhere;}
 </style>
 <link rel="stylesheet" href="/form-density.css?v=20261115a">
 </head>
@@ -264,8 +269,7 @@
   <div id="form">
 <div id="reqerrors" role="alert"></div>
 <div class="card">
-<button class="btn ghost" id="resetbtn" type="button">Reset Form</button>
-<div class="hint">Clears every answer saved on this device, after a confirmation. It never sends an order.</div>
+<div style="display:flex;justify-content:space-between;gap:12px"><button class="btn ghost" id="resetbtn" type="button">New Form</button><button class="btn ghost" id="myjobsbtn" type="button">My Jobs</button></div><div class="hint">New Form saves this job, including photos, before opening a blank form. Saved only on this device.</div>
 <div id="draftnotice" role="status" style="display:none;background:#fff4e5;color:#704800;padding:12px;border-radius:10px;margin-top:10px;white-space:pre-line;max-height:180px;overflow:auto"></div>
 </div><div class="card">
 <h2>Project Manager</h2>
@@ -354,7 +358,7 @@
 <button class="chip" data-v="Yes - Pets / Children On Site">Pets / Children On Site</button><button class="chip" data-v="Yes - Protect Vehicles / Outdoor Items">Protect Vehicles / Outdoor Items</button></div>
 <label class="f" for="otherinstr">Other / Special Instructions</label>
 <textarea data-f="otherinstr" id="otherinstr" placeholder='Required - enter "None" if no other instructions'></textarea>
-</div><div class="no-print" style="margin:14px 0 2px;text-align:center"><button class="btn primary" id="genbtn2" type="button" style="width:min(340px,100%)">Generate Initial Production Checklist PDF</button><div class="hint" style="font-size:16px;font-weight:700;margin-top:8px">make sure to upload PDF in Roofr</div></div><div class="card">
+</div><div class="no-print" style="margin:14px 0 2px;text-align:center"><button class="btn primary" id="genbtn2" type="button" style="width:min(340px,100%)">Complete Initial Production Checklist</button><div class="hint" style="font-size:16px;font-weight:700;margin-top:8px">make sure to upload PDF in Roofr</div></div><div class="card">
 <h2>Roof System Being Installed</h2>
 <label class="f">Roof System</label>
 <div class="chips" data-f="roofsystem">
@@ -397,7 +401,7 @@
       <a class="btn primary" id="emailbtn" href="#" style="text-decoration:none;text-align:center">Send email to Nick and Erik</a>
       <div style="display:flex;gap:10px;margin-top:6px">
         <button class="btn ghost" id="editbtn" style="flex:1">Back to Edit</button>
-        <button class="btn ghost" id="newbtn" style="flex:1;color:#b3261e">Start New</button>
+        <button class="btn ghost" id="newbtn" style="flex:1;color:#b3261e">New Form</button>
       </div>
     </div>
   </div>
@@ -651,6 +655,7 @@
   function persistDraft(){
     var f={};document.querySelectorAll('[data-f]').forEach(function(el){if(el.classList.contains('chips'))f[el.dataset.f]=chipVal(el.dataset.f);else if(el.type==='checkbox')f[el.dataset.f]=el.checked?'Yes':'';else if(!el.hasAttribute('data-nosave'))f[el.dataset.f]=el.value;});
     state.fields=f;localStorage.setItem(KEY,JSON.stringify(state));
+    queueJobArchive();
     document.getElementById('savestatus').textContent='Draft saved on this device '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
   }
   function save(){clearTimeout(saveTimer);saveTimer=setTimeout(function(){refreshDraftNotice();try{persistDraft();}catch(e){document.getElementById('savestatus').textContent='Not saved - device storage unavailable. Keep this page open and export a PDF.';toast('Draft could not save. Keep this page open.');}},350);}
@@ -834,12 +839,15 @@
     var box=document.getElementById('reqerrors');
     var names=miss.map(function(k){
       if(k.indexOf('__wi')===0){ var p=k.slice(4).split(':'); return 'Work Items - '+WORK[+p[0]].g+': '+p[1]+' line'+(p[1]==='1'?'':'s')+' unanswered (set 0 for not needed)'; }
+      if(k==='__photoSave')return 'Photos are not all saved. Finish All Done, wait for saving, or resolve the photo warning.';
+      if(k.indexOf('__photo:')===0)return 'Photos - '+jobPhotoItemName(k.slice(8));
       return FIELD_LABELS[k]||k;
     });
-    box.innerHTML=(scope==='top'?'<b>Fill in everything above before generating the PDF:</b><br>':'<b>Fill in everything before generating the work order:</b><br>')+names.join('<br>');
+    box.innerHTML=(scope==='top'?'<b>Complete every required initial section, including Photos, before completing the checklist:</b><br>':'<b>Fill in everything before generating the work order:</b><br>')+names.join('<br>');
     box.style.display='block';
     document.querySelectorAll('.miss').forEach(function(e){ e.classList.remove('miss'); });
     miss.forEach(function(k){
+      if(k.indexOf('__photo')===0){photosCard.querySelector('details.form-section').open=true;photosCard.classList.add('miss');return;}
       if(k.indexOf('__wi')===0){
         var gi=+k.slice(4).split(':')[0];
         var det=document.querySelector('#form details.group[data-gi="'+gi+'"]');
@@ -853,6 +861,7 @@
       var el=document.querySelector('[data-f="'+k+'"]'); if(el) el.classList.add('miss');
     });
     var first=miss[0].indexOf('__wi')===0 ? document.querySelector('#form details.group[data-gi="'+miss[0].slice(4).split(':')[0]+'"]') : document.querySelector('[data-f="'+miss[0]+'"]');
+    if(!first&&miss[0].indexOf('__photo')===0)first=photosCard;
     if(first){for(var parent=first.parentElement;parent;parent=parent.parentElement){if(parent.tagName==='DETAILS')parent.open=true;}}
     if(first && first.scrollIntoView) first.scrollIntoView({behavior:'smooth', block:'center'});
   }
@@ -964,8 +973,9 @@
   var outputPhotoURLs=[];
   async function showOutputPhotos(){await photoReady;outputPhotoURLs.forEach(function(u){URL.revokeObjectURL(u);});outputPhotoURLs=[];var box=document.getElementById('output-job-photos');if(!box){box=document.createElement('section');box.id='output-job-photos';box.className='wo';document.getElementById('wopaper').after(box);}box.replaceChildren();if(!photoRecords.length){var empty=document.createElement('p');empty.textContent='No job photos saved in this draft on this device.';box.appendChild(empty);return;}var title=document.createElement('h3');title.textContent='JOB PHOTOS ('+photoRecords.length+')';box.appendChild(title);photoRecords.forEach(function(r){var fig=document.createElement('figure');fig.style.cssText='margin:18px 0;break-inside:avoid';var label=document.createElement('figcaption');label.textContent=jobPhotoItemName(r.item)+(r.caption?' - '+r.caption:'');label.style.cssText='font-weight:700;margin-bottom:8px';var img=document.createElement('img'),u=URL.createObjectURL(r.blob);outputPhotoURLs.push(u);img.src=u;img.alt=jobPhotoItemName(r.item)+' job photo';img.style.cssText='display:block;width:100%;max-height:70vh;object-fit:contain';fig.append(label,img);box.appendChild(fig);});}
   function generateOrder(scope){
-    if(!state.review){
+    if(scope==='top'||!state.review){
       var miss=missingRequired(scope);
+      if(scope==='top'){if(cameraBatch||photoBusy||batchPreparing||photoFailure||state.photoIds.length!==photoRecords.length)miss.push('__photoSave');Array.from(new Set(Array.from(photosCard.querySelectorAll('[data-jobphoto]')).map(function(e){return e.dataset.jobphoto;}))).forEach(function(id){if(!photoRecords.some(function(r){return r.item===id;}))miss.push('__photo:'+id);});}
       if(miss.length){ showReqErrors(miss, scope); return; }
     }
     hideReqErrors();
@@ -1141,27 +1151,31 @@
     }
     } finally { pdfActionBusy=false; }
   });
-  document.getElementById('resetbtn').addEventListener('click', function(){
-    if(!confirm('Reset the form? This clears saved answers and detaches all job photos from this draft on this device. This cannot be undone.')) return;
-    try{localStorage.removeItem(KEY);}catch(e){alert('Could not clear saved draft. Nothing was reset.');return;}
-    location.reload();
-  });
-  document.getElementById('newbtn').addEventListener('click', function(){
-    if(!confirm('Start a new work order? This clears saved answers and detaches all job photos from the current draft on this device.')) return;
-    try{localStorage.removeItem(KEY);}catch(e){alert('Could not clear saved draft. Nothing was reset.');return;}
-    location.reload();
-  });
-
-
   // User-selected job evidence is stored in this browser, never uploaded to a server.
   var photoDB=null,photoRecords=[],photoBusy=false,photoFailure=null,photoReady=Promise.resolve(),photoURLs=[];
   var KIND_LABELS={general:'Job photo',potential:'Job photo',undamaged:'Job photo',painted:'Job photo'};
   var photoStatus=document.createElement('div');photoStatus.id='jobphotostatus';photoStatus.hidden=true;photoStatus.setAttribute('role','status');document.getElementById('workitems').prepend(photoStatus);
   function photoMessage(message,error){photoStatus.hidden=false;photoStatus.replaceChildren();var p=document.createElement('div');p.textContent=message;photoStatus.appendChild(p);if(error){photoStatus.setAttribute('role','alert');if(photoFailure&&photoFailure.files){var retry=document.createElement('button');retry.type='button';retry.className='btn';retry.textContent='Retry unsaved photos';retry.onclick=function(){var f=photoFailure;photoFailure=null;addJobPhotos(f.files,f.item,f.kind);};photoStatus.appendChild(retry);}var omit=document.createElement('button');omit.type='button';omit.className='btn ghost';omit.textContent='Exclude unsaved or missing photos';omit.onclick=function(){if(!confirm('Continue without the unsaved or missing photos? Existing saved photos stay.'))return;var old=state.photoIds.slice();state.photoIds=photoRecords.map(function(r){return r.id;});try{persistDraft();photoFailure=null;photoMessage(photoRecords.length+' job photos saved on this device.');}catch(e){state.photoIds=old;photoMessage('Could not update saved draft. Keep this page open and free device storage.',true);}};photoStatus.appendChild(omit);}else{photoStatus.setAttribute('role','status');}}
-  function openPhotoDB(){if(photoDB)return Promise.resolve(photoDB);return new Promise(function(resolve,reject){if(!window.indexedDB)return reject(Error('This browser does not allow local photo storage.'));var req=indexedDB.open('heirloom-job-evidence-v1',1);req.onupgradeneeded=function(){req.result.createObjectStore('photos',{keyPath:'id'});};req.onerror=function(){reject(req.error||Error('Photo storage unavailable.'));};req.onblocked=function(){reject(Error('Close other checklist tabs, then reload to enable photo storage.'));};req.onsuccess=function(){photoDB=req.result;resolve(photoDB);};});}
+  function openPhotoDB(){if(photoDB)return Promise.resolve(photoDB);return new Promise(function(resolve,reject){if(!window.indexedDB)return reject(Error('This browser does not allow local photo storage.'));var req=indexedDB.open('heirloom-job-evidence-v1',2);req.onupgradeneeded=function(){if(!req.result.objectStoreNames.contains('photos'))req.result.createObjectStore('photos',{keyPath:'id'});if(!req.result.objectStoreNames.contains('jobs'))req.result.createObjectStore('jobs',{keyPath:'id'});};req.onerror=function(){reject(req.error||Error('Photo storage unavailable.'));};req.onblocked=function(){reject(Error('Close other checklist tabs, then reload to enable photo storage.'));};req.onsuccess=function(){photoDB=req.result;photoDB.onversionchange=function(){photoDB.close();photoDB=null;};resolve(photoDB);};});}
   async function photoStore(mode,run){var db=await openPhotoDB();return new Promise(function(resolve,reject){var tx=db.transaction('photos',mode),req=run(tx.objectStore('photos'));tx.oncomplete=function(){resolve(req&&req.result);};tx.onerror=function(){reject(tx.error||Error('Device photo storage is full or unavailable.'));};tx.onabort=function(){reject(tx.error||Error('Photo save was interrupted.'));};});}
   async function loadJobPhotos(){if(!state.photoIds.length)return;try{var records=[];for(var id of state.photoIds){var r=await photoStore('readonly',function(store){return store.get(id);});if(r)records.push(r);}photoRecords=records;renderJobPhotos();if(records.length!==state.photoIds.length)throw Error('Some saved photo files are missing from this browser. Re-add them, or explicitly exclude missing photos.');photoMessage(records.length+' job photos restored on this device.');}catch(e){photoFailure={missing:true};photoMessage(e.message,true);}}
-  function renderJobPhotos(){updateAccessoryPhotoTallies();photoURLs.forEach(function(u){URL.revokeObjectURL(u);});photoURLs=[];document.querySelectorAll('[data-gallery]').forEach(function(g){g.replaceChildren();});photoRecords.forEach(function(r){var galleries=document.querySelectorAll('[data-gallery="'+r.item+'"]');galleries.forEach(function(g){var fig=document.createElement('figure');fig.className='job-photo';var img=document.createElement('img'),u=URL.createObjectURL(r.blob);photoURLs.push(u);img.src=u;img.alt='Job photo: '+KIND_LABELS[r.kind];var cap=document.createElement('figcaption');cap.textContent=KIND_LABELS[r.kind];var caption=document.createElement('input');caption.type='text';caption.maxLength=200;caption.placeholder='Location / caption (optional)';caption.setAttribute('aria-label',jobPhotoItemName(r.item)+' photo caption');caption.value=r.caption||'';caption.onchange=async function(){photoBusy=true;var prior=r.caption;r.caption=caption.value;try{await photoStore('readwrite',function(store){return store.put(r);});}catch(e){r.caption=prior;caption.value=prior||'';alert('Caption was not saved. Existing photo and caption are unchanged. Try again after freeing storage.');}finally{photoBusy=false;}};var remove=document.createElement('button');remove.className='btn ghost';remove.type='button';remove.textContent='Remove photo';remove.onclick=async function(){if(photoBusy||!confirm('Remove this job photo from this draft?'))return;var prior=state.photoIds.slice();state.photoIds=prior.filter(function(id){return id!==r.id;});try{persistDraft();photoRecords=photoRecords.filter(function(x){return x.id!==r.id;});renderJobPhotos();await photoStore('readwrite',function(store){return store.delete(r.id);});photoMessage(photoRecords.length+' job photos saved on this device.');}catch(e){state.photoIds=prior;photoMessage('Photo removal did not finish. Reload before continuing.',true);photoFailure={missing:true};}};fig.append(img,cap,caption,remove);g.appendChild(fig);});});updateSectionCounts();}
+  function renderJobPhotos(){updateAccessoryPhotoTallies();photoURLs.forEach(function(u){URL.revokeObjectURL(u);});photoURLs=[];document.querySelectorAll('[data-gallery]').forEach(function(g){g.replaceChildren();});photoRecords.forEach(function(r){var galleries=document.querySelectorAll('[data-gallery="'+r.item+'"]');galleries.forEach(function(g){var fig=document.createElement('figure');fig.className='job-photo';var img=document.createElement('img'),u=URL.createObjectURL(r.blob);photoURLs.push(u);img.src=u;img.alt='Job photo: '+KIND_LABELS[r.kind];var cap=document.createElement('figcaption');cap.textContent=KIND_LABELS[r.kind];var caption=document.createElement('input');caption.type='text';caption.maxLength=200;caption.placeholder='Location / caption (optional)';caption.setAttribute('aria-label',jobPhotoItemName(r.item)+' photo caption');caption.value=r.caption||'';caption.onchange=async function(){photoBusy=true;var prior=r.caption;r.caption=caption.value;try{await photoStore('readwrite',function(store){return store.put(r);});queueJobArchive();}catch(e){r.caption=prior;caption.value=prior||'';alert('Caption was not saved. Existing photo and caption are unchanged. Try again after freeing storage.');}finally{photoBusy=false;}};var remove=document.createElement('button');remove.className='btn ghost';remove.type='button';remove.textContent='Remove photo';remove.onclick=async function(){if(photoBusy||!confirm('Remove this job photo from this draft?'))return;var prior=state.photoIds.slice();state.photoIds=prior.filter(function(id){return id!==r.id;});try{persistDraft();photoRecords=photoRecords.filter(function(x){return x.id!==r.id;});renderJobPhotos();await photoStore('readwrite',function(store){return store.delete(r.id);});photoMessage(photoRecords.length+' job photos saved on this device.');}catch(e){state.photoIds=prior;photoMessage('Photo removal did not finish. Reload before continuing.',true);photoFailure={missing:true};}};fig.append(img,cap,caption,remove);g.appendChild(fig);});});updateSectionCounts();queueJobArchive();}
+  var activeJobKey='hr-active-job-v1',jobArchiveTimer=null,jobSwitching=false;
+  var jobsDialog=document.createElement('dialog');jobsDialog.id='my-jobs-dialog';jobsDialog.className='my-jobs';jobsDialog.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><h2>My Jobs</h2><button type="button" class="btn ghost" id="close-my-jobs">Close</button></div><p class="hint">Saved only in this browser on this device. Clearing browser data removes these jobs. Gate codes are not saved.</p><div id="my-jobs-status" role="status"></div><div id="my-jobs-list"></div>';document.body.appendChild(jobsDialog);
+  document.getElementById('close-my-jobs').onclick=function(){jobsDialog.close();};
+  async function jobStore(mode,run){var db=await openPhotoDB();return new Promise(function(resolve,reject){var tx=db.transaction('jobs',mode),req=run(tx.objectStore('jobs'));tx.oncomplete=function(){resolve(req&&req.result);};tx.onerror=function(){reject(tx.error||Error('Job storage unavailable.'));};tx.onabort=function(){reject(tx.error||Error('Job save interrupted.'));};});}
+  function hasJobContent(){return photoRecords.length>0||Array.from(document.querySelectorAll('[data-f]')).some(function(el){return el.classList.contains('chips')?!!chipVal(el.dataset.f):el.type==='checkbox'?el.checked:!!el.value;})||Object.keys(state.items).some(function(id){var st=state.items[id];return st.qty>0||st.note||st.soldate||Object.keys(st.sizeqty||{}).length;});}
+  var jobArchiveInFlight=Promise.resolve();
+  function saveCurrentJob(){var task=jobArchiveInFlight.catch(function(){}).then(writeCurrentJob);jobArchiveInFlight=task;return task;}
+  async function writeCurrentJob(){clearTimeout(jobArchiveTimer);clearTimeout(saveTimer);if(cameraBatch||photoBusy||batchPreparing)throw Error('Finish the photo batch with All Done and wait for photos to save first.');await photoReady;if(photoFailure||state.photoIds.length!==photoRecords.length)throw Error('Some photos are not saved yet. Keep this job open and resolve the photo warning first.');if(!hasJobContent())return null;persistDraft();clearTimeout(jobArchiveTimer);var id=localStorage.getItem(activeJobKey)||crypto.randomUUID(),draft=JSON.parse(localStorage.getItem(KEY));var record={id:id,name:(draft.fields.customer||'Unnamed customer').trim(),address:draft.fields.address||'',updatedAt:new Date().toISOString(),draft:draft,photos:photoRecords.slice()};await jobStore('readwrite',function(store){return store.put(record);});var saved=await jobStore('readonly',function(store){return store.get(id);});if(!saved||saved.updatedAt!==record.updatedAt||saved.photos.length!==draft.photoIds.length)throw Error('Could not verify the complete job save. Your current form is unchanged.');localStorage.setItem(activeJobKey,id);return id;}
+  function queueJobArchive(){if(jobSwitching||!localStorage.getItem(activeJobKey))return;clearTimeout(jobArchiveTimer);jobArchiveTimer=setTimeout(async function(){try{await saveCurrentJob();}catch(e){document.getElementById('savestatus').textContent='Draft kept open. My Jobs save needs attention: '+e.message;}},700);}
+  async function startNewSavedForm(){if(jobSwitching)return;jobSwitching=true;document.getElementById('form').inert=true;try{await saveCurrentJob();localStorage.removeItem(KEY);localStorage.removeItem(activeJobKey);location.reload();}catch(e){alert('New Form was not opened. '+e.message);}finally{jobSwitching=false;document.getElementById('form').inert=false;}}
+  async function openSavedJob(id){if(jobSwitching)return;jobSwitching=true;document.getElementById('form').inert=true;try{await saveCurrentJob();var record=await jobStore('readonly',function(store){return store.get(id);});if(!record||!record.draft||record.photos.length!==record.draft.photoIds.length)throw Error('Saved job is incomplete. Your current form was not replaced.');var db=await openPhotoDB();await new Promise(function(resolve,reject){var tx=db.transaction('photos','readwrite');record.photos.forEach(function(r){tx.objectStore('photos').put(r);});tx.oncomplete=resolve;tx.onerror=function(){reject(tx.error);};tx.onabort=function(){reject(tx.error);};});var prior=localStorage.getItem(KEY),priorActive=localStorage.getItem(activeJobKey);try{localStorage.setItem(KEY,JSON.stringify(record.draft));localStorage.setItem(activeJobKey,id);}catch(e){if(prior===null)localStorage.removeItem(KEY);else localStorage.setItem(KEY,prior);if(priorActive===null)localStorage.removeItem(activeJobKey);else localStorage.setItem(activeJobKey,priorActive);throw e;}location.reload();}catch(e){alert('Job was not opened. '+e.message);}finally{jobSwitching=false;document.getElementById('form').inert=false;}}
+  async function showMyJobs(){jobsDialog.showModal();var status=document.getElementById('my-jobs-status'),list=document.getElementById('my-jobs-list');status.textContent='Saving current job...';list.replaceChildren();try{await saveCurrentJob();var records=await jobStore('readonly',function(store){return store.getAll();});records.sort(function(a,b){return a.name.localeCompare(b.name,undefined,{sensitivity:'base'})||a.address.localeCompare(b.address)||b.updatedAt.localeCompare(a.updatedAt);});status.textContent=records.length?records.length+' saved job'+(records.length===1?'':'s'):'No saved jobs yet.';records.forEach(function(r){var item=document.createElement('div');item.className='saved-job';var name=document.createElement('h3');name.textContent=r.name;var details=document.createElement('p');details.textContent=(r.address?r.address+' · ':'')+r.photos.length+' photos · Saved '+new Date(r.updatedAt).toLocaleString();var open=document.createElement('button');open.type='button';open.className='btn primary';open.textContent=localStorage.getItem(activeJobKey)===r.id?'Open current job':'Open job';open.onclick=function(){openSavedJob(r.id);};item.append(name,details,open);list.appendChild(item);});}catch(e){status.textContent='Your current form is unchanged. '+e.message;}}
+  document.getElementById('myjobsbtn').onclick=showMyJobs;
+  document.getElementById('resetbtn').onclick=startNewSavedForm;
+  document.getElementById('newbtn').onclick=startNewSavedForm;
+
   function photoTotalQuantity(id){var st=state.items[id];return st&&st.photoQuantityOverride!=null?st.photoQuantityOverride:photoRecords.filter(function(r){return r.item===id;}).length;}
   function syncACWorkItem(){var panel=document.querySelector('[data-assessment="4-0"]');if(!panel)return;var title=wiName(4,0);panel.closest('.item').querySelector('.item-heading .nm').textContent=title;panel.querySelector('h4').textContent=title+' photos';panel.querySelectorAll('[data-jobphoto]').forEach(function(input){input.setAttribute('aria-label',(input.hasAttribute('capture')?'Take photo for ':'Choose photos for ')+title);});}
   document.querySelector('[data-f="accrane"]').addEventListener('click',function(){setTimeout(syncACWorkItem,0);});
