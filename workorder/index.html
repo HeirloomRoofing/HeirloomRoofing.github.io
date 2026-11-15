@@ -257,6 +257,27 @@
   .saved-job {border-top:1px solid #cfd9e0;padding:14px 0;}
   .saved-job h3 {margin:0 0 6px;color:var(--brand);font-size:18px;overflow-wrap:anywhere;}
   .saved-job p {margin:0 0 10px;font-size:13px;line-height:1.4;overflow-wrap:anywhere;}
+
+  /* Exact lower petal and inner vein extracted from the original Heirloom logo. */
+  #form summary {list-style:none;}
+  #form summary::-webkit-details-marker {display:none;}
+  #form .section-tab::after,#form .form-section[open]>.section-tab::after,
+  #form details.group > summary::after,#form details.group:not([open]) > summary::after,
+  #form .item-arrow::after,#form .item-details[open]>.item-heading .item-arrow::after,
+  #form details.area-photo > summary::after,#form .size-pick::after {
+    content:'';display:inline-block;flex:none;width:14px;height:18px;
+    background:url('/workorder/heirloom-leaf.svg') center/contain no-repeat;
+    vertical-align:middle;transform:none;transition:transform .15s;
+  }
+  #form details[open]>.section-tab::after,#form details.group[open]>summary::after,
+  #form .item-details[open]>.item-heading .item-arrow::after,
+  #form details.area-photo[open]>summary::after,#form .size-pick[aria-expanded="true"]::after {transform:rotate(180deg)!important;}
+  #form .item-arrow::after {margin-left:5px;width:12px;height:16px;}
+  #form details.area-photo > summary {padding-left:22px;}
+  #form details.area-photo > summary::after {position:absolute;left:0;top:50%;margin-top:-9px;}
+  #form .size-pick::after {margin-left:8px;width:12px;height:16px;}
+  #form .size-pick[aria-expanded="true"]::after {background-color:white;border-radius:3px;}
+  #form select {background-image:url('/workorder/heirloom-leaf.svg');background-size:14px 18px;padding-right:36px;}
 </style>
 <link rel="stylesheet" href="/form-density.css?v=20261115a">
 </head>
