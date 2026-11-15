@@ -918,6 +918,18 @@
     var h = '<div class="wohead"><img src="/start/logo.svg" alt="" style="background:#0161A8;border-radius:10px;padding:6px 10px"><div class="wt">'+documentTitle+'</div><div class="wd">Heirloom Roofing LLC &bull; '+today+'</div></div>';
     if(state.review) h += '<div style="border:2px solid #b57800;padding:12px;margin:16px 0;color:#704800"><b>DRAFT - REVIEW BEFORE '+(topOnly?'USE':'PRODUCTION')+'</b><br>'+(pendingMessage(scope).match(/PENDING/g)||[]).length+' pending choices or quantities. Full review list is below.</div>';
     function sec(title, rows){ return rows ? '<h3>'+title+'</h3><table>'+rows+'</table>' : ''; }
+    if(scope==='backup'){
+      h+='<p>Work item badges show the saved work scope, not photo counts. Photos and their separately recorded totals are included after these answers.</p>';
+      document.querySelectorAll('#form > .card').forEach(function(card){
+        var heading=card.querySelector('h2');if(!heading)return;
+        var title=heading.textContent.trim(),rows='';
+        card.querySelectorAll('[data-f]').forEach(function(el){var k=el.dataset.f,v=el.classList.contains('chips')?chipVal(k):el.type==='checkbox'?(el.checked?'Yes':''):el.value.trim();if(!v)return;rows+=rowKV(FIELD_LABELS[k]||(k==='gatena'?'No gate code needed':k),v);});
+        h+=sec(title,rows);
+        card.querySelectorAll('#workitems,#specialconditions,#workitems2').forEach(function(items){h+='<div class="secbar">'+esc(title)+'</div>'+itemRows(items.id);});
+      });
+      if(state.review)h+='<h3>Pending Choices and Review Notes</h3><div style="white-space:pre-line">'+esc(pendingMessage(scope))+'</div>';
+      return h;
+    }
     h += sec('Project Manager', rowKV('Heirloom Project Manager', val('pm')) + rowPhone('Phone Number', val('pmphone')) + rowKV('Request JT Project Manager', val('jt')) + rowKV('Notes', val('pmnotes')));
     h += sec('Job Info', rowKV('Customer', val('customer')) + rowPhone('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', gateVal()));
     h += sec('Current Roof Details', rowKV('Roof System', currentSystemVal()));
@@ -940,6 +952,7 @@
           var st = state.items[gi+'-'+ii];
           {
             rows += '<tr class="wline"><td class="qbox">'+(hasScopeQuantity(gi+'-'+ii)?(scopeAnswer(st)===null?'<span class="qpill pend">PENDING</span>':'<span class="qpill'+(scopeAnswer(st)?'':' zero')+'">'+(scopeAnswer(st)?'Yes':'No')+'</span>'):it[8]==='yn'?(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">Yes</span>':'<span class="qpill zero">No</span>')):(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">'+st.qty+'</span>':'<span class="qpill zero">0</span>')))+'</td><td class="wname">'+esc(wiName(gi,ii))+(it[6]==='multi'?sizeBreakdown(st):(st.size?' <span class="unit">- '+esc(st.size)+'</span>':''))+(st.soldate?' <span class="unit">(reset scheduled '+esc(st.soldate)+')</span>':'')+'</td><td class="un2">'+(hasScopeQuantity(gi+'-'+ii)?'<span style="white-space:nowrap">Qty: '+(scopeAnswer(st)===false?0:st.qty==null?'PENDING':st.qty)+'</span>':esc(it[1]))+'</td></tr>';
+            if(scope==='backup'&&st.observed){var observed=Object.keys(st.observed).filter(function(k){return st.observed[k]!==''&&st.observed[k]!=null;}).map(function(k){return k+': '+st.observed[k];}).join('; ');if(observed)rows+='<tr><td></td><td colspan="2" class="inote">Previously recorded observations: '+esc(observed)+'</td></tr>';}
             if(st.note && st.note.trim()) rows += '<tr><td></td><td colspan="2" class="inote">'+esc(st.note)+'</td></tr>';
           }
         });
@@ -1135,7 +1148,7 @@
             var row=rows[ri],cells=Array.from(row.cells);
             if(row.querySelector('.inote')){var note=lines(row.querySelector('.inote').innerText, width-66,9,false);for(var nn=0;nn<note.length;nn++){need(14);text(note[nn],left+62,y+9,9,false,muted);y+=12;}y+=7;continue;}
             if(row.classList.contains('wline')){
-              var qtyFont=outputScope==='backup'&&cells[0].innerText.trim().length>5?7:9;var qty=lines(cells[0].innerText,qtyFont===7?31:43,qtyFont,true),name=lines(cells[1].innerText,width-180,10,true),unit=lines(cells[2].innerText,90,8,false);
+              var qtyValue=cells[0].innerText.trim();font(9,true);var qtyFont=Math.min(9,9*35/Math.max(35,pdf.getTextWidth(qtyValue)));var qty=[qtyValue],name=lines(cells[1].innerText,width-180,10,true),unit=lines(cells[2].innerText,90,8,false);
               var h=Math.max(25,name.length*13+9,qty.length*12+8,unit.length*10+9);
               var following=rows[ri+1]&&rows[ri+1].querySelector('.inote');
               var noteReserve=following?Math.min(36,lines(following.innerText,width-66,9,false).length*12+7):0;
@@ -1248,7 +1261,7 @@
     function wrap(text,w,size,bold){pdf.setFont('helvetica',bold?'bold':'normal');pdf.setFontSize(size);return pdf.splitTextToSize(c.clean(String(text)),w);}
     function heading(title){pdf.addPage();label('HEIRLOOM ROOFING | '+title,c.left,40,12,true,c.blue);var job=[val('customer'),val('address')].filter(Boolean).join(' | ');var ls=wrap(job,c.width,9,false);label(ls,c.left,58,9,false,c.muted);return 72+ls.length*10;}
     function evidenceFooter(){var n=pdf.internal.getNumberOfPages();label('Heirloom Roofing | Job evidence',c.left,770,8,false,c.muted);label(String(n),c.right-12,770,8,false,c.muted);}
-    if(observations.length){var y=heading('PHOTO QUANTITIES');for(var o of observations){var title=wrap(o.item,c.width,10,true),body=wrap(o.text,c.width,10,false),h=(title.length+body.length)*14+20;if(y+h>740){evidenceFooter();y=heading('PHOTO QUANTITIES');}label(title,c.left,y,10,true,c.blue);y+=title.length*14+4;label(body,c.left,y,10,false);y+=body.length*14+16;}evidenceFooter();}
+    if(observations.length){var y=heading('PHOTO QUANTITIES');for(var o of observations){var title=wrap(o.item,c.width,10,true),body=wrap((outputScope==='backup'?'Photo record - separate from work scope: ':'')+o.text,c.width,10,false),h=(title.length+body.length)*14+20;if(y+h>740){evidenceFooter();y=heading('PHOTO QUANTITIES');}label(title,c.left,y,10,true,c.blue);y+=title.length*14+4;label(body,c.left,y,10,false);y+=body.length*14+16;}evidenceFooter();}
     for(var i=0;i<photoRecords.length;i++){var r=photoRecords[i];var y=heading('JOB PHOTOS');var item=jobPhotoItemName(r.item),title=wrap((i+1)+' of '+photoRecords.length+' | '+item,c.width,11,true);label(title,c.left,y,11,true,c.blue);y+=title.length*14+7;label(KIND_LABELS[r.kind]+' | User-selected job photo',c.left,y,9,false,c.muted);y+=17;if(r.caption){var cap=wrap(r.caption,c.width,10,false);label(cap,c.left,y,10,false);y+=cap.length*13+8;}var h=738-y,scale=Math.min(c.width/r.width,h/r.height),w=r.width*scale,ih=r.height*scale;var bytes=new Uint8Array(await r.blob.arrayBuffer());pdf.addImage(bytes,r.mime==='image/png'?'PNG':'JPEG',c.left+(c.width-w)/2,y,w,ih,undefined,'FAST');evidenceFooter();}
   }
 
