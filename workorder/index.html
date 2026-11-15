@@ -431,6 +431,9 @@
 
   document.querySelectorAll('.chips[data-f="currentsystem"],.chips[data-f="roofsystem"]').forEach(function(group){group.classList.add('photo-choices');group.querySelectorAll('.chip').forEach(function(chip){var key=MATERIAL_PHOTOS[chip.dataset.v];if(!key)return;var img=document.createElement('img');img.src='./visuals/'+key+'.jpg'+((key==='3tab'||key==='architectural'||key==='wood-fascia')?'?v=20261112c':'');img.alt='';img.width=48;img.height=48;img.loading='lazy';chip.prepend(img);});});
 
+  function hasScopeQuantity(id){return id==='4-5'||id==='4-6';}
+  function scopeAnswer(st){return typeof st.scopeRequired==='boolean'?st.scopeRequired:st.qty==null?null:st.qty>0;}
+  function syncScopeQuantity(id){var st=state.items[id],root=document.querySelector('[data-scopeqty="'+id+'"]');if(!root)return;var answer=scopeAnswer(st);root.querySelectorAll('[data-scopevalue]').forEach(function(b){b.classList.toggle('on',answer!==null&&String(answer)===b.dataset.scopevalue);});}
   function assessmentUI(id){
     return '<div class="job-assessment" data-assessment="'+id+'"><h4>Photos</h4><div class="photo-actions"><label class="job-camera">Take photo<input type="file" accept="image/*" capture="environment" data-jobphoto="'+id+'" data-kind="general" hidden></label><label class="job-library">Choose photos<input type="file" accept="image/*" multiple data-jobphoto="'+id+'" data-kind="general" hidden></label></div><div class="job-gallery" data-gallery="'+id+'"></div><label class="f" for="photo-total-'+id+'">Total quantity</label><input id="photo-total-'+id+'" type="number" min="0" step="1" inputmode="numeric" data-photo-total="'+id+'" value="0"></div>';
   }
@@ -465,6 +468,7 @@
       if(it[1]){var unit=document.createElement('p');unit.className='item-unit';unit.innerHTML='Unit: <span class="unit">'+it[1]+'</span>';body.prepend(unit);}
       var count=body.querySelector(':scope > .step,:scope > .yn');if(count){var label=document.createElement('label');label.className='item-field-label';label.textContent=it[8]==='yn'?'Scope required':'Quantity';var input=count.querySelector('input');if(input){input.id='qty-'+id;input.setAttribute('aria-label',wiName(gi,ii)+' quantity');label.htmlFor=input.id;}body.insertBefore(label,count);}
       var note=body.querySelector('textarea');if(note)note.setAttribute('aria-label',wiName(gi,ii)+' notes or measurements');
+      if(hasScopeQuantity(id)){var step=body.querySelector(':scope > .step'),wrap=document.createElement('div');wrap.dataset.scopeqty=id;wrap.style.cssText='display:flex;align-items:center;gap:8px;flex-wrap:wrap';wrap.innerHTML='<span class="yn"><button type="button" class="ynbtn" data-scopevalue="true">Yes</button><button type="button" class="ynbtn" data-scopevalue="false">No</button></span>';step.before(wrap);wrap.appendChild(step);}
       body.insertAdjacentHTML('beforeend',assessmentUI(id));
       detail.appendChild(head);detail.appendChild(body);row.appendChild(detail);
       det.appendChild(row);
@@ -616,8 +620,9 @@
     if(b){
       var inp = b.parentElement.querySelector('input');
       var v = Math.max(0, Math.round(((parseFloat(inp.value)||0) + parseInt(b.getAttribute('data-d'),10))*100)/100);
-      inp.value = v; state.items[inp.getAttribute('data-item')].qty = v; updateCounts(); save(); return;
+      inp.value = v; state.items[inp.getAttribute('data-item')].qty = v; if(hasScopeQuantity(inp.dataset.item))syncScopeQuantity(inp.dataset.item); updateCounts(); save(); return;
     }
+    var scopeButton=e.target.closest('[data-scopevalue]');if(scopeButton){var id=scopeButton.closest('[data-scopeqty]').dataset.scopeqty;state.items[id].scopeRequired=scopeButton.dataset.scopevalue==='true';syncScopeQuantity(id);updateCounts();save();return;}
     var yb = e.target.closest('.ynbtn');
     if(yb){ var yw=yb.closest('[data-yn]'); var yid=yw.getAttribute('data-yn'); state.items[yid].qty = yb.getAttribute('data-ynv')==='1'?1:0; yw.querySelectorAll('.ynbtn').forEach(function(x){ x.classList.toggle('on', x===yb); }); updateCounts(); save(); return; }
     var nb = e.target.closest('.notebtn');
@@ -637,7 +642,7 @@
       var z=sq.dataset.sz,v=sq.value.trim();st.sizeqty[z]=v===''?null:Math.max(0,parseInt(v,10)||0);sumSizes(sq.dataset.sq);updateCounts();save();return;
     }
     var inp = e.target.closest('input[data-item]');
-    if(inp){ var n=parseFloat(inp.value); state.items[inp.getAttribute('data-item')].qty = (inp.value.trim()===''||isNaN(n))?null:Math.max(0,Math.round(n*100)/100); updateCounts(); save(); return; }
+    if(inp){ var n=parseFloat(inp.value); state.items[inp.getAttribute('data-item')].qty = (inp.value.trim()===''||isNaN(n))?null:Math.max(0,Math.round(n*100)/100); if(hasScopeQuantity(inp.dataset.item))syncScopeQuantity(inp.dataset.item); updateCounts(); save(); return; }
     var ta = e.target.closest('textarea[data-notefor]');
     if(ta){ state.items[ta.getAttribute('data-notefor')].note = ta.value; save(); }
   });
@@ -678,14 +683,15 @@
     Object.keys(d.items).forEach(function(k){
       if(!Object.prototype.hasOwnProperty.call(out.items,k))throw Error('Unknown work item: '+k);
       var x=d.items[k];if(!x||typeof x!=='object'||Array.isArray(x))throw Error('Invalid item: '+k);
-      Object.keys(x).forEach(function(a){if(['qty','note','size','sizeqty','soldate','observed'].indexOf(a)<0)throw Error('Unexpected item field.');});
+      Object.keys(x).forEach(function(a){if(['qty','note','size','sizeqty','soldate','observed','scopeRequired'].indexOf(a)<0)throw Error('Unexpected item field.');});
       if(x.qty!=null&&(typeof x.qty!=='number'||!Number.isFinite(x.qty)||x.qty<0||x.qty>100000))throw Error('Invalid quantity: '+k);
       if(x.note!=null&&(typeof x.note!=='string'||x.note.length>10000))throw Error('Invalid note: '+k);
       if(x.size!=null){ var xk=k.split('-'), xit=WORK[+xk[0]].items[+xk[1]]; if(typeof x.size!=='string'||!xit[4]||xit[4].indexOf(x.size)<0)throw Error('Invalid size: '+k); }
       if(x.sizeqty!=null){ var xk2=k.split('-'), xit2=WORK[+xk2[0]].items[+xk2[1]]; if(typeof x.sizeqty!=='object'||Array.isArray(x.sizeqty)||!xit2[4]||xit2[6]!=='multi'||Object.keys(x.sizeqty).some(function(z){return (z!=='Unassigned'&&xit2[4].indexOf(z)<0&&xit2[4].indexOf(z+'"')<0)||(x.sizeqty[z]!=null&&(typeof x.sizeqty[z]!=='number'||x.sizeqty[z]<0||x.sizeqty[z]>100000));}))throw Error('Invalid size quantities: '+k); }
       if(x.soldate!=null&&(typeof x.soldate!=='string'||x.soldate.length>40))throw Error('Invalid solar date: '+k);
       if(x.observed!=null){if(typeof x.observed!=='object'||Array.isArray(x.observed)||Object.keys(x.observed).some(function(z){return ['potential','undamaged','painted'].indexOf(z)<0||typeof x.observed[z]!=='string'||x.observed[z].length>40;}))throw Error('Invalid observation: '+k);}
-      out.items[k]={observed:x.observed||{},qty:x.qty==null?null:x.qty,note:x.note||'',size:x.size||'',sizeqty:x.sizeqty||{},soldate:x.soldate||''};
+      if(x.scopeRequired!=null&&typeof x.scopeRequired!=='boolean')throw Error('Invalid yes/no answer.');
+      out.items[k]={scopeRequired:x.scopeRequired,observed:x.observed||{},qty:x.qty==null?null:x.qty,note:x.note||'',size:x.size||'',sizeqty:x.sizeqty||{},soldate:x.soldate||''};
     });
     if(d.review){
       if(typeof d.review!=='object'||Array.isArray(d.review))throw Error('Invalid review metadata.');
@@ -902,7 +908,7 @@
           if(it[5]) return;
           var st = state.items[gi+'-'+ii];
           {
-            rows += '<tr class="wline"><td class="qbox">'+(it[8]==='yn'?(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">Yes</span>':'<span class="qpill zero">No</span>')):(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">'+st.qty+'</span>':'<span class="qpill zero">0</span>')))+'</td><td class="wname">'+esc(wiName(gi,ii))+(it[6]==='multi'?sizeBreakdown(st):(st.size?' <span class="unit">- '+esc(st.size)+'</span>':''))+(st.soldate?' <span class="unit">(reset scheduled '+esc(st.soldate)+')</span>':'')+'</td><td class="un2">'+esc(it[1])+'</td></tr>';
+            rows += '<tr class="wline"><td class="qbox">'+(hasScopeQuantity(gi+'-'+ii)?(scopeAnswer(st)===null?'<span class="qpill pend">PENDING</span>':'<span class="qpill'+(scopeAnswer(st)?'':' zero')+'">'+(scopeAnswer(st)?'Yes':'No')+'</span>'):it[8]==='yn'?(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">Yes</span>':'<span class="qpill zero">No</span>')):(st.qty==null?'<span class="qpill pend">PENDING</span>':(st.qty>0?'<span class="qpill">'+st.qty+'</span>':'<span class="qpill zero">0</span>')))+'</td><td class="wname">'+esc(wiName(gi,ii))+(it[6]==='multi'?sizeBreakdown(st):(st.size?' <span class="unit">- '+esc(st.size)+'</span>':''))+(st.soldate?' <span class="unit">(reset scheduled '+esc(st.soldate)+')</span>':'')+'</td><td class="un2">'+(hasScopeQuantity(gi+'-'+ii)?'<span style="white-space:nowrap">Qty: '+(scopeAnswer(st)===false?0:st.qty==null?'PENDING':st.qty)+'</span>':esc(it[1]))+'</td></tr>';
             if(st.note && st.note.trim()) rows += '<tr><td></td><td colspan="2" class="inote">'+esc(st.note)+'</td></tr>';
           }
         });
@@ -945,7 +951,7 @@
       if(g.removed) return;
       var lines=[];
       g.items.forEach(function(it,ii){ if(it[5]) return; var st=state.items[gi+'-'+ii];
-        if(st.qty==null || st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+wiName(gi,ii)+(it[8]==='yn'?(st.qty==null?': PENDING':(st.qty>0?': Yes':': No')):(st.qty==null?': PENDING quantity / scope':(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):'')))+(it[6]==='multi'?sizeBreakdown(st,true):(st.size?' - '+st.size:''))+(st.soldate?' - reset scheduled '+st.soldate:'')+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
+        if(st.qty==null || st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+wiName(gi,ii)+(hasScopeQuantity(gi+'-'+ii)?(scopeAnswer(st)===null?'<span class="qpill pend">PENDING</span>':'<span class="qpill'+(scopeAnswer(st)?'':' zero')+'">'+(scopeAnswer(st)?'Yes':'No')+'</span>'):it[8]==='yn'?(st.qty==null?': PENDING':(st.qty>0?': Yes':': No')):(st.qty==null?': PENDING quantity / scope':(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):'')))+(it[6]==='multi'?sizeBreakdown(st,true):(st.size?' - '+st.size:''))+(st.soldate?' - reset scheduled '+st.soldate:'')+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
       if(lines.length){ L.push(g.g+':'); lines.forEach(function(x){L.push(x);}); }
     });
     if(val('addnotes')){ L.push(''); L.push('NOTES: '+val('addnotes')); }
@@ -1233,6 +1239,7 @@
   ['input','change','click','toggle'].forEach(function(event){document.getElementById('form').addEventListener(event,function(){setTimeout(updateSectionCounts,0);},true);});
   restore();
   syncACWorkItem();
+  ['4-5','4-6'].forEach(syncScopeQuantity);
   updateAccessoryPhotoTallies();
   updateCounts();
   updateSectionCounts();
