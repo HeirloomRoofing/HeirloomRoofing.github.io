@@ -239,6 +239,8 @@
   #form .item-heading {display:flex;align-items:center;gap:10px;list-style:none;cursor:pointer;padding:4px 0;}
   #form .item-heading::-webkit-details-marker {display:none;}
   #form .item-heading .nm {flex:1;min-width:0;}
+  #form .item-progress {display:block;font-size:11px;line-height:1.4;font-weight:500;margin-top:3px;color:#a94f00;}
+  #form .item-progress.ready {color:#167137;}
   #form .item-arrow {font-size:11px;color:var(--muted);flex:none;}
   #form .item-arrow::after {content:' \25BE';}
   #form .item-details[open]>.item-heading .item-arrow::after {content:' \25B4';}
@@ -455,6 +457,7 @@
       var head=document.createElement('summary');head.className='item-heading';
       var photo=row.querySelector('.item-reference');if(photo)head.appendChild(photo);
       head.appendChild(row.querySelector('.nm'));
+      if(gi===2){var progress=document.createElement('span');progress.className='item-progress';progress.dataset.itemProgress=id;progress.setAttribute('aria-live','polite');head.querySelector('.nm').appendChild(progress);}
       var arrow=document.createElement('span');arrow.className='item-arrow';arrow.textContent='Details';head.appendChild(arrow);
       var body=document.createElement('div');body.className='item-body';
       while(row.firstChild)body.appendChild(row.firstChild);
@@ -473,6 +476,7 @@
   document.addEventListener('click',function(e){var b=e.target.closest('[data-photo]');if(!b)return;e.preventDefault();var img=photoDialog.querySelector('img');img.src='./visuals/'+b.dataset.photo+'.jpg'+((b.dataset.photo==='ridge-cap'||b.dataset.photo==='ice-water')?'?v=20261113crop':((b.dataset.photo==='3tab'||b.dataset.photo==='architectural'||b.dataset.photo==='wood-fascia')?'?v=20261112c':''));img.alt=b.getAttribute('aria-label');photoDialog.showModal();});
 
   function updateCounts(){
+    document.querySelectorAll('[data-item-progress]').forEach(function(badge){var id=badge.dataset.itemProgress,parts=id.split('-').map(Number),it=WORK[parts[0]].items[parts[1]],st=state.items[id],missing=!st||st.qty==null||(it[4]&&sizedMissing(st));badge.textContent=missing?'1 left':'Ready';badge.className='item-progress'+(missing?'':' ready');badge.setAttribute('aria-label',wiName(parts[0],parts[1])+': '+(missing?'1 required answer left':'Ready'));});
     WORK.forEach(function(g,gi){
       if(g.removed) return;
       var n=0; g.items.forEach(function(it,ii){ if(it[5]){ n++; return; } var st=state.items[gi+'-'+ii]; if(st.qty!=null && (!it[4] || !sizedMissing(st))) n++; });
