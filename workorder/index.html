@@ -408,7 +408,7 @@
   <button class="btn primary" id="genbtn">Generate Work Order</button>
 </div>
 <div class="toast" id="toast"></div>
-<p style="text-align:center;font-size:11px;margin:10px 0 90px"><a href="./visuals/photo-credits.html" target="_blank" rel="noopener">Reference photo sources and credits</a></p>
+<p id="reference-credits" style="text-align:center;font-size:11px;margin:10px 0 90px"><a href="./visuals/photo-credits.html" target="_blank" rel="noopener">Reference photo sources and credits</a></p>
 
 <script src="jspdf.umd.min.js"></script>
 <script>
@@ -435,7 +435,7 @@
   function scopeAnswer(st){return typeof st.scopeRequired==='boolean'?st.scopeRequired:st.qty==null?null:st.qty>0;}
   function syncScopeQuantity(id){var st=state.items[id],root=document.querySelector('[data-scopeqty="'+id+'"]');if(!root)return;var answer=scopeAnswer(st);root.querySelectorAll('[data-scopevalue]').forEach(function(b){b.classList.toggle('on',answer!==null&&String(answer)===b.dataset.scopevalue);});}
   function assessmentUI(id){
-    return '<div class="job-assessment" data-assessment="'+id+'"><h4>Photos</h4><div class="photo-actions"><label class="job-camera">Take photo<input type="file" accept="image/*" capture="environment" data-jobphoto="'+id+'" data-kind="general" hidden></label><label class="job-library">Choose photos<input type="file" accept="image/*" multiple data-jobphoto="'+id+'" data-kind="general" hidden></label></div><div class="job-gallery" data-gallery="'+id+'"></div><label class="f" for="photo-total-'+id+'">Total quantity</label><input id="photo-total-'+id+'" type="number" min="0" step="1" inputmode="numeric" data-photo-total="'+id+'" value="0"></div>';
+    return '<div class="job-assessment" data-assessment="'+id+'"><h4>Photos</h4><div class="photo-actions"><label class="job-camera">Take photo<input type="file" accept="image/*" capture="environment" data-jobphoto="'+id+'" data-kind="general" hidden></label><label class="job-library">Choose photos<input type="file" accept="image/*" multiple data-jobphoto="'+id+'" data-kind="general" hidden></label></div><div class="job-gallery" data-gallery="'+id+'"></div>'+(hasScopeQuantity(id)?'':'<label class="f" for="photo-total-'+id+'">Total quantity</label><input id="photo-total-'+id+'" type="number" min="0" step="1" inputmode="numeric" data-photo-total="'+id+'" value="0">')+'</div>';
   }
   // Build work item UI
   var wi = document.getElementById('workitems'); var wi2 = document.getElementById('workitems2');
@@ -951,7 +951,7 @@
       if(g.removed) return;
       var lines=[];
       g.items.forEach(function(it,ii){ if(it[5]) return; var st=state.items[gi+'-'+ii];
-        if(st.qty==null || st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+wiName(gi,ii)+(hasScopeQuantity(gi+'-'+ii)?(scopeAnswer(st)===null?'<span class="qpill pend">PENDING</span>':'<span class="qpill'+(scopeAnswer(st)?'':' zero')+'">'+(scopeAnswer(st)?'Yes':'No')+'</span>'):it[8]==='yn'?(st.qty==null?': PENDING':(st.qty>0?': Yes':': No')):(st.qty==null?': PENDING quantity / scope':(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):'')))+(it[6]==='multi'?sizeBreakdown(st,true):(st.size?' - '+st.size:''))+(st.soldate?' - reset scheduled '+st.soldate:'')+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
+        if(st.qty==null || st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+wiName(gi,ii)+(hasScopeQuantity(gi+'-'+ii)?': '+(scopeAnswer(st)===null?'PENDING':scopeAnswer(st)?'Yes':'No')+' - Quantity: '+(scopeAnswer(st)===false?0:st.qty==null?'PENDING':st.qty):it[8]==='yn'?(st.qty==null?': PENDING':(st.qty>0?': Yes':': No')):(st.qty==null?': PENDING quantity / scope':(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):'')))+(it[6]==='multi'?sizeBreakdown(st,true):(st.size?' - '+st.size:''))+(st.soldate?' - reset scheduled '+st.soldate:'')+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
       if(lines.length){ L.push(g.g+':'); lines.forEach(function(x){L.push(x);}); }
     });
     if(val('addnotes')){ L.push(''); L.push('NOTES: '+val('addnotes')); }
@@ -961,6 +961,8 @@
 
   function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; setTimeout(function(){ t.style.display='none'; }, 2400); }
 
+  var outputPhotoURLs=[];
+  async function showOutputPhotos(){await photoReady;outputPhotoURLs.forEach(function(u){URL.revokeObjectURL(u);});outputPhotoURLs=[];var box=document.getElementById('output-job-photos');if(!box){box=document.createElement('section');box.id='output-job-photos';box.className='wo';document.getElementById('wopaper').after(box);}box.replaceChildren();if(!photoRecords.length){var empty=document.createElement('p');empty.textContent='No job photos saved in this draft on this device.';box.appendChild(empty);return;}var title=document.createElement('h3');title.textContent='JOB PHOTOS ('+photoRecords.length+')';box.appendChild(title);photoRecords.forEach(function(r){var fig=document.createElement('figure');fig.style.cssText='margin:18px 0;break-inside:avoid';var label=document.createElement('figcaption');label.textContent=jobPhotoItemName(r.item)+(r.caption?' - '+r.caption:'');label.style.cssText='font-weight:700;margin-bottom:8px';var img=document.createElement('img'),u=URL.createObjectURL(r.blob);outputPhotoURLs.push(u);img.src=u;img.alt=jobPhotoItemName(r.item)+' job photo';img.style.cssText='display:block;width:100%;max-height:70vh;object-fit:contain';fig.append(label,img);box.appendChild(fig);});}
   function generateOrder(scope){
     if(!state.review){
       var miss=missingRequired(scope);
@@ -969,7 +971,9 @@
     hideReqErrors();
     outputScope=scope==='top'?'top':'all';
     document.getElementById('wopaper').innerHTML = buildOutput(outputScope);
-    var evidenceNotice=document.getElementById('evidence-notice');if(!evidenceNotice){evidenceNotice=document.createElement('p');evidenceNotice.id='evidence-notice';evidenceNotice.className='no-print hint';document.getElementById('wopaper').before(evidenceNotice);}evidenceNotice.textContent=(photoRecords.length?photoRecords.length+' saved job photos plus any recorded conditions will be appended after the checklist pages in the downloaded PDF.':'Recorded item conditions, if entered, will be appended after the checklist pages in the downloaded PDF.');
+    var evidenceNotice=document.getElementById('evidence-notice');if(!evidenceNotice){evidenceNotice=document.createElement('p');evidenceNotice.id='evidence-notice';evidenceNotice.className='no-print hint';document.getElementById('wopaper').before(evidenceNotice);}evidenceNotice.textContent=(photoRecords.length?photoRecords.length+' saved job photos are shown below and included after the checklist pages in the downloaded PDF.':'Recorded item conditions, if entered, will be appended after the checklist pages in the downloaded PDF.');
+    document.getElementById('reference-credits').style.display='none';
+    showOutputPhotos();
     var eb = document.getElementById('emailbtn');
     var m = buildMailto();
     eb.href = m.url;
@@ -983,6 +987,7 @@
     window.scrollTo(0,0);
     return true;
   }
+  document.getElementById('editbtn').addEventListener('click',function(){document.getElementById('reference-credits').style.display='';});
   document.getElementById('genbtn').addEventListener('click', function(){ generateOrder(); });
   document.getElementById('genbtn2').addEventListener('click', function(){ if(generateOrder('top')) document.getElementById('sharepdfbtn').click(); });
   document.getElementById('editbtn').addEventListener('click', function(){
@@ -1192,7 +1197,7 @@
   addEventListener('beforeunload',function(e){if(batchPreparing||(cameraBatch&&cameraBatch.files.length)){e.preventDefault();e.returnValue='';}});
   document.getElementById('form').addEventListener('change',function(e){var f=e.target.closest('[data-jobphoto]');if(f){var files=Array.from(f.files||[]);if(files.length){if(f.hasAttribute('capture'))stageCameraFiles(files,f.dataset.jobphoto,f.dataset.kind);else addJobPhotos(files,f.dataset.jobphoto,f.dataset.kind);}f.value='';return;}var observed=e.target.closest('[data-observe]');if(observed){var st=state.items[observed.dataset.observe];if(!st.observed)st.observed={};if(observed.type==='number'&&observed.value!=='')observed.value=Math.max(0,parseFloat(observed.value)||0);st.observed[observed.dataset.kind]=observed.value;save();}});
   document.getElementById('form').addEventListener('input',function(e){var el=e.target.closest('[data-observe]');if(!el)return;var st=state.items[el.dataset.observe];if(!st.observed)st.observed={};if(el.type==='number'&&el.value!==''&&+el.value<0)el.value='0';st.observed[el.dataset.kind]=el.value;save();});
-  function observationText(st,id){var count=photoRecords.filter(function(r){return r.item===id;}).length;if(!count&&st.photoQuantityOverride==null)return '';return 'Total quantity: '+photoTotalQuantity(id);}
+  function observationText(st,id){if(hasScopeQuantity(id))return '';var count=photoRecords.filter(function(r){return r.item===id;}).length;if(!count&&st.photoQuantityOverride==null)return '';return 'Total quantity: '+photoTotalQuantity(id);}
   async function appendJobEvidence(pdf,c){
     await photoReady;if(photoFailure||photoBusy||state.photoIds.length!==photoRecords.length)throw Error('Job photos are not all saved and ready. Return to the form to retry or exclude missing files.');
     if(photoRecords.length&&!samePhotoJob()){if(!confirm('The job name or address changed after these photos were added. These photos were added for '+(state.photoJob.customer||'unnamed customer')+' at '+(state.photoJob.address||'no address')+'. Confirm they belong to the current job before including them.'))throw Error('Photo job identity was not confirmed.');state.photoJob=currentPhotoJob();persistDraft();}
