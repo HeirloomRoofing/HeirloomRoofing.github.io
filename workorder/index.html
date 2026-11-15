@@ -48,6 +48,7 @@
   details.group summary { cursor:default; list-style:none; padding:15px 2px 13px; font-weight:700; font-size:17px; letter-spacing:.03em; color:var(--brand); display:flex; justify-content:space-between; align-items:center; }
   details.group summary::-webkit-details-marker { display:none; }
   details.group .count { font-size:12px; color:var(--brand); font-weight:700; }
+  #specialconditions > details.group > summary, #specialconditions .group-count {display:none;}
   details.group .group-count { text-align:right; padding:9px 2px 3px; border-top:1px dashed var(--line); margin-top:6px; }
   details.group summary .chev { color:var(--muted); font-size:12px; margin-left:8px; }
   .item { display:flex; align-items:center; gap:10px; padding:9px 0; border-top:1px dashed var(--line); flex-wrap:wrap; }
@@ -180,12 +181,12 @@
   #form .section-tab::after {content:'\25BE';font-size:16px;color:var(--brand);}
   #form .form-section[open]>.section-tab::after {content:'\25B4';}
   #form .section-fields {padding-top:16px;}
-  /* A compact initial overview keeps all ten section tabs in a phone viewport. */
+  /* A compact initial overview keeps the section tabs in a phone viewport. */
   body:has(#form:not([style*="display: none"])) .band {padding:10px 16px;}
   body:has(#form:not([style*="display: none"])) .band img {height:32px;width:auto;}
   body:has(#form:not([style*="display: none"])) .band .t {font-size:16px;margin-top:5px;}
   body:has(#form:not([style*="display: none"])) main {margin-top:0;}
-  #form > .card:has(> .form-section) {margin:4px 0;padding:8px 14px;border-radius:11px;}
+  #form > .card:has(> .form-section) {margin:4px 0;padding:6px 14px;border-radius:11px;}
   #form .section-tab {min-height:19px;}
   #form .section-tab h2 {font-size:14px;line-height:19px;flex:1;min-width:0;}
   #form .section-count {font-size:10px;line-height:13px;color:var(--muted);text-align:right;max-width:82px;flex:none;}
@@ -296,7 +297,7 @@
 <h2>Work Items</h2>
 <div class="sub">Every line needs an answer - set 0 for not needed, add a note to any line if helpful.</div>
 <div id="workitems"></div>
-</div><div class="card big5">
+</div><div class="card"><h2>Special Conditions</h2><div id="specialconditions"></div></div><div class="card big5">
 <h2>The Big 5</h2>
 <label class="f">1. Layers</label>
 <div class="chips" data-f="layers">
@@ -468,7 +469,7 @@
       det.appendChild(row);
     });
     var foot=document.createElement('div'); foot.className='count group-count'; foot.id='cnt-'+gi; det.appendChild(foot);
-    (gi===0||gi===1||gi===5?wi2:wi).appendChild(det);
+    (gi===4?document.getElementById('specialconditions'):gi===0||gi===1||gi===5?wi2:wi).appendChild(det);
   });
 
   var photoDialog=document.createElement('dialog');photoDialog.className='photo-view';photoDialog.innerHTML='<form method="dialog"><button class="btn" style="padding:7px 16px">Close photo</button></form><img alt=""><p style="font-size:12px;color:#526474">Reference example for identification, not a photo of this job or an exact product specification.</p><a href="./visuals/photo-credits.html" target="_blank" rel="noopener" style="font-size:12px">Photo sources and credits</a>';document.body.appendChild(photoDialog);
@@ -654,7 +655,7 @@
     if(!state.review) return '';
     var a=[];
     (state.review.pending||[]).forEach(function(k){var el=document.querySelector('[data-f="'+k+'"]'); if(scope==='top' && el && !(el.compareDocumentPosition(document.getElementById('genbtn2')) & Node.DOCUMENT_POSITION_FOLLOWING)) return; if(el && !(k==='layers' ? layersVal() : val(k))){var label=document.querySelector('label[for="'+k+'"]');a.push((FIELD_LABELS[k]||(label?label.textContent:k))+': PENDING');}});
-    Object.keys(state.items).forEach(function(k){if(state.items[k].qty==null || (state.items[k].sizeqty&&state.items[k].sizeqty.Unassigned>0)){var x=k.split('-');var g=WORK[+x[0]];if(!g||g.removed||g.items[+x[1]][5]||(scope==='top'&&!document.querySelector('#workitems details.group[data-gi="'+x[0]+'"]')))return;a.push(wiName(+x[0],+x[1])+': PENDING quantity / scope');}});
+    Object.keys(state.items).forEach(function(k){if(state.items[k].qty==null || (state.items[k].sizeqty&&state.items[k].sizeqty.Unassigned>0)){var x=k.split('-');var g=WORK[+x[0]];if(!g||g.removed||g.items[+x[1]][5]||(scope==='top'&&!document.querySelector(':is(#workitems,#specialconditions) details.group[data-gi="'+x[0]+'"]')))return;a.push(wiName(+x[0],+x[1])+': PENDING quantity / scope');}});
     return (a.length?a.join('\n'):'All listed choices entered. Still a draft for review.')+(scope!=='top'&&state.review.notes?'\nReview notes: '+state.review.notes:'');
   }
   function refreshDraftNotice(){var n=document.getElementById('draftnotice'); if(!n)return; n.style.display=state.review?'block':'none';if(state.review){var msg=pendingMessage();var count=(msg.match(/PENDING/g)||[]).length;n.innerHTML='<b>DRAFT - review before sending</b><br>'+count+' pending choices or quantities. Confirmed answers are below.<details style="margin-top:8px"><summary>Review all pending choices and notes</summary><div style="white-space:pre-line;margin-top:8px">'+esc(msg)+'</div></details><button type="button" class="btn ghost" id="finishreview" style="width:100%;margin-top:10px">Finish review - everything is filled in</button>';}}
@@ -815,7 +816,7 @@
     });
     WORK.forEach(function(g,gi){
       if(g.removed) return;
-      if(scope==='top' && !document.querySelector('#workitems details.group[data-gi="'+gi+'"]')) return;
+      if(scope==='top' && !document.querySelector(':is(#workitems,#specialconditions) details.group[data-gi="'+gi+'"]')) return;
       var n=0;
       g.items.forEach(function(it,ii){ if(it[5]) return; var st=state.items[gi+'-'+ii]; if(!st || st.qty==null || (it[4] && sizedMissing(st))) n++; });
       if(n) miss.push('__wi'+gi+':'+n);
@@ -883,7 +884,7 @@
     h += sec('Job Info', rowKV('Customer', val('customer')) + rowPhone('Customer Phone', val('phone')) + rowKV('Address', val('address')) + rowKV('Gate Code', gateVal()));
     h += sec('Current Roof Details', rowKV('Roof System', currentSystemVal()));
     // Follow the form: upper work items precede roof system and conditions.
-    h += '<div class="secbar">Work Items</div>'+itemRows('workitems');
+    h += '<div class="secbar">Work Items</div>'+itemRows('workitems')+itemRows('specialconditions');
     h += sec('The Big 5', rowKV('1. Layers', layersVal())
       + rowKV('2. Decking / Redeck', deckingVal())
       + rowKV('3. A/C / Crane', val('accrane') + (val('acnotes')? ' - Notes: '+val('acnotes'):''))
@@ -1214,7 +1215,7 @@
   function updateSectionCounts(){
     var sections=Array.from(document.querySelectorAll('#form .form-section')), counts=sections.map(function(){return 0;});
     missingRequired('top').forEach(function(key){
-      var el,n=1;if(key.indexOf('__wi')===0){var parts=key.slice(4).split(':');n=+parts[1];el=document.querySelector('#workitems details.group[data-gi="'+parts[0]+'"]');}
+      var el,n=1;if(key.indexOf('__wi')===0){var parts=key.slice(4).split(':');n=+parts[1];el=document.querySelector(':is(#workitems,#specialconditions) details.group[data-gi="'+parts[0]+'"]');}
       else el=document.querySelector('[data-f="'+key+'"]');
       var section=el&&el.closest('.form-section'),idx=sections.indexOf(section);if(idx>=0)counts[idx]+=n;
     });
