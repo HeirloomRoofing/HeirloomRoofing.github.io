@@ -999,7 +999,7 @@
   }
   document.getElementById('editbtn').addEventListener('click',function(){document.getElementById('reference-credits').style.display='';});
   document.getElementById('genbtn').addEventListener('click', function(){ generateOrder(); });
-  document.getElementById('genbtn2').addEventListener('click', function(){ if(generateOrder('top')) document.getElementById('sharepdfbtn').click(); });
+  document.getElementById('genbtn2').addEventListener('click', async function(){if(this.disabled)return;this.disabled=true;try{await saveCurrentJob();if(generateOrder('top'))document.getElementById('sharepdfbtn').click();}catch(e){alert('Initial checklist was not completed. Your current form is kept open. '+e.message);}finally{this.disabled=false;}});
   document.getElementById('editbtn').addEventListener('click', function(){
     document.getElementById('output').style.display='none';
     document.getElementById('form').style.display='block';
