@@ -480,7 +480,7 @@
     {g:"ROOFING", items:[["Tear Off & Dispose Existing Roofing","Roofing squares",0,"w"],["Install Architectural Shingles","Roofing squares",0,"m"],["Install Underlayment","Roofing squares",0,"m"],["Ice & Water Barrier at Valley","Linear feet",0,"m"],["Install Drip Edge","Linear feet",0,"m"],["Install Ridge Cap","Linear feet",0,"m"],["Flat Roof Restoration","Roofing squares",0,"m"]]},
     {g:"ACCESSORIES", items:[["Replace Pipe Jacks","Each",0,"m",["1\"","2\"","3\"","4\"","No Size"],null,"multi"],["Replace Turbine Vents","Each",0,"m"],["Replace T-Top Vents","Each",0,"m",["4\"","7\""],null,"multi"],["Replace B-Vent Flashing","Each",0,"m"],["Replace Split Pipe Boots","Each",0,"m",["1\"","2\"","3\"","4\"","Not Verified"],null,"multi"],["Replace Dormer Vents","Each",0,"m"],["Replace O'Hagin Vents","Each",0,"m"],["Satellite Realignment after Roof Completion","Each",0,"w"],["Straighten A/C Condenser Fins","Each",0,"w"],["Skylights","Each",0,"m"],["Replace Furnace Vent","Each",0,"m"]]},
     {g:"DECKING", removed:true, items:[["Backup 4' x 8' Decking Sheets","Each",0,"m"]]},
-    {g:"SPECIAL CONDITIONS", items:[["Rooftop HVAC","Lump sum",0,"w"],["Take Extra Care at Pitched / Flat Roof Transition","",0,"w",null,null,null,null,"yn"],["Shingle Moulding","Linear feet",0,"m"],["Fascia Replacement","Linear feet",0,"m",null,true],["Do Not Disturb Patio Flat Roof or Shed Roofs","Lump sum",0,"w"],["Dispose of Swamp Cooler and Patch Deck","Each",0,"w"],["Solar DnR Will Be Needed.","",0,"w",null,null,null,"date"]]},
+    {g:"SPECIAL CONDITIONS", items:[["Rooftop HVAC","Each",0,"w"],["Take Extra Care at Pitched / Flat Roof Transition","",0,"w",null,null,null,null,"yn"],["Shingle Moulding","Linear feet",0,"m"],["Fascia Replacement","Linear feet",0,"m",null,true],["Do Not Disturb Patio Flat Roof or Shed Roofs","Lump sum",0,"w"],["Dispose of Swamp Cooler and Patch Deck","Each",0,"w"],["Solar DnR Will Be Needed.","",0,"w",null,null,null,"date"]]},
     {g:"CLOSEOUT", items:[["Remove All Debris","Each",1,"w",null,null,null,null,"yn"],["Final Magnetic Sweep","Each",1,"w",null,null,null,null,"yn"],["Final Roof Inspection","Each",1,"w",null,null,null,null,"yn"],["Completion Photos","Each",1,"w",null,null,null,null,"yn"]]}
   ];
   var KEY = 'hr-workorder-draft-v1';
@@ -531,6 +531,7 @@
       if(it[1]){var unit=document.createElement('p');unit.className='item-unit';unit.innerHTML='Unit: <span class="unit">'+it[1]+'</span>';body.prepend(unit);}
       var count=body.querySelector(':scope > .step,:scope > .yn');if(count){var label=document.createElement('label');label.className='item-field-label';label.textContent=it[8]==='yn'?'Scope required':'Quantity';var input=count.querySelector('input');if(input){input.id='qty-'+id;input.setAttribute('aria-label',wiName(gi,ii)+' quantity');label.htmlFor=input.id;}body.insertBefore(label,count);}
       var note=body.querySelector('textarea');if(note)note.setAttribute('aria-label',wiName(gi,ii)+' notes or measurements');
+      if(id==='4-0'){var units=body.querySelector('[data-item]');units.step='1';units.inputMode='numeric';body.querySelector('.item-field-label').textContent='Number of units';body.querySelector('[data-notebtn]').textContent='+ Notes';}
       if(hasScopeQuantity(id)){var step=body.querySelector(':scope > .step'),wrap=document.createElement('div');wrap.dataset.scopeqty=id;wrap.style.cssText='display:flex;align-items:center;gap:8px;flex-wrap:wrap';wrap.innerHTML='<span class="yn"><button type="button" class="ynbtn" data-scopevalue="true">Yes</button><button type="button" class="ynbtn" data-scopevalue="false">No</button></span>';step.before(wrap);wrap.appendChild(step);}
       body.insertAdjacentHTML('beforeend',assessmentUI(id));
       detail.appendChild(head);detail.appendChild(body);row.appendChild(detail);
@@ -576,7 +577,7 @@
   // The "install" work line follows the roof system being installed
   function wiName(gi,ii){
     var it=WORK[gi].items[ii];
-    if(it[0]==='Rooftop HVAC'){var action=chipVal('accrane');return action||'Work Around A/C';}
+    if(it[0]==='Rooftop HVAC')return 'Number of A/C Units';
     if(gi===1&&ii===1){
       var m={'Architectural Shingle':'Install Architectural Shingles','3-Tab Shingle':'Install 3-Tab Shingles','Tile':'Install Tile Roofing','Modified Bitumen':'Install Modified Bitumen Roofing','SPF / Coating':'Install SPF foam','Slate':'Install Slate Roofing','Stone-Coated Steel':'Install Stone-Coated Steel Roofing','Composite / Synthetic':'Install Composite Roofing'};
       return m[chipVal('roofsystem')]||'Install New Roof System';
@@ -683,6 +684,7 @@
     if(b){
       var inp = b.parentElement.querySelector('input');
       var v = Math.max(0, Math.round(((parseFloat(inp.value)||0) + parseInt(b.getAttribute('data-d'),10))*100)/100);
+      if(inp.dataset.item==='4-0')v=Math.floor(v);
       inp.value = v; state.items[inp.getAttribute('data-item')].qty = v; if(hasScopeQuantity(inp.dataset.item))syncScopeQuantity(inp.dataset.item); updateCounts(); save(); return;
     }
     var scopeButton=e.target.closest('[data-scopevalue]');if(scopeButton){var id=scopeButton.closest('[data-scopeqty]').dataset.scopeqty;state.items[id].scopeRequired=scopeButton.dataset.scopevalue==='true';syncScopeQuantity(id);updateCounts();save();return;}
@@ -705,7 +707,7 @@
       var z=sq.dataset.sz,v=sq.value.trim();st.sizeqty[z]=v===''?null:Math.max(0,parseInt(v,10)||0);sumSizes(sq.dataset.sq);updateCounts();save();return;
     }
     var inp = e.target.closest('input[data-item]');
-    if(inp){ var n=parseFloat(inp.value); state.items[inp.getAttribute('data-item')].qty = (inp.value.trim()===''||isNaN(n))?null:Math.max(0,Math.round(n*100)/100); if(hasScopeQuantity(inp.dataset.item))syncScopeQuantity(inp.dataset.item); updateCounts(); save(); return; }
+    if(inp){ var n=parseFloat(inp.value);if(inp.dataset.item==='4-0'&&inp.value.trim()!==''&&!isNaN(n)){n=Math.max(0,Math.floor(n));inp.value=n;} state.items[inp.getAttribute('data-item')].qty = (inp.value.trim()===''||isNaN(n))?null:Math.max(0,Math.round(n*100)/100); if(hasScopeQuantity(inp.dataset.item))syncScopeQuantity(inp.dataset.item); updateCounts(); save(); return; }
     var ta = e.target.closest('textarea[data-notefor]');
     if(ta){ state.items[ta.getAttribute('data-notefor')].note = ta.value; save(); }
   });
