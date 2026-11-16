@@ -532,7 +532,7 @@
       var body=document.createElement('div');body.className='item-body';
       while(row.firstChild)body.appendChild(row.firstChild);
       if(it[1]){var unit=document.createElement('p');unit.className='item-unit';unit.innerHTML='Unit: <span class="unit">'+it[1]+'</span>';body.prepend(unit);}
-      var count=body.querySelector(':scope > .step,:scope > .yn');if(count){var label=document.createElement('label');label.className='item-field-label';label.textContent=it[8]==='yn'?'Scope required':'Quantity';var input=count.querySelector('input');if(input){input.id='qty-'+id;input.setAttribute('aria-label',wiName(gi,ii)+' quantity');label.htmlFor=input.id;}body.insertBefore(label,count);}
+      var count=body.querySelector(':scope > .step,:scope > .yn');if(count&&it[8]!=='yn'){var label=document.createElement('label');label.className='item-field-label';label.textContent='Quantity';var input=count.querySelector('input');if(input){input.id='qty-'+id;input.setAttribute('aria-label',wiName(gi,ii)+' quantity');label.htmlFor=input.id;}body.insertBefore(label,count);}
       var note=body.querySelector('textarea');if(note)note.setAttribute('aria-label',wiName(gi,ii)+' notes or measurements');
       if(it[1]&&it[8]!=='yn'){
         row.classList.add('compact-count-item');
