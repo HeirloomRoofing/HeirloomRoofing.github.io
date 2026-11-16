@@ -277,6 +277,11 @@
   #form .form-section {margin-top:0;}
   #form > .card:has(>.form-section) {padding:10px;}
   #form .section-fields {padding:8px 4px 2px;}
+  #form > .no-print:has(> #genbtn2) {padding:14px;margin:12px 0 28px!important;background:#eaf4fb;border:1px solid #b7d7ee;border-radius:14px;}
+  #form #genbtn2 {width:100%!important;max-width:none;margin:0;min-height:48px;font-size:14px;border-radius:10px;}
+  #form .production-section > .section-tab {background:#fff;color:var(--brand);border:1px solid #b7cddd;}
+  #form .production-section > .section-tab h2,#form .production-section > .section-tab::after {color:var(--brand);}
+  #form .section-count:empty {display:none;}
 </style>
 <link rel="stylesheet" href="/form-density.css?v=20261115a">
 </head>
@@ -1300,7 +1305,7 @@
   // Top-level form headings are collapsible; inputs stay in their original DOM order.
   document.querySelectorAll('#form > .card').forEach(function(card){
     var heading=card.querySelector(':scope > h2');if(!heading)return;
-    var section=document.createElement('details');section.className='form-section';
+    var section=document.createElement('details');section.className='form-section';if(card.compareDocumentPosition(document.getElementById('genbtn2'))&Node.DOCUMENT_POSITION_PRECEDING)section.classList.add('production-section');
     var tab=document.createElement('summary');tab.className='section-tab';tab.appendChild(heading);
     var count=document.createElement('span');count.className='section-count';count.setAttribute('aria-live','polite');tab.appendChild(count);
     var contents=document.createElement('div');contents.className='section-fields';
@@ -1317,7 +1322,7 @@
     var photoFields=Array.from(new Set(Array.from(photosCard.querySelectorAll('[data-jobphoto]')).map(function(el){return el.dataset.jobphoto;})));
     var emptyPhotoFields=photoFields.filter(function(id){return !photoRecords.some(function(r){return r.item===id;});}).length;
     document.querySelectorAll('details.area-photo').forEach(function(area){var id=area.querySelector('[data-jobphoto]').dataset.jobphoto;var saved=photoRecords.filter(function(r){return r.item===id;}).length;var summary=area.querySelector(':scope > summary'),badge=summary.querySelector('.photo-field-count');if(!badge){badge=document.createElement('span');badge.className='photo-field-count';summary.appendChild(badge);}badge.textContent=saved?saved+' saved':'';badge.style.color=saved?'#167137':'#a94f00';badge.setAttribute('aria-label',saved?saved+' photos saved':'No photos yet');});
-    sections.forEach(function(section,i){var badge=section.querySelector(':scope > summary .section-count');var initial=!!(section.compareDocumentPosition(document.getElementById('genbtn2'))&Node.DOCUMENT_POSITION_FOLLOWING);badge.textContent=section===photosCard.querySelector('.form-section')?(photoRecords.filter(function(r){return r.item.indexOf('area-')===0;}).length+' photos'):initial?(counts[i]===0?'Ready':counts[i]+' left'):'Not needed for initial';badge.className='section-count'+(section===photosCard.querySelector('.form-section')?(emptyPhotoFields?' pending':' ready'):initial?(counts[i]?' pending':' ready'):'');});
+    sections.forEach(function(section,i){var badge=section.querySelector(':scope > summary .section-count');var initial=!!(section.compareDocumentPosition(document.getElementById('genbtn2'))&Node.DOCUMENT_POSITION_FOLLOWING);badge.textContent=section===photosCard.querySelector('.form-section')?(photoRecords.filter(function(r){return r.item.indexOf('area-')===0;}).length+' photos'):initial?(counts[i]===0?'Ready':counts[i]+' left'):'';badge.className='section-count'+(section===photosCard.querySelector('.form-section')?(emptyPhotoFields?' pending':' ready'):initial?(counts[i]?' pending':' ready'):'');});
   }
   ['input','change','click','toggle'].forEach(function(event){document.getElementById('form').addEventListener(event,function(){setTimeout(updateSectionCounts,0);},true);});
   // Entry helpers only reveal/focus existing fields; no answers are inferred.
