@@ -276,6 +276,8 @@
   #form .section-tab .section-count {color:#fff;opacity:.9;}
   #form .form-section {margin-top:0;}
   #form .section-tab {scroll-margin-top:12px;}
+  #form .form-section:not(.production-section) > .section-tab {position:relative;isolation:isolate;background:transparent;}
+  #form .form-section:not(.production-section) > .section-tab::before {content:'';position:absolute;inset:2px 0;background:var(--brand);border-radius:10px;z-index:-1;pointer-events:none;}
   #form > .card:has(>.form-section) {padding:10px;}
   /* Keep all seven initial tabs above the phone footer without shrinking their tap targets. */
   #form > .card:has(>.form-section:not(.production-section)) {padding:4px 10px;margin:2px 0;}
