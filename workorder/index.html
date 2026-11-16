@@ -996,7 +996,7 @@
         var title=heading?heading.textContent.trim():'Additional Notes',rows='';
         card.querySelectorAll('[data-f]').forEach(function(el){var k=el.dataset.f,v=el.classList.contains('chips')?chipVal(k):el.type==='checkbox'?(el.checked?'Yes':''):el.value.trim();if(!v)return;rows+=rowKV(FIELD_LABELS[k]||(k==='gatena'?'No gate code needed':k),v);});
         h+=sec(title,rows);
-        card.querySelectorAll('#workitems,#specialconditions,#workitems2,#closeout').forEach(function(items){h+='<div class="secbar">'+esc(title)+'</div>'+itemRows(items.id);});
+        card.querySelectorAll('#workitems,#specialconditions,#workitems2,#closeout').forEach(function(items){h+=(items.id==='closeout'?'':'<div class="secbar">'+esc(title)+'</div>')+itemRows(items.id);});
       });
       if(state.review)h+='<h3>Pending Choices and Review Notes</h3><div style="white-space:pre-line">'+esc(pendingMessage(scope))+'</div>';
       return h;
@@ -1036,7 +1036,7 @@
     h += sec('Roof System Being Installed', rowKV('Roof System', val('roofsystem')) + rowKV('Job Type', val('jobtype')));
       h += sec('New Roof Details', rowKV('Malarkey Product', val('malarkey')) + rowKV('Tile Profile', val('tileprofile')) + rowKV('Stone-Coated Steel Profile', val('steelprofile')) + rowKV('Composite Product', val('compositeproduct')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Approx. Tear-Off (Roofing squares)', val('tearoff')) + rowKV('Approx. Install (Roofing squares)', val('install')));
       if(lowerItems) h += '<div class="secbar">Work Items</div>'+lowerItems;
-      h += '<div class="secbar">Closeout</div>'+itemRows('closeout');
+      h += itemRows('closeout');
     }
     if(!topOnly && val('addnotes')) h += '<h3>Additional Notes</h3><table><tr><td>'+esc(val('addnotes')).replace(/\n/g,'<br>')+'</td></tr></table>';
     if(state.review) h += '<h3>Pending Choices and Review Notes</h3><div style="white-space:pre-line;border:1px solid #b57800;padding:12px">'+esc(pendingMessage(scope))+'</div>';
