@@ -58,3 +58,8 @@
   body:has(#form) .savebar .status {font-size:11px;text-align:center;white-space:normal;}
   body:has(#form) .savebar .btn.primary {width:100%;max-width:none;min-height:44px;padding:10px 12px;font-size:16px;}
 }
+
+/* Keep the white copy action readable during hover, keyboard focus and touch. */
+#ccacopy, #ccacopy:hover, #ccacopy:focus, #ccacopy:active {
+  color:var(--brand); background:#fff;
+}
