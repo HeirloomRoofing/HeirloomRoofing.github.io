@@ -43,14 +43,14 @@
   .chip.on { background:#005b91; border-color:#005b91; color:#fff; transition:none; }
   .row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .hint { font-size:12px; color:var(--muted); margin-top:5px; }
-  details.group { border-top:1px solid var(--line); }
-  details.group:first-of-type { border-top:none; }
-  details.group summary { cursor:default; list-style:none; padding:15px 2px 13px; font-weight:700; font-size:17px; letter-spacing:.03em; color:var(--brand); display:flex; justify-content:space-between; align-items:center; }
-  details.group summary::-webkit-details-marker { display:none; }
-  details.group .count { font-size:12px; color:var(--brand); font-weight:700; }
-  #specialconditions > details.group > summary, #specialconditions .group-count {display:none;}
-  details.group .group-count { text-align:right; padding:9px 2px 3px; border-top:1px dashed var(--line); margin-top:6px; }
-  details.group summary .chev { color:var(--muted); font-size:12px; margin-left:8px; }
+  .group { border-top:1px solid var(--line); }
+  .group:first-of-type { border-top:none; }
+  .group summary { cursor:default; list-style:none; padding:15px 2px 13px; font-weight:700; font-size:17px; letter-spacing:.03em; color:var(--brand); display:flex; justify-content:space-between; align-items:center; }
+  .group summary::-webkit-details-marker { display:none; }
+  .group .count { font-size:12px; color:var(--brand); font-weight:700; }
+  #specialconditions > .group > summary, #specialconditions .group-count {display:none;}
+  .group .group-count { text-align:right; padding:9px 2px 3px; border-top:1px dashed var(--line); margin-top:6px; }
+  .group summary .chev { color:var(--muted); font-size:12px; margin-left:8px; }
   .item { display:flex; align-items:center; gap:10px; padding:9px 0; border-top:1px dashed var(--line); flex-wrap:wrap; }
   .item .nm { flex:1 1 55%; font-size:14.5px; }
   .item .unit { font-size:11px; font-weight:700; color:var(--muted); background:#eef3f7; border-radius:6px; padding:2px 7px; }
@@ -232,9 +232,9 @@
   .size-quantity .step button {width:38px;}
   .size-legacy {padding:12px;border:1px solid #b57800;border-radius:10px;margin-top:10px;font-size:12px;}
   /* Form-only item accordions. Generated order and PDF retain their existing templates. */
-  #form details.group > summary {cursor:pointer;}
-  #form details.group > summary::after {content:'\25BE';font-size:14px;}
-  #form details.group:not([open]) > summary::after {content:'\25B8';}
+  #form .group > summary {cursor:pointer;}
+  #form .group > summary::after {content:'\25BE';font-size:14px;}
+  #form .group:not([open]) > summary::after {content:'\25B8';}
   #form .item {display:block;}
   #form .item-details {width:100%;border:0;margin:0;padding:0;}
   #form .item-heading {display:flex;align-items:center;gap:10px;list-style:none;cursor:pointer;padding:4px 0;}
@@ -282,6 +282,14 @@
   #form .production-section > .section-tab {background:#fff;color:var(--brand);border:1px solid #b7cddd;}
   #form .production-section > .section-tab h2,#form .production-section > .section-tab::after {color:var(--brand);}
   #form .section-count:empty {display:none;}
+  #form #workitems > .group > summary,#form #workitems .group-count {display:none;}
+  #form .group > .group-heading {font-size:15px;color:var(--brand);margin:12px 0 8px;}
+  #form #workitems .group-heading,#form #specialconditions .group-heading {display:none;}
+  #form .item-heading {cursor:default;}
+  #form .size-pick::after {content:none!important;}
+  #form .size-quantity {display:block;}
+  #form .item-heading .nm {color:var(--brand);font-weight:700;font-size:16px;}
+  #form .size-pick[aria-pressed="true"] {background:var(--brand);color:#fff;}
 </style>
 <link rel="stylesheet" href="/form-density.css?v=20261115a">
 </head>
@@ -296,7 +304,7 @@
 <div class="card">
 <div style="display:flex;justify-content:space-between;gap:12px"><button class="btn ghost" id="resetbtn" type="button">New Form</button><button class="btn ghost" id="savejobbtn" type="button">Save</button><button class="btn ghost" id="myjobsbtn" type="button">My Jobs</button></div>
 <button type="button" class="btn ghost" id="savefilesbtn" hidden style="margin-top:10px">Save Files</button><div id="manual-job-save-status" role="status" class="hint" hidden></div>
-<div class="quick-entry"><button type="button" class="btn ghost" id="next-unanswered">Next unanswered</button><button type="button" class="btn ghost" id="toggle-entry">Open all</button></div>
+
 <div id="draftnotice" role="status" style="display:none;background:#fff4e5;color:#704800;padding:12px;border-radius:10px;margin-top:10px;white-space:pre-line;max-height:180px;overflow:auto"></div>
 </div><div class="card">
 <h2>Project Manager</h2>
@@ -473,8 +481,8 @@
   var wi = document.getElementById('workitems'); var wi2 = document.getElementById('workitems2');
   WORK.forEach(function(g,gi){
     if(g.removed) return;
-    var det = document.createElement('details'); det.className='group'; det.setAttribute('data-gi',gi); det.open=true;
-    var sum = document.createElement('summary');
+    var det = document.createElement('div'); det.className='group'; det.setAttribute('data-gi',gi); det.open=true;
+    var sum = document.createElement('h3');sum.className='group-heading';
     sum.innerHTML = '<span>'+g.g+'</span>';
     det.appendChild(sum);
     g.items.forEach(function(it,ii){
@@ -486,15 +494,15 @@
         '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="'+(it[0]==='Replace Furnace Vent'?'':'0')+'" placeholder="'+(it[0]==='Replace Furnace Vent'?'Pending':'0')+'">'+
         '<button type="button" data-d="1" aria-label="increase">+</button></span>')+
         (it[7]==='date'?'<label class="sizeq">Reset Date: <input type="date" data-datefor="'+id+'" aria-label="Solar reset date"></label>':'')+
-        (it[4]?'<div class="size-first" data-sizeitem="'+id+'"><label class="item-field-label">Size / quantity</label><div class="size-options">'+it[4].map(function(z,zi){return '<div class="size-choice"><button class="size-pick" type="button" data-picksize="'+id+'" data-sz="'+z.replace(/"/g,'&quot;')+'" aria-expanded="false" aria-controls="sizebox-'+id+'-'+zi+'">'+(z==='No Size'?'4-in-1':z)+'</button><div class="size-quantity" id="sizebox-'+id+'-'+zi+'" hidden><label>Quantity for '+(z==='No Size'?'4-in-1':z)+'</label><span class="step"><button type="button" data-sqd="-1" aria-label="Decrease size quantity">&minus;</button><input type="number" min="0" step="1" inputmode="numeric" data-sq="'+id+'" data-sz="'+z.replace(/"/g,'&quot;')+'" value="" placeholder="Pending" aria-label="'+wiName(gi,ii)+' '+(z==='No Size'?'4-in-1':z.replace(/"/g,'&quot;'))+' quantity"><button type="button" data-sqd="1" aria-label="Increase size quantity">+</button></span></div></div>';}).join('')+'</div><button type="button" class="size-none btn ghost" data-sizenone="'+id+'">None needed</button><div class="size-legacy" hidden><label>Unassigned size quantity</label><input type="number" min="0" step="1" data-sq="'+id+'" data-sz="Unassigned" aria-label="Saved unassigned quantity"></div></div>':'')+
+        (it[4]?'<div class="size-first" data-sizeitem="'+id+'"><label class="item-field-label">Size / quantity</label><div class="size-options">'+it[4].map(function(z,zi){return '<div class="size-choice"><button class="size-pick" type="button" data-picksize="'+id+'" data-sz="'+z.replace(/"/g,'&quot;')+'" aria-expanded="false" aria-controls="sizebox-'+id+'-'+zi+'">'+(z==='No Size'?'4-in-1':z)+'</button><div class="size-quantity" id="sizebox-'+id+'-'+zi+'"><label>Quantity for '+(z==='No Size'?'4-in-1':z)+'</label><span class="step"><button type="button" data-sqd="-1" aria-label="Decrease size quantity">&minus;</button><input type="number" min="0" step="1" inputmode="numeric" data-sq="'+id+'" data-sz="'+z.replace(/"/g,'&quot;')+'" value="" placeholder="Pending" aria-label="'+wiName(gi,ii)+' '+(z==='No Size'?'4-in-1':z.replace(/"/g,'&quot;'))+' quantity"><button type="button" data-sqd="1" aria-label="Increase size quantity">+</button></span></div></div>';}).join('')+'</div><button type="button" class="size-none btn ghost" data-sizenone="'+id+'">None needed</button><div class="size-legacy" hidden><label>Unassigned size quantity</label><input type="number" min="0" step="1" data-sq="'+id+'" data-sz="Unassigned" aria-label="Saved unassigned quantity"></div></div>':'')+
         '<button type="button" class="notebtn" data-notebtn="'+id+'">'+(['Take Extra Care at Pitched / Flat Roof Transition','Replace Pipe Jacks','Replace B-Vent Flashing','Replace Split Pipe Boots','Tear Off & Dispose Existing Roofing','Install Architectural Shingles','Install Underlayment','Ice & Water Barrier at Valley','Install Drip Edge','Protect Landscaping / Plants / Trees','Protect Windows / Walls / Driveway / Hardscape','Remove All Debris','Final Magnetic Sweep','Final Roof Inspection','Completion Photos','Satellite Realignment after Roof Completion','Straighten A/C Condenser Fins'].indexOf(it[0])>=0?'+ Notes':'+ Measurement')+'</button>'+
         '<textarea data-notefor="'+id+'" placeholder="'+(it[0]==='Skylights'?'Measurements for skylights':'Notes for this line')+'" style="display:'+(it[0]==='Take Extra Care at Pitched / Flat Roof Transition'?'block':'none')+';flex-basis:100%"></textarea>';
-      var detail=document.createElement('details');detail.className='item-details';
-      var head=document.createElement('summary');head.className='item-heading';
+      var detail=document.createElement('div');detail.className='item-details';
+      var head=document.createElement('div');head.className='item-heading';
       var photo=row.querySelector('.item-reference');if(photo)head.appendChild(photo);
       head.appendChild(row.querySelector('.nm'));
       if(gi===2){var progress=document.createElement('span');progress.className='item-progress';progress.dataset.itemProgress=id;progress.setAttribute('aria-live','polite');head.querySelector('.nm').appendChild(progress);}
-      var arrow=document.createElement('span');arrow.className='item-arrow';arrow.textContent='Details';head.appendChild(arrow);
+
       var body=document.createElement('div');body.className='item-body';
       while(row.firstChild)body.appendChild(row.firstChild);
       if(it[1]){var unit=document.createElement('p');unit.className='item-unit';unit.innerHTML='Unit: <span class="unit">'+it[1]+'</span>';body.prepend(unit);}
@@ -632,7 +640,7 @@
     var st=state.items[id],root=document.querySelector('[data-sizeitem="'+id+'"]');if(!root)return;
     root.querySelectorAll('input[data-sq]').forEach(function(input){var z=input.dataset.sz,v=st.sizeqty[z];input.value=v==null?'':v;
       if(z==='Unassigned'){input.closest('.size-legacy').hidden=!(v>0);return;}
-      var chosen=Object.prototype.hasOwnProperty.call(st.sizeqty,z),box=input.closest('.size-quantity'),button=box.parentElement.querySelector('.size-pick');box.hidden=!chosen;button.setAttribute('aria-expanded',String(chosen));
+      var chosen=Object.prototype.hasOwnProperty.call(st.sizeqty,z),box=input.closest('.size-quantity'),button=box.parentElement.querySelector('.size-pick');box.hidden=false;button.setAttribute('aria-pressed',String(chosen));button.removeAttribute('aria-expanded');
     });
   }
   function sumSizes(id){var st=state.items[id],keys=Object.keys(st.sizeqty);st.qty=keys.some(function(z){return st.sizeqty[z]==null;})?null:keys.reduce(function(n,z){return n+st.sizeqty[z];},0);}
@@ -694,7 +702,7 @@
     if(!state.review) return '';
     var a=[];
     (state.review.pending||[]).forEach(function(k){var el=document.querySelector('[data-f="'+k+'"]'); if(scope==='top' && el && !(el.compareDocumentPosition(document.getElementById('genbtn2')) & Node.DOCUMENT_POSITION_FOLLOWING)) return; if(el && !(k==='layers' ? layersVal() : val(k))){var label=document.querySelector('label[for="'+k+'"]');a.push((FIELD_LABELS[k]||(label?label.textContent:k))+': PENDING');}});
-    Object.keys(state.items).forEach(function(k){if(state.items[k].qty==null || (state.items[k].sizeqty&&state.items[k].sizeqty.Unassigned>0)){var x=k.split('-');var g=WORK[+x[0]];if(!g||g.removed||g.items[+x[1]][5]||(scope==='top'&&!document.querySelector(':is(#workitems,#specialconditions) details.group[data-gi="'+x[0]+'"]')))return;a.push(wiName(+x[0],+x[1])+': PENDING quantity / scope');}});
+    Object.keys(state.items).forEach(function(k){if(state.items[k].qty==null || (state.items[k].sizeqty&&state.items[k].sizeqty.Unassigned>0)){var x=k.split('-');var g=WORK[+x[0]];if(!g||g.removed||g.items[+x[1]][5]||(scope==='top'&&!document.querySelector(':is(#workitems,#specialconditions) .group[data-gi="'+x[0]+'"]')))return;a.push(wiName(+x[0],+x[1])+': PENDING quantity / scope');}});
     return (a.length?a.join('\n'):'All listed choices entered. Still a draft for review.')+(scope!=='top'&&state.review.notes?'\nReview notes: '+state.review.notes:'');
   }
   function refreshDraftNotice(){var n=document.getElementById('draftnotice'); if(!n)return; n.style.display=state.review?'block':'none';if(state.review){var msg=pendingMessage();var count=(msg.match(/PENDING/g)||[]).length;n.innerHTML='<b>DRAFT</b><br>'+count+' pending.<details style="margin-top:8px"><summary>Review pending</summary><div style="white-space:pre-line;margin-top:8px">'+esc(msg)+'</div></details><button type="button" class="btn ghost" id="finishreview" style="width:100%;margin-top:10px">Finish review</button>';}}
@@ -856,7 +864,7 @@
     });
     WORK.forEach(function(g,gi){
       if(g.removed) return;
-      if(scope==='top' && !document.querySelector(':is(#workitems,#specialconditions) details.group[data-gi="'+gi+'"]')) return;
+      if(scope==='top' && !document.querySelector(':is(#workitems,#specialconditions) .group[data-gi="'+gi+'"]')) return;
       var n=0;
       g.items.forEach(function(it,ii){ if(it[5]) return; var st=state.items[gi+'-'+ii]; if(!st || st.qty==null || (it[4] && sizedMissing(st))) n++; });
       if(n) miss.push('__wi'+gi+':'+n);
@@ -878,7 +886,7 @@
       if(k.indexOf('__photo')===0){photosCard.querySelector('details.form-section').open=true;photosCard.classList.add('miss');return;}
       if(k.indexOf('__wi')===0){
         var gi=+k.slice(4).split(':')[0];
-        var det=document.querySelector('#form details.group[data-gi="'+gi+'"]');
+        var det=document.querySelector('#form .group[data-gi="'+gi+'"]');
         if(det){ det.open=true; det.classList.add('miss'); }
         WORK[gi].items.forEach(function(it,ii){
           var st=state.items[gi+'-'+ii];
@@ -888,7 +896,7 @@
       }
       var el=document.querySelector('[data-f="'+k+'"]'); if(el) el.classList.add('miss');
     });
-    var first=miss[0].indexOf('__wi')===0 ? document.querySelector('#form details.group[data-gi="'+miss[0].slice(4).split(':')[0]+'"]') : document.querySelector('[data-f="'+miss[0]+'"]');
+    var first=miss[0].indexOf('__wi')===0 ? document.querySelector('#form .group[data-gi="'+miss[0].slice(4).split(':')[0]+'"]') : document.querySelector('[data-f="'+miss[0]+'"]');
     if(!first&&miss[0].indexOf('__photo')===0)first=photosCard;
     if(first){for(var parent=first.parentElement;parent;parent=parent.parentElement){if(parent.tagName==='DETAILS')parent.open=true;}}
     if(first && first.scrollIntoView) first.scrollIntoView({behavior:'smooth', block:'center'});
@@ -908,12 +916,12 @@
 
   document.getElementById('form').addEventListener('input', function(e){
     var t=e.target.closest('.miss'); if(t) t.classList.remove('miss');
-    var d=e.target.closest('details.group.miss'); if(d) d.classList.remove('miss');
+    var d=e.target.closest('.group.miss'); if(d) d.classList.remove('miss');
     var box=document.getElementById('reqerrors'); if(box.style.display==='block') box.style.display='none';
   });
   document.getElementById('form').addEventListener('click', function(e){
     var c=e.target.closest('.chips.miss'); if(c) c.classList.remove('miss');
-    var d=e.target.closest('details.group.miss'); if(d && e.target.closest('.step, .notebtn')) d.classList.remove('miss');
+    var d=e.target.closest('.group.miss'); if(d && e.target.closest('.step, .notebtn')) d.classList.remove('miss');
   });
 
   var outputScope = "all", pdfActionBusy = false;
@@ -948,7 +956,7 @@
     h += sec('Property Conditions', rowKV('Steep Pitch', val('pitch')) + rowKV('Stories / Roof Height', val('stories')) + rowKV('Limited Access', val('access')) + rowKV('Complex Roof Design', val('complex')) + rowKV('Special Equipment', val('equipment')) + rowKV('Occupied / Restricted', val('occupied')) + rowKV('Other / Special Instructions', val('otherinstr')));
     function itemRows(container){
       var out='';
-      document.querySelectorAll('#'+container+' details.group[data-gi]').forEach(function(group){
+      document.querySelectorAll('#'+container+' .group[data-gi]').forEach(function(group){
         var gi=Number(group.getAttribute('data-gi')),g=WORK[gi];
         if(g.removed) return;
         var rows='';
@@ -1305,7 +1313,7 @@
   // Top-level form headings are collapsible; inputs stay in their original DOM order.
   document.querySelectorAll('#form > .card').forEach(function(card){
     var heading=card.querySelector(':scope > h2');if(!heading)return;
-    var section=document.createElement('details');section.className='form-section';if(card.compareDocumentPosition(document.getElementById('genbtn2'))&Node.DOCUMENT_POSITION_PRECEDING)section.classList.add('production-section');
+    var section=document.createElement('details');section.className='form-section';if(card.querySelector('#workitems'))section.open=true;if(card.compareDocumentPosition(document.getElementById('genbtn2'))&Node.DOCUMENT_POSITION_PRECEDING)section.classList.add('production-section');
     var tab=document.createElement('summary');tab.className='section-tab';tab.appendChild(heading);
     var count=document.createElement('span');count.className='section-count';count.setAttribute('aria-live','polite');tab.appendChild(count);
     var contents=document.createElement('div');contents.className='section-fields';
@@ -1315,7 +1323,7 @@
   function updateSectionCounts(){
     var sections=Array.from(document.querySelectorAll('#form .form-section')), counts=sections.map(function(){return 0;});
     initialEntryMissing().forEach(function(key){
-      var el,n=1;if(key.indexOf('__wi')===0){var parts=key.slice(4).split(':');n=+parts[1];el=document.querySelector(':is(#workitems,#specialconditions) details.group[data-gi="'+parts[0]+'"]');}
+      var el,n=1;if(key.indexOf('__wi')===0){var parts=key.slice(4).split(':');n=+parts[1];el=document.querySelector(':is(#workitems,#specialconditions) .group[data-gi="'+parts[0]+'"]');}
       else el=document.querySelector('[data-f="'+key+'"]');
       var section=el&&el.closest('.form-section'),idx=sections.indexOf(section);if(idx>=0)counts[idx]+=n;
     });
@@ -1325,39 +1333,15 @@
     sections.forEach(function(section,i){var badge=section.querySelector(':scope > summary .section-count');var initial=!!(section.compareDocumentPosition(document.getElementById('genbtn2'))&Node.DOCUMENT_POSITION_FOLLOWING);badge.textContent=section===photosCard.querySelector('.form-section')?(photoRecords.filter(function(r){return r.item.indexOf('area-')===0;}).length+' photos'):initial?(counts[i]===0?'Ready':counts[i]+' left'):'';badge.className='section-count'+(section===photosCard.querySelector('.form-section')?(emptyPhotoFields?' pending':' ready'):initial?(counts[i]?' pending':' ready'):'');});
   }
   ['input','change','click','toggle'].forEach(function(event){document.getElementById('form').addEventListener(event,function(){setTimeout(updateSectionCounts,0);},true);});
-  // Entry helpers only reveal/focus existing fields; no answers are inferred.
-  function revealEntry(el){
-    if(!el)return;
-    document.querySelectorAll('.entry-target').forEach(function(x){x.classList.remove('entry-target');});
-    for(var p=el;p&&p!==document.getElementById('form');p=p.parentElement){if(p.tagName==='DETAILS')p.open=true;}
-    el.classList.add('entry-target');
-    var focus=el.matches('input:not([type=file]),select,textarea,button')?el:el.querySelector('button,input:not([type=file]),select,textarea,summary');
-    if(focus)focus.focus({preventScroll:true});
-    el.scrollIntoView({behavior:'smooth',block:'center'});
-  }
   function initialEntryMissing(){
     var keys=missingRequired('top');
     ['pm','pmphone','jt','pmnotes','customer','phone','address','gate'].forEach(function(k){if(k==='gate'&&gateNA())return;if(!val(k)&&keys.indexOf(k)<0)keys.push(k);});
     return keys;
   }
-  function nextInitialTargets(){
-    var targets=[];
-    initialEntryMissing().forEach(function(key){
-      if(key.indexOf('__wi')===0){var gi=+key.slice(4).split(':')[0];WORK[gi].items.forEach(function(it,ii){if(it[5])return;var st=state.items[gi+'-'+ii];if(!st||st.qty==null||(it[4]&&sizedMissing(st))){var node=document.querySelector('.item-details:has([data-notefor="'+gi+'-'+ii+'"])');if(node)targets.push(node);}});}
-      else{var node=document.querySelector('[data-f="'+key+'"]');if(node)targets.push(node);}
-    });
-    return targets.sort(function(a,b){return a===b?0:a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING?-1:1;});
-  }
-  document.getElementById('next-unanswered').onclick=function(){
-    var targets=nextInitialTargets();
-    if(targets.length){revealEntry(targets[0]);return;}
-
-    revealEntry(document.getElementById('genbtn2'));
-  };
-  document.getElementById('toggle-entry').onclick=function(){var open=this.textContent==='Open all';document.querySelectorAll('#form details.form-section,#form details.group,#form details.item-details').forEach(function(el){el.open=open;});this.textContent=open?'Close all':'Open all';};
   ['pmnotes','otherinstr','addnotes'].forEach(function(id){var el=document.getElementById(id),button=document.createElement('button');button.type='button';button.className='btn ghost answer-none';button.textContent='None';button.setAttribute('aria-label','Set '+FIELD_LABELS[id]+' to None');button.onclick=function(){if(el.value.trim()&&el.value.trim()!=='None'&&!confirm('Replace this note with None?'))return;el.value='None';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));};el.after(button);});
   document.getElementById('form').addEventListener('focusin',function(e){var el=e.target;if(el.matches('input[type=number]')&&el.value!==''){try{el.select();}catch(ignore){}}});
   restore();
+  document.querySelectorAll('[data-sizeitem]').forEach(function(el){syncSizeUI(el.dataset.sizeitem);});
   syncACWorkItem();
   ['4-5','4-6'].forEach(syncScopeQuantity);
   updateAccessoryPhotoTallies();
