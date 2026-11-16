@@ -304,7 +304,6 @@
   #form .item .item-heading .item-reference {grid-column:1;grid-row:1;}
   #form .item .item-heading .nm {grid-column:2;grid-row:1;}
   #form .item .item-heading .item-progress {grid-column:3;grid-row:1;}
-  #form .compact-count-item .nm > .unit {display:block;width:max-content;margin:4px auto 0;font-size:11px;line-height:16px;}
   #form .item.compact-count-item .item-heading {padding-bottom:6px;}
   #form .item.compact-count-item .item-body {padding-top:6px;}
   #form .compact-count-item .size-options {margin-top:0;}
@@ -516,7 +515,7 @@
       if(it[5]) return;
       var id = gi+'-'+ii;
       var row = document.createElement('div'); row.className='item';
-      row.innerHTML = itemPhoto(it[0])+'<span class="nm">'+wiName(gi,ii)+'</span>'+
+      row.innerHTML = itemPhoto(it[0])+'<span class="nm">'+formItemName(gi,ii)+'</span>'+
         (it[6]==='multi'?'':it[8]==='yn'?'<span class="step yn" data-yn="'+id+'"><button type="button" class="ynbtn" data-ynv="1">Yes</button><button type="button" class="ynbtn" data-ynv="0">No</button></span>':'<span class="step"><button type="button" data-d="-1" aria-label="decrease">&minus;</button>'+
         '<input type="number" min="0" step="any" inputmode="decimal" data-item="'+id+'" value="'+(it[0]==='Replace Furnace Vent'?'':'0')+'" placeholder="'+(it[0]==='Replace Furnace Vent'?'Pending':'0')+'">'+
         '<button type="button" data-d="1" aria-label="increase">+</button></span>')+
@@ -535,13 +534,12 @@
       if(it[1]){var unit=document.createElement('p');unit.className='item-unit';unit.innerHTML='Unit: <span class="unit">'+it[1]+'</span>';body.prepend(unit);}
       var count=body.querySelector(':scope > .step,:scope > .yn');if(count){var label=document.createElement('label');label.className='item-field-label';label.textContent=it[8]==='yn'?'Scope required':'Quantity';var input=count.querySelector('input');if(input){input.id='qty-'+id;input.setAttribute('aria-label',wiName(gi,ii)+' quantity');label.htmlFor=input.id;}body.insertBefore(label,count);}
       var note=body.querySelector('textarea');if(note)note.setAttribute('aria-label',wiName(gi,ii)+' notes or measurements');
-      if(gi===2&&it[1]==='Each'){
+      if(it[1]&&it[8]!=='yn'){
         row.classList.add('compact-count-item');
-        var each=body.querySelector('.item-unit .unit');head.querySelector('.nm').appendChild(each);
         body.querySelector('.item-unit').remove();body.querySelectorAll('.size-first > .item-field-label').forEach(function(label){label.remove();});
         var redundant=body.querySelector(':scope > .item-field-label');if(redundant&&redundant.textContent==='Quantity')redundant.remove();
       }
-      if(id==='4-0'){var units=body.querySelector('[data-item]');units.step='1';units.inputMode='numeric';body.querySelector('.item-field-label').textContent='Number of units';body.querySelector('[data-notebtn]').textContent='+ Notes';}
+      if(id==='4-0'){var units=body.querySelector('[data-item]');units.step='1';units.inputMode='numeric';body.querySelector('[data-notebtn]').textContent='+ Notes';}
       if(hasScopeQuantity(id)){var step=body.querySelector(':scope > .step'),wrap=document.createElement('div');wrap.dataset.scopeqty=id;wrap.style.cssText='display:flex;align-items:center;gap:8px;flex-wrap:wrap';wrap.innerHTML='<span class="yn"><button type="button" class="ynbtn" data-scopevalue="true">Yes</button><button type="button" class="ynbtn" data-scopevalue="false">No</button></span>';step.before(wrap);wrap.appendChild(step);}
       body.insertAdjacentHTML('beforeend',assessmentUI(id));
       detail.appendChild(head);detail.appendChild(body);row.appendChild(detail);
@@ -584,6 +582,16 @@
     if(!v) c.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
   }
 
+  function formItemName(gi,ii){
+    var name=wiName(gi,ii),it=WORK[gi].items[ii];
+    if(it[8]==='yn'||!it[1]||it[0]==='Rooftop HVAC')return name;
+    if(it[1]==='Each'){
+      var titles={'Replace Pipe Jacks':'Pipe Jack Quantity','Replace Turbine Vents':'Turbine Vent Quantity','Replace T-Top Vents':'T-Top Vent Quantity','Replace B-Vent Flashing':'B-Vent Flashing Quantity','Replace Split Pipe Boots':'Split Pipe Boot Quantity','Replace Dormer Vents':'Dormer Vent Quantity',"Replace O'Hagin Vents":"O'Hagin Vent Quantity",'Satellite Realignment after Roof Completion':'Satellite Realignment Quantity after Roof Completion','Straighten A/C Condenser Fins':'A/C Condenser Fin Straightening Quantity','Skylights':'Skylight Quantity','Replace Furnace Vent':'Furnace Vent Quantity','Dispose of Swamp Cooler and Patch Deck':'Swamp Cooler Disposal and Deck Patch Quantity'};
+      return titles[it[0]]||name+' Quantity';
+    }
+    return name+' ('+it[1]+')';
+  }
+
   // The "install" work line follows the roof system being installed
   function wiName(gi,ii){
     var it=WORK[gi].items[ii];
@@ -618,7 +626,7 @@
       show('steelprofilelabel',s==='Stone-Coated Steel'); show('steelprofile',s==='Stone-Coated Steel');
       show('compositeproductlabel',s==='Composite / Synthetic'); show('compositeproduct',s==='Composite / Synthetic');
       var wi=document.querySelector('input[data-item="1-1"]');
-      if(wi){ var row=wi.closest('.item'), nm=row.querySelector('.nm'); if(nm) nm.textContent=wiName(1,1); var oldPhoto=row.querySelector('.photo-thumb');if(oldPhoto){var oldRef=oldPhoto.closest('.item-reference');if(oldRef)oldRef.remove();else oldPhoto.remove();}var key=MATERIAL_PHOTOS[s];if(key){var b=document.createElement('button');b.type='button';b.className='photo-thumb';b.dataset.photo=key;b.setAttribute('aria-label','Enlarge photo: '+s);b.innerHTML='<img src="./visuals/'+key+'.jpg'+((key==='3tab'||key==='architectural'||key==='wood-fascia')?'?v=20261112c':'')+'" alt="'+s+' real-photo example" width="64" height="64" loading="lazy">';var ref=document.createElement('span');ref.className='item-reference';ref.appendChild(b);row.querySelector('.item-heading').prepend(ref);} }
+      if(wi){ var row=wi.closest('.item'), nm=row.querySelector('.nm'); if(nm) nm.textContent=formItemName(1,1); var oldPhoto=row.querySelector('.photo-thumb');if(oldPhoto){var oldRef=oldPhoto.closest('.item-reference');if(oldRef)oldRef.remove();else oldPhoto.remove();}var key=MATERIAL_PHOTOS[s];if(key){var b=document.createElement('button');b.type='button';b.className='photo-thumb';b.dataset.photo=key;b.setAttribute('aria-label','Enlarge photo: '+s);b.innerHTML='<img src="./visuals/'+key+'.jpg'+((key==='3tab'||key==='architectural'||key==='wood-fascia')?'?v=20261112c':'')+'" alt="'+s+' real-photo example" width="64" height="64" loading="lazy">';var ref=document.createElement('span');ref.className='item-reference';ref.appendChild(b);row.querySelector('.item-heading').prepend(ref);} }
     };
     rc.addEventListener('click', function(){ setTimeout(window.syncSystemProducts,0); });
     window.syncSystemProducts();
