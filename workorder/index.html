@@ -271,6 +271,12 @@
   #form .entry-next {width:100%;margin:12px 0 4px;min-height:44px;}
   #form .answer-none {min-height:44px;margin:4px 0 8px;padding:7px 14px;font-size:14px;}
   #form .entry-target {outline:2px solid var(--brand);outline-offset:4px;scroll-margin:24px;}
+  #form .section-tab {background:var(--brand);color:#fff;border-radius:10px;padding:13px 12px;min-height:48px;}
+  #form .section-tab h2,#form .section-tab::after {color:#fff;}
+  #form .section-tab .section-count {color:#fff;opacity:.9;}
+  #form .form-section {margin-top:0;}
+  #form > .card:has(>.form-section) {padding:10px;}
+  #form .section-fields {padding:8px 4px 2px;}
 </style>
 <link rel="stylesheet" href="/form-density.css?v=20261115a">
 </head>
@@ -1347,10 +1353,6 @@
     revealEntry(document.getElementById('genbtn2'));
   };
   document.getElementById('toggle-entry').onclick=function(){var open=this.textContent==='Open all';document.querySelectorAll('#form details.form-section,#form details.group,#form details.item-details').forEach(function(el){el.open=open;});this.textContent=open?'Close all':'Open all';};
-  document.querySelectorAll('#form .form-section').forEach(function(section){
-    var sections=Array.from(document.querySelectorAll('#form .form-section')),index=sections.indexOf(section),next=sections[index+1];if(!next)return;
-    var button=document.createElement('button');button.type='button';button.className='btn ghost entry-next';button.textContent='Next: '+next.querySelector('h2').textContent;button.onclick=function(){revealEntry(next);};section.querySelector('.section-fields').appendChild(button);
-  });
   ['pmnotes','otherinstr','addnotes'].forEach(function(id){var el=document.getElementById(id),button=document.createElement('button');button.type='button';button.className='btn ghost answer-none';button.textContent='None';button.setAttribute('aria-label','Set '+FIELD_LABELS[id]+' to None');button.onclick=function(){if(el.value.trim()&&el.value.trim()!=='None'&&!confirm('Replace this note with None?'))return;el.value='None';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));};el.after(button);});
   document.getElementById('form').addEventListener('focusin',function(e){var el=e.target;if(el.matches('input[type=number]')&&el.value!==''){try{el.select();}catch(ignore){}}});
   restore();
