@@ -920,7 +920,6 @@
     if(state.review) h += '<div style="border:2px solid #b57800;padding:12px;margin:16px 0;color:#704800"><b>DRAFT - REVIEW BEFORE '+(topOnly?'USE':'PRODUCTION')+'</b><br>'+(pendingMessage(scope).match(/PENDING/g)||[]).length+' pending choices or quantities. Full review list is below.</div>';
     function sec(title, rows){ return rows ? '<h3>'+title+'</h3><table>'+rows+'</table>' : ''; }
     if(scope==='backup'){
-      h+='<p>Work item badges show the saved work scope, not photo counts. Photos and their separately recorded totals are included after these answers.</p>';
       document.querySelectorAll('#form > .card').forEach(function(card){
         var heading=card.querySelector('h2');if(!heading)return;
         var title=heading.textContent.trim(),rows='';
