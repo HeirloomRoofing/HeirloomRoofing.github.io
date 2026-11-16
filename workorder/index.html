@@ -309,6 +309,14 @@
   #form .item.compact-count-item .item-heading {padding-bottom:6px;}
   #form .item.compact-count-item .item-body {padding-top:6px;}
   #form .compact-count-item .size-options {margin-top:0;}
+  #form .item.measurement-item {padding:8px 10px;}
+  #form .item.measurement-item .item-heading {grid-template-columns:52px minmax(0,1fr) 68px;min-height:52px;padding:0;gap:8px;}
+  #form .item.measurement-item .item-heading .nm {font-size:16px;line-height:1.2;text-align:left;}
+  #form .item.measurement-item .item-heading > .step {grid-column:3;grid-row:1;justify-content:flex-end;}
+  #form .item.measurement-item .item-heading > .step input {width:68px;min-height:44px;font-size:16px;appearance:textfield;-moz-appearance:textfield;}
+  #form .item.measurement-item input::-webkit-inner-spin-button,#form .item.measurement-item input::-webkit-outer-spin-button {-webkit-appearance:none;margin:0;}
+  #form .item.measurement-item .item-body {border:0;margin:0;padding:0;gap:4px;}
+
   @media screen {
     #form .section-fields:has(.item) {background:#f1f5f9;border-radius:12px;margin-top:10px;padding:2px 10px 10px;}
     #form .group[data-gi] {border:0;padding:0;}
@@ -540,6 +548,10 @@
         row.classList.add('compact-count-item');
         body.querySelector('.item-unit').remove();body.querySelectorAll('.size-first > .item-field-label').forEach(function(label){label.remove();});
         var redundant=body.querySelector(':scope > .item-field-label');if(redundant&&redundant.textContent==='Quantity')redundant.remove();
+      }
+      if(['Linear feet','Roofing squares'].indexOf(it[1])>=0){
+        row.classList.add('measurement-item');
+        var measure=body.querySelector(':scope > .step');measure.querySelectorAll('button').forEach(function(button){button.remove();});head.appendChild(measure);
       }
       if(id==='4-0'){var units=body.querySelector('[data-item]');units.step='1';units.inputMode='numeric';body.querySelector('[data-notebtn]').textContent='+ Notes';}
       if(hasScopeQuantity(id)){var step=body.querySelector(':scope > .step'),wrap=document.createElement('div');wrap.dataset.scopeqty=id;wrap.style.cssText='display:flex;align-items:center;gap:8px;flex-wrap:wrap';wrap.innerHTML='<span class="yn"><button type="button" class="ynbtn" data-scopevalue="true">Yes</button><button type="button" class="ynbtn" data-scopevalue="false">No</button></span>';step.before(wrap);wrap.appendChild(step);}
