@@ -444,8 +444,7 @@
 <div><label class="f" for="tearoff">Approx. Tear-Off (Roofing squares)</label><input data-f="tearoff" id="tearoff" inputmode="decimal" max="100" min="0" step="any" type="number"/></div>
 <div><label class="f" for="install">Approx. Install (Roofing squares)</label><input data-f="install" id="install" inputmode="decimal" max="100" min="0" step="any" type="number"/></div>
 </div></div><div class="card"><h2>Work Items</h2><div id="workitems2"></div></div><div class="card">
-<h2>Additional Notes</h2>
-<textarea data-f="addnotes" id="addnotes" placeholder='Notes'></textarea>
+<textarea data-f="addnotes" id="addnotes" placeholder="Additional Notes" aria-label="Additional Notes" style="min-height:120px"></textarea>
 
 </div></div>
 <div id="output">
@@ -954,8 +953,8 @@
     function sec(title, rows){ return rows ? '<h3>'+title+'</h3><table>'+rows+'</table>' : ''; }
     if(scope==='backup'){
       document.querySelectorAll('#form > .card').forEach(function(card){
-        var heading=card.querySelector('h2');if(!heading)return;
-        var title=heading.textContent.trim(),rows='';
+        var heading=card.querySelector('h2');if(!heading&&!card.querySelector('#addnotes'))return;
+        var title=heading?heading.textContent.trim():'Additional Notes',rows='';
         card.querySelectorAll('[data-f]').forEach(function(el){var k=el.dataset.f,v=el.classList.contains('chips')?chipVal(k):el.type==='checkbox'?(el.checked?'Yes':''):el.value.trim();if(!v)return;rows+=rowKV(FIELD_LABELS[k]||(k==='gatena'?'No gate code needed':k),v);});
         h+=sec(title,rows);
         card.querySelectorAll('#workitems,#specialconditions,#workitems2').forEach(function(items){h+='<div class="secbar">'+esc(title)+'</div>'+itemRows(items.id);});
@@ -1358,7 +1357,7 @@
     ['pm','pmphone','jt','pmnotes','customer','phone','address','gate'].forEach(function(k){if(k==='gate'&&gateNA())return;if(!val(k)&&keys.indexOf(k)<0)keys.push(k);});
     return keys;
   }
-  ['pmnotes','otherinstr','addnotes'].forEach(function(id){var el=document.getElementById(id),button=document.createElement('button');button.type='button';button.className='btn ghost answer-none';button.textContent='None';button.setAttribute('aria-label','Set '+FIELD_LABELS[id]+' to None');button.onclick=function(){if(el.value.trim()&&el.value.trim()!=='None'&&!confirm('Replace this note with None?'))return;el.value='None';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));};el.after(button);});
+  ['pmnotes','otherinstr'].forEach(function(id){var el=document.getElementById(id),button=document.createElement('button');button.type='button';button.className='btn ghost answer-none';button.textContent='None';button.setAttribute('aria-label','Set '+FIELD_LABELS[id]+' to None');button.onclick=function(){if(el.value.trim()&&el.value.trim()!=='None'&&!confirm('Replace this note with None?'))return;el.value='None';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));};el.after(button);});
   document.getElementById('form').addEventListener('focusin',function(e){var el=e.target;if(el.matches('input[type=number]')&&el.value!==''){try{el.select();}catch(ignore){}}});
   restore();
   document.querySelectorAll('[data-sizeitem]').forEach(function(el){syncSizeUI(el.dataset.sizeitem);});
