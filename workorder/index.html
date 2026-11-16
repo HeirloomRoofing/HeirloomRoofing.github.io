@@ -275,6 +275,7 @@
   #form .section-tab h2,#form .section-tab::after {color:#fff;}
   #form .section-tab .section-count {color:#fff;opacity:.9;}
   #form .form-section {margin-top:0;}
+  #form .section-tab {scroll-margin-top:12px;}
   #form > .card:has(>.form-section) {padding:10px;}
   #form .section-fields {padding:8px 4px 2px;}
   #form > .no-print:has(> #genbtn2) {padding:14px;margin:12px 0 28px!important;background:#eaf4fb;border:1px solid #b7d7ee;border-radius:14px;}
@@ -1339,6 +1340,13 @@
     var contents=document.createElement('div');contents.className='section-fields';
     while(card.firstChild)contents.appendChild(card.firstChild);
     section.appendChild(tab);section.appendChild(contents);card.appendChild(section);
+    // Only a user opening this section scrolls it; closing or validation keeps its own behavior.
+    tab.addEventListener('click',function(event){
+      if(section.open||event.defaultPrevented)return;
+      requestAnimationFrame(function(){
+        if(section.open)tab.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+      });
+    });
   });
   function updateSectionCounts(){
     var sections=Array.from(document.querySelectorAll('#form .form-section')), counts=sections.map(function(){return 0;});
