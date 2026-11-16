@@ -258,26 +258,20 @@
   .saved-job h3 {margin:0 0 6px;color:var(--brand);font-size:18px;overflow-wrap:anywhere;}
   .saved-job p {margin:0 0 10px;font-size:13px;line-height:1.4;overflow-wrap:anywhere;}
 
-  /* Exact lower petal and inner vein extracted from the original Heirloom logo. */
+  /* Clear triangular disclosure marks; original controls and order are unchanged. */
   #form summary {list-style:none;}
   #form summary::-webkit-details-marker {display:none;}
-  #form .section-tab::after,#form .form-section[open]>.section-tab::after,
-  #form details.group > summary::after,#form details.group:not([open]) > summary::after,
-  #form .item-arrow::after,#form .item-details[open]>.item-heading .item-arrow::after,
-  #form details.area-photo > summary::after,#form .size-pick::after {
-    content:'';display:inline-block;flex:none;width:calc(11px * 2 / 3);height:calc(14px * 2 / 3);
-    background:url('/workorder/heirloom-leaf.svg') center/contain no-repeat;
-    vertical-align:middle;transform:none;transition:transform .15s;
-  }
-  #form details[open]>.section-tab::after,#form details.group[open]>summary::after,
-  #form .item-details[open]>.item-heading .item-arrow::after,
-  #form details.area-photo[open]>summary::after,#form .size-pick[aria-expanded="true"]::after {transform:rotate(180deg)!important;}
-  #form .item-arrow::after {margin-left:5px;width:calc(10px * 2 / 3);height:calc(13px * 2 / 3);}
+  #form details.area-photo > summary::after {content:'\25BE';position:absolute;left:0;top:50%;transform:translateY(-50%);font-size:16px;color:var(--brand);}
+  #form details.area-photo[open] > summary::after {content:'\25B4';}
   #form details.area-photo > summary {padding-left:22px;}
-  #form details.area-photo > summary::after {position:absolute;left:0;top:50%;margin-top:calc(-7px * 2 / 3);}
-  #form .size-pick::after {margin-left:8px;width:calc(10px * 2 / 3);height:calc(13px * 2 / 3);}
-  #form .size-pick[aria-expanded="true"]::after {background-color:white;border-radius:3px;}
-  #form select {background-image:url('/workorder/heirloom-leaf.svg');background-size:calc(11px * 2 / 3) calc(14px * 2 / 3);padding-right:36px;}
+  #form .size-pick::after {content:' \25BE';font-size:14px;}
+  #form .size-pick[aria-expanded="true"]::after {content:' \25B4';}
+  #form .quick-entry {display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  #form .quick-entry .btn {flex:1;min-height:44px;}
+  #form .entry-next {width:100%;margin:12px 0 4px;min-height:44px;}
+  #form .answer-none {min-height:44px;margin:4px 0 8px;padding:7px 14px;font-size:14px;}
+  #form .entry-target {outline:2px solid var(--brand);outline-offset:4px;scroll-margin:24px;}
+  #form .entry-status {font-size:12px;color:var(--muted);margin:6px 0 0;}
 </style>
 <link rel="stylesheet" href="/form-density.css?v=20261115a">
 </head>
@@ -292,6 +286,7 @@
 <div class="card">
 <div style="display:flex;justify-content:space-between;gap:12px"><button class="btn ghost" id="resetbtn" type="button">New Form</button><button class="btn ghost" id="savejobbtn" type="button">Save</button><button class="btn ghost" id="myjobsbtn" type="button">My Jobs</button></div><div class="hint">Complete this initial production checklist at the sale, while you are on the roof chalking it.</div>
 <button type="button" class="btn ghost" id="savefilesbtn" hidden style="margin-top:10px">Save Files</button><div id="manual-job-save-status" role="status" class="hint" hidden></div>
+<div class="quick-entry"><button type="button" class="btn ghost" id="next-unanswered">Next unanswered</button><button type="button" class="btn ghost" id="toggle-entry">Open all</button></div><p class="entry-status" id="entry-status" role="status">Initial checklist navigation</p>
 <div id="draftnotice" role="status" style="display:none;background:#fff4e5;color:#704800;padding:12px;border-radius:10px;margin-top:10px;white-space:pre-line;max-height:180px;overflow:auto"></div>
 </div><div class="card">
 <h2>Project Manager</h2>
@@ -1309,7 +1304,7 @@
   });
   function updateSectionCounts(){
     var sections=Array.from(document.querySelectorAll('#form .form-section')), counts=sections.map(function(){return 0;});
-    missingRequired('top').forEach(function(key){
+    initialEntryMissing().forEach(function(key){
       var el,n=1;if(key.indexOf('__wi')===0){var parts=key.slice(4).split(':');n=+parts[1];el=document.querySelector(':is(#workitems,#specialconditions) details.group[data-gi="'+parts[0]+'"]');}
       else el=document.querySelector('[data-f="'+key+'"]');
       var section=el&&el.closest('.form-section'),idx=sections.indexOf(section);if(idx>=0)counts[idx]+=n;
@@ -1320,6 +1315,42 @@
     sections.forEach(function(section,i){var badge=section.querySelector(':scope > summary .section-count');var initial=!!(section.compareDocumentPosition(document.getElementById('genbtn2'))&Node.DOCUMENT_POSITION_FOLLOWING);badge.textContent=section===photosCard.querySelector('.form-section')?(emptyPhotoFields?emptyPhotoFields+' left':'Ready'):initial?(counts[i]===0?'Ready':counts[i]+' left'):'Not needed for initial';badge.className='section-count'+(section===photosCard.querySelector('.form-section')?(emptyPhotoFields?' pending':' ready'):initial?(counts[i]?' pending':' ready'):'');});
   }
   ['input','change','click','toggle'].forEach(function(event){document.getElementById('form').addEventListener(event,function(){setTimeout(updateSectionCounts,0);},true);});
+  // Entry helpers only reveal/focus existing fields; no answers are inferred.
+  function revealEntry(el){
+    if(!el)return;
+    document.querySelectorAll('.entry-target').forEach(function(x){x.classList.remove('entry-target');});
+    for(var p=el;p&&p!==document.getElementById('form');p=p.parentElement){if(p.tagName==='DETAILS')p.open=true;}
+    el.classList.add('entry-target');
+    var focus=el.matches('input:not([type=file]),select,textarea,button')?el:el.querySelector('button,input:not([type=file]),select,textarea,summary');
+    if(focus)focus.focus({preventScroll:true});
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  function initialEntryMissing(){
+    var keys=missingRequired('top');
+    ['pm','pmphone','jt','pmnotes','customer','phone','address','gate'].forEach(function(k){if(k==='gate'&&gateNA())return;if(!val(k)&&keys.indexOf(k)<0)keys.push(k);});
+    return keys;
+  }
+  function nextInitialTargets(){
+    var targets=[];
+    initialEntryMissing().forEach(function(key){
+      if(key.indexOf('__wi')===0){var gi=+key.slice(4).split(':')[0];WORK[gi].items.forEach(function(it,ii){if(it[5])return;var st=state.items[gi+'-'+ii];if(!st||st.qty==null||(it[4]&&sizedMissing(st))){var node=document.querySelector('.item-details:has([data-notefor="'+gi+'-'+ii+'"])');if(node)targets.push(node);}});}
+      else{var node=document.querySelector('[data-f="'+key+'"]');if(node)targets.push(node);}
+    });
+    return targets.sort(function(a,b){return a===b?0:a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING?-1:1;});
+  }
+  document.getElementById('next-unanswered').onclick=function(){
+    var targets=nextInitialTargets();
+    if(targets.length){revealEntry(targets[0]);return;}
+    document.getElementById('entry-status').textContent='Initial answers are filled. Review your photos, then complete the checklist.';
+    revealEntry(photosCard.querySelector('.form-section'));
+  };
+  document.getElementById('toggle-entry').onclick=function(){var open=this.textContent==='Open all';document.querySelectorAll('#form details.form-section,#form details.group,#form details.item-details').forEach(function(el){el.open=open;});this.textContent=open?'Close all':'Open all';};
+  document.querySelectorAll('#form .form-section').forEach(function(section){
+    var sections=Array.from(document.querySelectorAll('#form .form-section')),index=sections.indexOf(section),next=sections[index+1];if(!next)return;
+    var button=document.createElement('button');button.type='button';button.className='btn ghost entry-next';button.textContent='Next: '+next.querySelector('h2').textContent;button.onclick=function(){revealEntry(next);};section.querySelector('.section-fields').appendChild(button);
+  });
+  ['pmnotes','otherinstr','addnotes'].forEach(function(id){var el=document.getElementById(id),button=document.createElement('button');button.type='button';button.className='btn ghost answer-none';button.textContent='None';button.setAttribute('aria-label','Set '+FIELD_LABELS[id]+' to None');button.onclick=function(){if(el.value.trim()&&el.value.trim()!=='None'&&!confirm('Replace this note with None?'))return;el.value='None';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));};el.after(button);});
+  document.getElementById('form').addEventListener('focusin',function(e){var el=e.target;if(el.matches('input[type=number]')&&el.value!==''){try{el.select();}catch(ignore){}}});
   restore();
   syncACWorkItem();
   ['4-5','4-6'].forEach(syncScopeQuantity);
