@@ -461,7 +461,7 @@
 </div><label class="f" for="flatcolor">Flat Roof Color</label><select data-f="flatcolor" id="flatcolor"><option value="">Choose a flat roof color</option><option>Buff</option><option>Grey Slate</option><option>Black</option><option>Heatherblend</option><option>Chestnut</option><option>Oak</option><option>Pine Green</option><option>Weatherwood</option><option>Red Blend</option><option>White</option><option>Bright White</option><option>Polyfresko (Highly Reflective White)</option><option>Tan</option><option>Gray</option><option>Match Original</option><option>Match New Shingles</option><option>Other</option><option>N/A - No Flat Roof</option><option>Not Included in This Job</option></select><div class="row2">
 <div><label class="f" for="tearoff">Approx. Tear-Off (Roofing squares)</label><input data-f="tearoff" id="tearoff" inputmode="decimal" max="100" min="0" step="any" type="number"/></div>
 <div><label class="f" for="install">Approx. Install (Roofing squares)</label><input data-f="install" id="install" inputmode="decimal" max="100" min="0" step="any" type="number"/></div>
-</div></div><div class="card"><h2>Work Items</h2><div id="workitems2"></div></div><div class="card">
+</div></div><div class="card"><h2>Work Items</h2><div id="workitems2"></div></div><div class="card"><h2>Closeout</h2><div id="closeout"></div></div><div class="card">
 <textarea data-f="addnotes" id="addnotes" placeholder="Additional Notes" aria-label="Additional Notes" style="min-height:120px"></textarea>
 
 </div></div>
@@ -520,7 +520,7 @@
     var det = document.createElement('div'); det.className='group'; det.setAttribute('data-gi',gi); det.open=true;
     var sum = document.createElement('h3');sum.className='group-heading';
     sum.innerHTML = '<span>'+g.g+'</span>';
-    det.appendChild(sum);
+    if(gi!==5)det.appendChild(sum);
     g.items.forEach(function(it,ii){
       if(it[5]) return;
       var id = gi+'-'+ii;
@@ -560,7 +560,7 @@
       det.appendChild(row);
     });
     var foot=document.createElement('div'); foot.className='count group-count'; foot.id='cnt-'+gi; det.appendChild(foot);
-    (gi===4?document.getElementById('specialconditions'):gi===0||gi===1||gi===5?wi2:wi).appendChild(det);
+    (gi===5?document.getElementById('closeout'):gi===4?document.getElementById('specialconditions'):gi===0||gi===1?wi2:wi).appendChild(det);
   });
 
   var photoDialog=document.createElement('dialog');photoDialog.className='photo-view';photoDialog.innerHTML='<form method="dialog"><button class="btn" style="padding:7px 16px">Close photo</button></form><img alt=""><p style="font-size:12px;color:#526474">Reference example for identification, not a photo of this job or an exact product specification.</p><a href="./visuals/photo-credits.html" target="_blank" rel="noopener" style="font-size:12px">Photo sources and credits</a>';document.body.appendChild(photoDialog);
@@ -996,7 +996,7 @@
         var title=heading?heading.textContent.trim():'Additional Notes',rows='';
         card.querySelectorAll('[data-f]').forEach(function(el){var k=el.dataset.f,v=el.classList.contains('chips')?chipVal(k):el.type==='checkbox'?(el.checked?'Yes':''):el.value.trim();if(!v)return;rows+=rowKV(FIELD_LABELS[k]||(k==='gatena'?'No gate code needed':k),v);});
         h+=sec(title,rows);
-        card.querySelectorAll('#workitems,#specialconditions,#workitems2').forEach(function(items){h+='<div class="secbar">'+esc(title)+'</div>'+itemRows(items.id);});
+        card.querySelectorAll('#workitems,#specialconditions,#workitems2,#closeout').forEach(function(items){h+='<div class="secbar">'+esc(title)+'</div>'+itemRows(items.id);});
       });
       if(state.review)h+='<h3>Pending Choices and Review Notes</h3><div style="white-space:pre-line">'+esc(pendingMessage(scope))+'</div>';
       return h;
@@ -1036,6 +1036,7 @@
     h += sec('Roof System Being Installed', rowKV('Roof System', val('roofsystem')) + rowKV('Job Type', val('jobtype')));
       h += sec('New Roof Details', rowKV('Malarkey Product', val('malarkey')) + rowKV('Tile Profile', val('tileprofile')) + rowKV('Stone-Coated Steel Profile', val('steelprofile')) + rowKV('Composite Product', val('compositeproduct')) + rowKV('Shingle Color', val('shinglecolor')) + rowKV('Drip Edge Color', val('dripedge')) + rowKV('Flat Roof Color', val('flatcolor')) + rowKV('Approx. Tear-Off (Roofing squares)', val('tearoff')) + rowKV('Approx. Install (Roofing squares)', val('install')));
       if(lowerItems) h += '<div class="secbar">Work Items</div>'+lowerItems;
+      h += '<div class="secbar">Closeout</div>'+itemRows('closeout');
     }
     if(!topOnly && val('addnotes')) h += '<h3>Additional Notes</h3><table><tr><td>'+esc(val('addnotes')).replace(/\n/g,'<br>')+'</td></tr></table>';
     if(state.review) h += '<h3>Pending Choices and Review Notes</h3><div style="white-space:pre-line;border:1px solid #b57800;padding:12px">'+esc(pendingMessage(scope))+'</div>';
@@ -1388,7 +1389,7 @@
   function updateSectionCounts(){
     var sections=Array.from(document.querySelectorAll('#form .form-section')), counts=sections.map(function(){return 0;});
     Array.from(new Set(initialEntryMissing().concat(missingRequired('all')))).forEach(function(key){
-      var el,n=1;if(key.indexOf('__wi')===0){var parts=key.slice(4).split(':');n=+parts[1];el=document.querySelector(':is(#workitems,#specialconditions,#workitems2) .group[data-gi="'+parts[0]+'"]');}
+      var el,n=1;if(key.indexOf('__wi')===0){var parts=key.slice(4).split(':');n=+parts[1];el=document.querySelector(':is(#workitems,#specialconditions,#workitems2,#closeout) .group[data-gi="'+parts[0]+'"]');}
       else el=document.querySelector('[data-f="'+key+'"]');
       var section=el&&el.closest('.form-section'),idx=sections.indexOf(section);if(idx>=0)counts[idx]+=n;
     });
