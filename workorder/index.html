@@ -304,6 +304,10 @@
   #form .item .item-heading .item-reference {grid-column:1;grid-row:1;}
   #form .item .item-heading .nm {grid-column:2;grid-row:1;}
   #form .item .item-heading .item-progress {grid-column:3;grid-row:1;}
+  #form .compact-count-item .nm > .unit {display:block;width:max-content;margin:4px auto 0;font-size:11px;line-height:16px;}
+  #form .item.compact-count-item .item-heading {padding-bottom:6px;}
+  #form .item.compact-count-item .item-body {padding-top:6px;}
+  #form .compact-count-item .size-options {margin-top:0;}
   @media screen {
     #form .section-fields:has(.item) {background:#f1f5f9;border-radius:12px;margin-top:10px;padding:2px 10px 10px;}
     #form .group[data-gi] {border:0;padding:0;}
@@ -531,6 +535,12 @@
       if(it[1]){var unit=document.createElement('p');unit.className='item-unit';unit.innerHTML='Unit: <span class="unit">'+it[1]+'</span>';body.prepend(unit);}
       var count=body.querySelector(':scope > .step,:scope > .yn');if(count){var label=document.createElement('label');label.className='item-field-label';label.textContent=it[8]==='yn'?'Scope required':'Quantity';var input=count.querySelector('input');if(input){input.id='qty-'+id;input.setAttribute('aria-label',wiName(gi,ii)+' quantity');label.htmlFor=input.id;}body.insertBefore(label,count);}
       var note=body.querySelector('textarea');if(note)note.setAttribute('aria-label',wiName(gi,ii)+' notes or measurements');
+      if(gi===2&&it[1]==='Each'){
+        row.classList.add('compact-count-item');
+        var each=body.querySelector('.item-unit .unit');head.querySelector('.nm').appendChild(each);
+        body.querySelector('.item-unit').remove();body.querySelectorAll('.size-first > .item-field-label').forEach(function(label){label.remove();});
+        var redundant=body.querySelector(':scope > .item-field-label');if(redundant&&redundant.textContent==='Quantity')redundant.remove();
+      }
       if(id==='4-0'){var units=body.querySelector('[data-item]');units.step='1';units.inputMode='numeric';body.querySelector('.item-field-label').textContent='Number of units';body.querySelector('[data-notebtn]').textContent='+ Notes';}
       if(hasScopeQuantity(id)){var step=body.querySelector(':scope > .step'),wrap=document.createElement('div');wrap.dataset.scopeqty=id;wrap.style.cssText='display:flex;align-items:center;gap:8px;flex-wrap:wrap';wrap.innerHTML='<span class="yn"><button type="button" class="ynbtn" data-scopevalue="true">Yes</button><button type="button" class="ynbtn" data-scopevalue="false">No</button></span>';step.before(wrap);wrap.appendChild(step);}
       body.insertAdjacentHTML('beforeend',assessmentUI(id));
