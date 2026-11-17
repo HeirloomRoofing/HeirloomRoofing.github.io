@@ -1057,7 +1057,7 @@
       + rowKV('3. A/C / Crane', val('accrane') + (val('acnotes')? ' - Notes: '+val('acnotes'):''))
       + rowKV('4. Fascia Replacement', val('fascia') + (val('fasciasize')? ' - Board Size: '+val('fasciasize'):''))
       + rowKV('5. Special Conditions', val('special')));
-    h += sec('Property Conditions', rowKV('Steep Pitch', val('pitch')) + rowKV('Stories / Roof Height', val('stories')) + rowKV('Limited Access', val('access')) + rowKV('Complex Roof Design', val('complex')) + rowKV('Special Equipment', val('equipment')) + rowKV('Occupied / Restricted', val('occupied')) + rowKV('Other / Special Instructions', val('otherinstr')));
+    h += sec('Property Conditions', rowKV('Steep Pitch', val('pitch')) + rowKV('Stories / Roof Height', val('stories')) + rowKV('Limited Access', val('access')) + rowKV('Complex Roof Design', val('complex')) + rowKV('Special Equipment', val('equipment')) + rowKV('Occupied / Restricted', val('occupied')) + rowKV('Extra Notes', val('otherinstr')));
     function itemRows(container){
       var out='';
       document.querySelectorAll('#'+container+' .group[data-gi]').forEach(function(group){
@@ -1114,7 +1114,7 @@
       var lines=[];
       g.items.forEach(function(it,ii){ if(it[5]) return; var st=state.items[gi+'-'+ii];
         if(st.qty==null || st.qty>0 || (st.note&&st.note.trim())) lines.push('- '+wiName(gi,ii)+(hasScopeQuantity(gi+'-'+ii)?': '+(scopeAnswer(st)===null?'PENDING':scopeAnswer(st)?'Yes':'No')+' - Quantity: '+(scopeAnswer(st)===false?0:st.qty==null?'PENDING':st.qty):it[8]==='yn'?(st.qty==null?': PENDING':(st.qty>0?': Yes':': No')):(st.qty==null?': PENDING quantity / scope':(st.qty>0?': '+st.qty+(it[1]?' '+it[1]:''):'')))+(it[6]==='multi'?sizeBreakdown(st,true):(st.size?' - '+st.size:''))+(st.soldate?' - reset scheduled '+st.soldate:'')+(st.note&&st.note.trim()?' ('+st.note.trim()+')':'')); });
-      if(lines.length){ L.push(g.g+':'); lines.forEach(function(x){L.push(x);}); }
+      if(lines.length){ if(!heading||heading.textContent.trim().toUpperCase()!==g.g.toUpperCase())L.push(g.g+':'); lines.forEach(function(x){L.push(x);}); }
     });
     if(val('addnotes')){ L.push(''); L.push('NOTES: '+val('addnotes')); }
     L.push(''); L.push('Any unexpected conditions or additional work must be reported to the PM before proceeding.');
@@ -1151,7 +1151,108 @@
   }
   document.getElementById('editbtn').addEventListener('click',function(){document.getElementById('reference-credits').style.display='';});
   document.getElementById('genbtn').addEventListener('click', function(){ generateOrder(); });
-  document.getElementById('genbtn2').addEventListener('click', async function(){if(this.disabled)return;this.disabled=true;document.getElementById('form').inert=true;try{var id=await saveCurrentJob();var miss=missingRequired('top');if(cameraBatch||photoBusy||batchPreparing||photoFailure||state.photoIds.length!==photoRecords.length)miss.push('__photoSave');if(miss.length){showReqErrors(miss,'top');return;}if(!id)throw Error('No job content was saved.');hideReqErrors();var status=document.getElementById('manual-job-save-status');status.hidden=false;status.textContent='Saved to My Jobs.';toast('Initial checklist saved to My Jobs');}catch(e){alert('Initial checklist was not completed. Your current form is kept open. '+e.message);}finally{this.disabled=false;document.getElementById('form').inert=false;}});
+  var initialNotesDialog=document.createElement('dialog');
+  initialNotesDialog.id='initial-notes-dialog';
+  initialNotesDialog.style.cssText='width:min(620px,calc(100% - 24px));max-height:90vh;overflow:auto;border:1px solid #b7d7ee;border-radius:14px;padding:18px;color:var(--ink);background:#fff';
+  initialNotesDialog.innerHTML='<h2 style="margin:0 0 10px">Initial Checklist Notes</h2><p id="initial-notes-status" role="status" style="font-size:14px;line-height:1.4"></p><label for="initial-notes-text" style="display:block;font-weight:700;margin-bottom:8px">Review, then copy into Roofr</label><textarea id="initial-notes-text" readonly style="width:100%;height:48vh;min-height:180px;padding:12px;font:14px/1.5 inherit;box-sizing:border-box;border:1px solid #b7d7ee;border-radius:8px"></textarea><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"><button id="copy-initial-notes" type="button" class="btn primary">Copy Notes</button><button id="save-initial-notes-image" type="button" class="btn ghost">Save Image</button><button id="close-initial-notes" type="button" class="btn ghost">Back to Checklist</button></div><p id="initial-notes-copy-status" role="status" style="font-size:13px"></p><div id="initial-notes-images"></div>';
+  document.body.append(initialNotesDialog);
+  function initialChecklistNotes(){
+    var missing=initialEntryMissing(),L=['HEIRLOOM ROOFING - INITIAL PRODUCTION CHECKLIST',missing.length?'DRAFT - INCOMPLETE: confirm all MISSING answers before production.':'Initial checklist answers recorded. Review before production.',''];
+    function field(label,value){L.push(label+': '+(String(value==null?'':value).trim()||'MISSING - not entered'));}
+    var cutoff=document.getElementById('genbtn2');
+    document.querySelectorAll('#form > .card').forEach(function(card){
+      if(!(card.compareDocumentPosition(cutoff)&Node.DOCUMENT_POSITION_FOLLOWING))return;
+      var heading=card.querySelector('h2');if(heading)L.push('',heading.textContent.trim().toUpperCase());
+      card.querySelectorAll('[data-f]').forEach(function(el){
+        var key=el.dataset.f;if(key==='gatena'||key==='currentsystemother'||key==='layersother')return;
+        if(el.closest('[hidden]'))return;
+        if((key==='deckqty'||key==='deckthick')&&(!val('decking')||val('decking')==='Solid Decking / No Decking Needed'))return;
+        if(key==='fasciasize'&&(!val('fascia')||val('fascia')==='None Expected'))return;
+        var label=FIELD_LABELS[key]||key,value;
+        if(key==='currentsystem')value=currentSystemVal();
+        else if(key==='gate')value=gateVal();
+        else if(key==='layers')value=layersVal();
+        else if(key==='decking')value=val('decking');
+        else value=val(key);
+        if((key==='acnotes'&&val('accrane')!=='Yes')||(key==='pmnotes'&&!value)) { if(key==='pmnotes')field(label,value); else if(value)field(label,value); return; }
+        field(label,value);
+
+      });
+      card.querySelectorAll('#workitems .group[data-gi],#specialconditions .group[data-gi]').forEach(function(group){
+        var gi=+group.dataset.gi,g=WORK[gi];if(g.removed)return;
+        if(!heading||heading.textContent.trim().toUpperCase()!==g.g.toUpperCase())L.push(g.g+':');
+        g.items.forEach(function(it,ii){
+          if(it[5])return;var id=gi+'-'+ii,st=state.items[id]||{},answer;
+          if(hasScopeQuantity(id))answer=(scopeAnswer(st)===null?'MISSING - scope not answered':scopeAnswer(st)?'Yes':'No')+'; Quantity: '+(scopeAnswer(st)===false?'0':st.qty==null?'MISSING':st.qty);
+          else if(it[8]==='yn')answer=st.qty==null?'MISSING - not answered':st.qty>0?'Yes':'No';
+          else answer=st.qty==null?'MISSING - quantity not entered':st.qty+(it[1]?' '+it[1]:'');
+          if(it[6]==='multi'){var breakdown=sizeBreakdown(st,true);if(breakdown)answer+='; '+breakdown; if(st.qty>0&&sizedMissing(st))answer+='; MISSING - size allocation';}
+          else if(st.size)answer+='; Size: '+st.size;
+          else if(it[4]&&st.qty>0)answer+='; MISSING - size';
+          if(st.soldate)answer+='; Reset scheduled: '+st.soldate;
+          L.push('- '+wiName(gi,ii)+': '+answer);
+          if(st.note&&st.note.trim())L.push('  Notes: '+st.note.trim());
+        });
+      });
+    });
+    if(state.review){L.push('','IMPORTED DRAFT / REVIEW',pendingMessage('top'));}
+    L.push('','Initial selling-visit checklist only. Not the final production work order.');
+    return L.join('\n');
+  }
+  function showInitialChecklistNotes(missing,saved){
+    document.getElementById('initial-notes-text').value=initialChecklistNotes();
+    document.getElementById('initial-notes-status').textContent=(saved?'Saved to My Jobs. ':'')+(missing.length?'Incomplete checklist. Missing answers are flagged in the notes; no answers have been guessed.':'Initial checklist saved. Review these notes before pasting into Roofr.');
+    document.getElementById('initial-notes-copy-status').textContent='';
+    document.getElementById('initial-notes-images').replaceChildren();
+    initialNotesDialog.showModal();
+  }
+  document.getElementById('close-initial-notes').onclick=function(){initialNotesDialog.close();};
+  document.getElementById('copy-initial-notes').onclick=async function(){
+    var text=document.getElementById('initial-notes-text');text.value=initialChecklistNotes();
+    var copied=false;try{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(text.value);copied=true;}}catch(ignore){}
+    if(!copied){text.focus();text.select();try{copied=document.execCommand('copy');}catch(ignore){}}
+    document.getElementById('initial-notes-copy-status').textContent=copied?'Notes copied. Paste them into Roofr.':'Copy unavailable. Select the notes above and copy them manually.';
+  };
+  function initialNotesImageCanvases(){
+    var text=initialChecklistNotes(),measure=document.createElement('canvas').getContext('2d'),lines=[],width=1080,height=1440,pad=60,lineHeight=44;
+    measure.font='30px Arial';
+    text.split('\n').forEach(function(paragraph){
+      if(!paragraph){lines.push('');return;}
+      var line='';
+      paragraph.split(/\s+/).forEach(function(word){
+        var candidate=line?line+' '+word:word;
+        if(measure.measureText(candidate).width<=width-pad*2){line=candidate;return;}
+        if(line){lines.push(line);line='';}
+        Array.from(word).forEach(function(character){if(measure.measureText(line+character).width>width-pad*2){lines.push(line);line='';}line+=character;});
+      });lines.push(line);
+    });
+    var pageLines=Math.floor((height-230)/lineHeight),canvases=[];
+    for(var from=0;from<lines.length;from+=pageLines){
+      var chunk=lines.slice(from,from+pageLines),pageHeight=Math.min(height,Math.max(480,230+chunk.length*lineHeight));var c=document.createElement('canvas');c.width=width;c.height=pageHeight;var ctx=c.getContext('2d');
+      ctx.fillStyle='#ffffff';ctx.fillRect(0,0,width,pageHeight);ctx.fillStyle='#0161a8';ctx.fillRect(0,0,width,105);ctx.fillStyle='#ffffff';ctx.font='bold 34px Arial';ctx.fillText('Heirloom Roofing | Checklist Notes',pad,65);
+      ctx.fillStyle='#1c2b36';ctx.font='30px Arial';var chunk=lines.slice(from,from+pageLines);
+      chunk.forEach(function(line,i){ctx.fillText(line,pad,160+i*lineHeight);});
+      ctx.fillStyle='#5a6b78';ctx.font='24px Arial';ctx.fillText('Page '+(canvases.length+1)+' of '+Math.ceil(lines.length/pageLines),pad,pageHeight-40);canvases.push(c);
+    }return canvases;
+  }
+  document.getElementById('save-initial-notes-image').onclick=async function(){
+    var button=this;button.disabled=true;
+    try{
+      var canvases=initialNotesImageCanvases(),files=[],box=document.getElementById('initial-notes-images');box.replaceChildren();
+      var tip=document.createElement('p');tip.textContent='Save each image below. On iPhone, touch and hold an image and choose Save to Photos, or use the share sheet if available. Notes continue across numbered images when needed.';tip.style.cssText='font-size:14px;line-height:1.4';box.append(tip);
+      for(var i=0;i<canvases.length;i++){
+        var blob=await new Promise(function(resolve){canvases[i].toBlob(resolve,'image/png');});if(!blob)throw Error('Image could not be created. Copy Notes is still available.');
+        var file=new File([blob],'Heirloom-Initial-Checklist-Notes-'+(i+1)+'.png',{type:'image/png'});files.push(file);
+        var img=document.createElement('img');img.src=canvases[i].toDataURL('image/png');img.alt='Checklist notes image '+(i+1)+' of '+canvases.length;img.style.cssText='display:block;width:100%;height:auto;margin:12px 0;border:1px solid #dbe6ee';box.append(img);
+        var download=document.createElement('a');download.href=img.src;download.download=file.name;download.textContent='Download image '+(i+1)+' of '+canvases.length;download.className='btn ghost';download.style.cssText='display:block;margin-bottom:16px;text-align:center';box.append(download);
+      }
+      document.getElementById('initial-notes-copy-status').textContent=files.length+' image'+(files.length===1?'':'s')+' ready. Choose where to save; nothing was uploaded.';
+      if(navigator.canShare&&navigator.canShare({files:files})){try{await navigator.share({files:files,title:'Initial Checklist Notes'});}catch(e){if(e.name!=='AbortError')document.getElementById('initial-notes-copy-status').textContent='Sharing unavailable. Use the images and download links below.';}}
+      box.scrollIntoView({block:'start',behavior:'smooth'});
+    }catch(e){document.getElementById('initial-notes-copy-status').textContent=e.message||'Image could not be created. Use Copy Notes.';}finally{button.disabled=false;}
+  };
+  document.getElementById('genbtn2').addEventListener('click', async function(){if(this.disabled)return;this.disabled=true;document.getElementById('form').inert=true;try{var id=await saveCurrentJob();var miss=initialEntryMissing();if(cameraBatch||photoBusy||batchPreparing||photoFailure||state.photoIds.length!==photoRecords.length)miss.push('__photoSave');if(miss.length)showReqErrors(miss,'top');else hideReqErrors();if(!id)throw Error('No job content was saved.');var status=document.getElementById('manual-job-save-status');status.hidden=false;status.textContent='Saved to My Jobs.';showInitialChecklistNotes(miss,!!id);}catch(e){alert('Initial checklist was not completed. Your current form is kept open. '+e.message);}finally{this.disabled=false;document.getElementById('form').inert=false;}});
+
   document.getElementById('editbtn').addEventListener('click', function(){
     document.getElementById('output').style.display='none';
     document.getElementById('form').style.display='block';
@@ -1365,7 +1466,7 @@
   function jpegOrientation(buffer){var v=new DataView(buffer);if(v.byteLength<4||v.getUint16(0)!==0xffd8)return 1;var offset=2;try{while(offset+4<v.byteLength){var marker=v.getUint16(offset);offset+=2;if(marker===0xffda||marker===0xffd9)break;var length=v.getUint16(offset);if(length<2||offset+length>v.byteLength)break;if(marker===0xffe1&&length>=16&&v.getUint32(offset+2)===0x45786966&&v.getUint16(offset+6)===0){var t=offset+8,little=v.getUint16(t)===0x4949;if(v.getUint16(t+2,little)!==42)return 1;var dir=t+v.getUint32(t+4,little),n=v.getUint16(dir,little);for(var i=0;i<n;i++){var entry=dir+2+i*12;if(v.getUint16(entry,little)===0x0112)return v.getUint16(entry+8,little);}return 1;}offset+=length;}}catch(e){return 0;}return 1;}
   function pngHasExif(bytes){var v=new DataView(bytes),u=new Uint8Array(bytes),offset=8;while(offset+12<=u.length){var n=v.getUint32(offset);if(offset+12+n>u.length)return true;if(String.fromCharCode.apply(null,u.slice(offset+4,offset+8))==='eXIf')return true;offset+=12+n;}return false;}
   function photoWithoutMetadata(bytes,jpeg){var v=new Uint8Array(bytes),parts=[];if(jpeg){parts.push(v.slice(0,2));var offset=2;while(offset+4<=v.length){var marker=(v[offset]<<8)|v[offset+1];if(marker===0xffda||marker===0xffd9){parts.push(v.slice(offset));return parts;}var length=(v[offset+2]<<8)|v[offset+3];if(length<2||offset+2+length>v.length)throw Error('Invalid JPEG data.');if(marker!==0xffe1&&marker!==0xffed&&marker!==0xfffe)parts.push(v.slice(offset,offset+2+length));offset+=2+length;}throw Error('Incomplete JPEG data.');}parts.push(v.slice(0,8));var offset=8,d=new DataView(bytes);while(offset+12<=v.length){var length=d.getUint32(offset),end=offset+12+length;if(end>v.length)throw Error('Invalid PNG data.');var type=String.fromCharCode.apply(null,v.slice(offset+4,offset+8));if(['eXIf','tEXt','zTXt','iTXt','tIME'].indexOf(type)<0)parts.push(v.slice(offset,end));offset=end;}return parts;}
-  async function prepareJobImage(file){if(!file.type.startsWith('image/')&&!/\.(heic|heif|jpe?g|png|webp)$/i.test(file.name))throw Error('Choose an image file.');var bytes=await file.arrayBuffer(),v=new Uint8Array(bytes),jpeg=v.length>3&&v[0]===255&&v[1]===216&&v[2]===255,png=v.length>8&&v[0]===137&&v[1]===80&&v[2]===78&&v[3]===71,u=URL.createObjectURL(file);try{var img=await new Promise(function(resolve,reject){var i=new Image();i.onload=function(){resolve(i);};i.onerror=function(){reject(Error('This photo format could not be opened. Choose an original JPEG or PNG copy.'));};i.src=u;});var width=img.naturalWidth,height=img.naturalHeight;if(!width||!height)throw Error('Photo dimensions could not be read.');if((png&&!pngHasExif(bytes))||(jpeg&&jpegOrientation(bytes)===1))return {blob:new Blob(photoWithoutMetadata(bytes,jpeg),{type:png?'image/png':'image/jpeg'}),width:width,height:height,mime:png?'image/png':'image/jpeg',fidelity:'original-image-data'};var c=document.createElement('canvas');c.width=width;c.height=height;var ctx=c.getContext('2d');if(!ctx)throw Error('Not enough memory to prepare this full-size photo.');ctx.drawImage(img,0,0);var blob=await new Promise(function(resolve){c.toBlob(resolve,'image/png');});if(!blob)throw Error('Full-size photo could not be prepared. Keep the original and try fewer photos.');return {blob:blob,width:width,height:height,mime:'image/png',fidelity:'native-resolution-png'};}finally{URL.revokeObjectURL(u);}}
+  async function prepareJobImage(file){if(!file.type.startsWith('image/')&&!/\.(heic|heif|jpe?g|png|webp)$/i.test(file.name))throw Error('Choose an image file.');var bytes=await file.arrayBuffer(),v=new Uint8Array(bytes),jpeg=v.length>3&&v[0]===255&&v[1]===216&&v[2]===255,png=v.length>8&&v[0]===137&&v[1]===80&&v[2]===78&&v[3]===71,u=URL.createObjectURL(file);try{var img=await new Promise(function(resolve,reject){var i=new Image();i.onload=function(){resolve(i);};i.onerror=function(){reject(Error('This photo format could not be opened. Choose an original JPEG or PNG copy.'));};i.src=u;});var width=img.naturalWidth,height=img.naturalHeight;if(!width||!height)throw Error('Photo dimensions could not be read.');if((png&&!pngHasExif(bytes))||(jpeg&&jpegOrientation(bytes)===1))return {blob:new Blob(photoWithoutMetadata(bytes,jpeg),{type:png?'image/png':'image/jpeg'}),width:width,height:height,mime:png?'image/png':'image/jpeg',fidelity:'original-image-data'};var chunk=lines.slice(from,from+pageLines),pageHeight=Math.min(height,Math.max(480,230+chunk.length*lineHeight));var c=document.createElement('canvas');c.width=width;c.height=pageHeight;var ctx=c.getContext('2d');if(!ctx)throw Error('Not enough memory to prepare this full-size photo.');ctx.drawImage(img,0,0);var blob=await new Promise(function(resolve){c.toBlob(resolve,'image/png');});if(!blob)throw Error('Full-size photo could not be prepared. Keep the original and try fewer photos.');return {blob:blob,width:width,height:height,mime:'image/png',fidelity:'native-resolution-png'};}finally{URL.revokeObjectURL(u);}}
   function currentPhotoJob(){return {customer:val('customer'),address:val('address')};}
   function samePhotoJob(){var j=currentPhotoJob();return !state.photoJob||(j.customer===state.photoJob.customer&&j.address===state.photoJob.address);}
   async function addJobPhotos(files,item,kind){if(photoBusy){alert('Wait for the current photos to finish saving.');return;}if(photoFailure){alert('Retry or exclude the previous unsaved photos first.');return;}photoBusy=true;var remaining=Array.from(files);photoMessage('Saving '+remaining.length+' photos...');try{await photoReady;if(photoFailure)throw Error('Resolve missing saved photos before adding more.');await openPhotoDB();while(remaining.length){var data=await prepareJobImage(remaining[0]);var record={id:(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2)),item:item,kind:kind,caption:'',blob:data.blob,width:data.width,height:data.height,mime:data.mime,fidelity:data.fidelity};await photoStore('readwrite',function(store){return store.put(record);});var old=state.photoIds.slice(),job=state.photoJob;state.photoIds.push(record.id);if(!state.photoJob)state.photoJob=currentPhotoJob();try{persistDraft();}catch(e){state.photoIds=old;state.photoJob=job;await photoStore('readwrite',function(store){return store.delete(record.id);});throw Error('Device draft storage is unavailable. Existing saved photos are safe. Free storage and retry.');}photoRecords.push(record);remaining.shift();renderJobPhotos();}photoMessage('');}catch(e){photoFailure={files:remaining,item:item,kind:kind};photoMessage('Not all selected photos were saved: '+e.message+' Existing saved photos and answers are unchanged.',true);}finally{photoBusy=false;if(!photoFailure)photoStatus.hidden=true;}}
