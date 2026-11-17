@@ -751,7 +751,7 @@
     var pick=e.target.closest('[data-picksize]');
     if(pick){var id=pick.dataset.picksize,z=pick.dataset.sz,st=state.items[id];if(!Object.prototype.hasOwnProperty.call(st.sizeqty,z))st.sizeqty[z]=null;syncSizeUI(id);sumSizes(id);var input=pick.parentElement.querySelector('input');input.focus();updateCounts();save();return;}
     var none=e.target.closest('[data-sizenone]');
-    if(none){var id=none.dataset.sizenone,st=state.items[id];if((st.qty>0||Object.keys(st.sizeqty).length)&&!confirm('Set this item to none needed and clear its size quantities?'))return;st.sizeqty={};st.qty=0;st.size='';syncSizeUI(id);updateCounts();save();return;}
+    if(none){var id=none.dataset.sizenone,st=state.items[id];if((st.qty>0||Object.keys(st.sizeqty).length)&&!confirm('Set this item to none needed and clear its size quantities?'))return;st.sizeqty={};st.qty=0;st.qtyAnswered=true;st.size='';syncSizeUI(id);updateCounts();save();return;}
     var sb = e.target.closest('.step button[data-sqd]');
     if(sb){
       var si=sb.parentElement.querySelector('input[data-sq]');
@@ -763,7 +763,7 @@
       var inp = b.parentElement.querySelector('input');
       var v = Math.max(0, Math.round(((parseFloat(inp.value)||0) + parseInt(b.getAttribute('data-d'),10))*100)/100);
       if(inp.dataset.item==='4-0')v=Math.floor(v);
-      inp.value = v; state.items[inp.getAttribute('data-item')].qty = v; if(hasScopeQuantity(inp.dataset.item))syncScopeQuantity(inp.dataset.item); updateCounts(); save(); return;
+      inp.value = v; state.items[inp.getAttribute('data-item')].qtyAnswered=true; state.items[inp.getAttribute('data-item')].qty = v; if(hasScopeQuantity(inp.dataset.item))syncScopeQuantity(inp.dataset.item); updateCounts(); save(); return;
     }
     var scopeButton=e.target.closest('[data-scopevalue]');if(scopeButton){var id=scopeButton.closest('[data-scopeqty]').dataset.scopeqty;state.items[id].scopeRequired=scopeButton.dataset.scopevalue==='true';syncScopeQuantity(id);updateCounts();save();return;}
     var yb = e.target.closest('.ynbtn');
@@ -785,7 +785,7 @@
       var z=sq.dataset.sz,v=sq.value.trim();st.sizeqty[z]=v===''?null:Math.max(0,parseInt(v,10)||0);sumSizes(sq.dataset.sq);updateCounts();save();return;
     }
     var inp = e.target.closest('input[data-item]');
-    if(inp){ var n=parseFloat(inp.value);if(inp.dataset.item==='4-0'&&inp.value.trim()!==''&&!isNaN(n)){n=Math.max(0,Math.floor(n));inp.value=n;} state.items[inp.getAttribute('data-item')].qty = (inp.value.trim()===''||isNaN(n))?null:Math.max(0,Math.round(n*100)/100); if(hasScopeQuantity(inp.dataset.item))syncScopeQuantity(inp.dataset.item); updateCounts(); save(); return; }
+    if(inp){ state.items[inp.dataset.item].qtyAnswered=inp.value.trim()!==''; var n=parseFloat(inp.value);if(inp.dataset.item==='4-0'&&inp.value.trim()!==''&&!isNaN(n)){n=Math.max(0,Math.floor(n));inp.value=n;} state.items[inp.getAttribute('data-item')].qty = (inp.value.trim()===''||isNaN(n))?null:Math.max(0,Math.round(n*100)/100); if(hasScopeQuantity(inp.dataset.item))syncScopeQuantity(inp.dataset.item); updateCounts(); save(); return; }
     var ta = e.target.closest('textarea[data-notefor]');
     if(ta){ state.items[ta.getAttribute('data-notefor')].note = ta.value; save(); }
   });
@@ -827,7 +827,7 @@
     Object.keys(d.items).forEach(function(k){
       if(!Object.prototype.hasOwnProperty.call(out.items,k))throw Error('Unknown work item: '+k);
       var x=d.items[k];if(!x||typeof x!=='object'||Array.isArray(x))throw Error('Invalid item: '+k);
-      Object.keys(x).forEach(function(a){if(['qty','note','size','sizeqty','soldate','observed','scopeRequired'].indexOf(a)<0)throw Error('Unexpected item field.');});
+      Object.keys(x).forEach(function(a){if(['qty','note','size','sizeqty','soldate','observed','scopeRequired','qtyAnswered','ynExplicit'].indexOf(a)<0)throw Error('Unexpected item field.');});
       if(x.qty!=null&&(typeof x.qty!=='number'||!Number.isFinite(x.qty)||x.qty<0||x.qty>100000))throw Error('Invalid quantity: '+k);
       if(x.note!=null&&(typeof x.note!=='string'||x.note.length>10000))throw Error('Invalid note: '+k);
       if(x.size!=null){ var xk=k.split('-'), xit=WORK[+xk[0]].items[+xk[1]]; if(typeof x.size!=='string'||!xit[4]||xit[4].indexOf(x.size)<0)throw Error('Invalid size: '+k); }
@@ -835,7 +835,9 @@
       if(x.soldate!=null&&(typeof x.soldate!=='string'||x.soldate.length>40))throw Error('Invalid solar date: '+k);
       if(x.observed!=null){if(typeof x.observed!=='object'||Array.isArray(x.observed)||Object.keys(x.observed).some(function(z){return ['potential','undamaged','painted'].indexOf(z)<0||typeof x.observed[z]!=='string'||x.observed[z].length>40;}))throw Error('Invalid observation: '+k);}
       if(x.scopeRequired!=null&&typeof x.scopeRequired!=='boolean')throw Error('Invalid yes/no answer.');
-      out.items[k]={scopeRequired:x.scopeRequired,observed:x.observed||{},qty:x.qty==null?null:x.qty,note:x.note||'',size:x.size||'',sizeqty:x.sizeqty||{},soldate:x.soldate||''};
+      if(x.qtyAnswered!=null&&typeof x.qtyAnswered!=='boolean')throw Error('Invalid quantity answer flag.');
+      if(x.ynExplicit!=null&&typeof x.ynExplicit!=='boolean')throw Error('Invalid explicit yes/no flag.');
+      out.items[k]={qtyAnswered:x.qtyAnswered===true,ynExplicit:x.ynExplicit===true,scopeRequired:x.scopeRequired,observed:x.observed||{},qty:x.qty==null?null:x.qty,note:x.note||'',size:x.size||'',sizeqty:x.sizeqty||{},soldate:x.soldate||''};
     });
     if(d.review){
       if(typeof d.review!=='object'||Array.isArray(d.review))throw Error('Invalid review metadata.');
@@ -1156,8 +1158,17 @@
   initialNotesDialog.style.cssText='width:min(620px,calc(100% - 24px));max-height:90vh;overflow:auto;border:1px solid #b7d7ee;border-radius:14px;padding:18px;color:var(--ink);background:#fff';
   initialNotesDialog.innerHTML='<h2 style="margin:0 0 10px">Initial Checklist Notes</h2><p id="initial-notes-status" role="status" style="font-size:14px;line-height:1.4"></p><label for="initial-notes-text" style="display:block;font-weight:700;margin-bottom:8px">Review, then copy into Roofr</label><textarea id="initial-notes-text" readonly style="width:100%;height:48vh;min-height:180px;padding:12px;font:14px/1.5 inherit;box-sizing:border-box;border:1px solid #b7d7ee;border-radius:8px"></textarea><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"><button id="copy-initial-notes" type="button" class="btn primary">Copy Notes</button><button id="save-initial-notes-image" type="button" class="btn ghost">Save Image</button><button id="close-initial-notes" type="button" class="btn ghost">Back to Checklist</button></div><p id="initial-notes-copy-status" role="status" style="font-size:13px"></p><div id="initial-notes-images"></div>';
   document.body.append(initialNotesDialog);
+  function initialItemAnswered(id){
+    var st=state.items[id]||{};
+    return st.qty>0 || (st.qty!=null && (st.qtyAnswered===true || st.ynExplicit===true || typeof st.scopeRequired==='boolean' || Object.keys(st.sizeqty||{}).length>0));
+  }
+  function initialNotesMissing(){
+    var missing=initialEntryMissing();
+    document.querySelectorAll('#workitems .group[data-gi],#specialconditions .group[data-gi]').forEach(function(group){var gi=+group.dataset.gi;WORK[gi].items.forEach(function(it,ii){if(!it[5]&&!initialItemAnswered(gi+'-'+ii))missing.push('__initialAnswer:'+gi+'-'+ii);});});
+    return missing;
+  }
   function initialChecklistNotes(){
-    var missing=initialEntryMissing(),L=['HEIRLOOM ROOFING - INITIAL PRODUCTION CHECKLIST',missing.length?'DRAFT - INCOMPLETE: confirm all MISSING answers before production.':'Initial checklist answers recorded. Review before production.',''];
+    var missing=initialNotesMissing(),L=['HEIRLOOM ROOFING - INITIAL PRODUCTION CHECKLIST',missing.length?'DRAFT - INCOMPLETE: confirm all MISSING answers before production.':'Initial checklist answers recorded. Review before production.',''];
     function field(label,value){L.push(label+': '+(String(value==null?'':value).trim()||'MISSING - not entered'));}
     var cutoff=document.getElementById('genbtn2');
     document.querySelectorAll('#form > .card').forEach(function(card){
@@ -1183,7 +1194,8 @@
         if(!heading||heading.textContent.trim().toUpperCase()!==g.g.toUpperCase())L.push(g.g+':');
         g.items.forEach(function(it,ii){
           if(it[5])return;var id=gi+'-'+ii,st=state.items[id]||{},answer;
-          if(hasScopeQuantity(id))answer=(scopeAnswer(st)===null?'MISSING - scope not answered':scopeAnswer(st)?'Yes':'No')+'; Quantity: '+(scopeAnswer(st)===false?'0':st.qty==null?'MISSING':st.qty);
+          if(!initialItemAnswered(id))answer='MISSING - not explicitly answered';
+          else if(hasScopeQuantity(id))answer=(scopeAnswer(st)===null?'MISSING - scope not answered':scopeAnswer(st)?'Yes':'No')+'; Quantity: '+(scopeAnswer(st)===false?'0':st.qty==null?'MISSING':st.qty);
           else if(it[8]==='yn')answer=st.qty==null?'MISSING - not answered':st.qty>0?'Yes':'No';
           else answer=st.qty==null?'MISSING - quantity not entered':st.qty+(it[1]?' '+it[1]:'');
           if(it[6]==='multi'){var breakdown=sizeBreakdown(st,true);if(breakdown)answer+='; '+breakdown; if(st.qty>0&&sizedMissing(st))answer+='; MISSING - size allocation';}
@@ -1251,7 +1263,7 @@
       box.scrollIntoView({block:'start',behavior:'smooth'});
     }catch(e){document.getElementById('initial-notes-copy-status').textContent=e.message||'Image could not be created. Use Copy Notes.';}finally{button.disabled=false;}
   };
-  document.getElementById('genbtn2').addEventListener('click', async function(){if(this.disabled)return;this.disabled=true;document.getElementById('form').inert=true;try{var id=await saveCurrentJob();var miss=initialEntryMissing();if(cameraBatch||photoBusy||batchPreparing||photoFailure||state.photoIds.length!==photoRecords.length)miss.push('__photoSave');if(miss.length)showReqErrors(miss,'top');else hideReqErrors();if(!id)throw Error('No job content was saved.');var status=document.getElementById('manual-job-save-status');status.hidden=false;status.textContent='Saved to My Jobs.';showInitialChecklistNotes(miss,!!id);}catch(e){alert('Initial checklist was not completed. Your current form is kept open. '+e.message);}finally{this.disabled=false;document.getElementById('form').inert=false;}});
+  document.getElementById('genbtn2').addEventListener('click', async function(){if(this.disabled)return;this.disabled=true;document.getElementById('form').inert=true;try{var id=await saveCurrentJob();var miss=initialNotesMissing();if(cameraBatch||photoBusy||batchPreparing||photoFailure||state.photoIds.length!==photoRecords.length)miss.push('__photoSave');var formMiss=initialEntryMissing();if(formMiss.length)showReqErrors(formMiss,'top');else hideReqErrors();if(!id)throw Error('No job content was saved.');var status=document.getElementById('manual-job-save-status');status.hidden=false;status.textContent='Saved to My Jobs.';showInitialChecklistNotes(miss,!!id);}catch(e){alert('Initial checklist was not completed. Your current form is kept open. '+e.message);}finally{this.disabled=false;document.getElementById('form').inert=false;}});
 
   document.getElementById('editbtn').addEventListener('click', function(){
     document.getElementById('output').style.display='none';
