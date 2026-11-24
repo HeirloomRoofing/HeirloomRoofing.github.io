@@ -40,6 +40,31 @@
   footer { margin-top:20px; text-align:center; color:var(--muted); font-size:12px; font-weight:500; }
 </style>
 <style>#ccabtn:hover, #ccabtn:focus, #ccabtn:active { color:var(--brand) !important; background:#f0f7fc !important; } @media (hover:none){ #ccabtn, #ccabtn:hover, #ccabtn:active { color:var(--brand) !important; background:#f0f7fc !important; } }.shareback select { width:100%; padding:12px 14px; font-size:16px; font-family:inherit; border:1.5px solid #cfd9e0; border-radius:12px; background:#fbfaf7; color:var(--ink); }</style><link rel="stylesheet" href="/form-density.css?v=20261116-copy">
+<style id="fitlayout">
+main{position:relative;z-index:1}
+.band{padding:10px 20px 34px!important}
+.band>img:not(.face){width:112px!important;height:56px!important;object-fit:contain}
+main{margin-top:-26px!important;padding:0 16px 8px!important}
+.cardbox{padding:12px 14px!important;border-radius:20px!important}
+h1{font-size:24px!important}.role{font-size:12px!important;margin-top:2px!important;line-height:1.35}
+.actions{gap:7px!important;margin-top:9px!important}
+.actions a.btn,a.sharebtn{border-radius:11px!important}
+.actions a.btn.b-web{font-size:21px!important;padding:14px 10px!important;background:var(--brand)!important;color:#fff!important;box-shadow:0 8px 20px rgba(1,97,168,.28);letter-spacing:.2px}
+.actions a.btn.b-text{font-size:17px!important;padding:10px!important}
+.actions a.btn.b-call,.actions a.btn.b-email{font-size:15px!important;padding:9px 10px!important}
+.actions a.btn.b-save{font-size:13px!important;padding:7px 10px!important}
+.actions a.btn.b-book{font-size:15px!important;padding:10px!important;background:var(--brand)!important;color:#fff!important}
+a.prooflink,a.prooflink:hover{background:#fff!important;color:#0161A8!important;border:1.5px solid #0161A8!important}
+.proof{margin-top:7px!important}
+a.prooflink{padding:8px 10px!important;margin-top:7px!important;font-size:14px!important;border-radius:12px!important}
+a.prooflink small{display:none!important}
+.ccawrap{margin-top:7px;text-align:center}
+.ccawrap #ccabtn{display:block;margin-top:0!important;padding:10px!important;font-size:15px!important;border-radius:11px!important}
+.ccawrap #ccapanel{margin-top:8px}
+footer{font-size:10px!important;padding:6px 0 0!important;white-space:nowrap;text-align:center}
+body{padding-bottom:78px!important;min-height:0!important}
+.band>img.face{position:absolute!important;top:10px!important;right:18px!important;width:50px!important;height:50px!important;border-radius:50%;border:2px solid #fff;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+</style>
 </head>
 <body>
 <div class="band">
@@ -50,12 +75,27 @@
     <h1>Josh Henderson</h1>
     <div class="role">Heirloom Roofing LLC, licensed Arizona contractor, ROC 366805</div>
     <div class="actions">
-      <a class="btn primary" href="#" id="savevcf">Save Contact</a>
-      <a class="btn" href="sms:+16232133768">Text</a>
-      <a class="btn" href="tel:+16232133768">Call</a>
-      <a class="btn" href="mailto:josh@heirloomroofing.com">Email</a>
-      <a class="btn" href="https://heirloomroofing.com">Website</a>
-<a class="btn" id="ccabtn" style="grid-column:span 2; background:#f0f7fc;" href="#" role="button" aria-expanded="false" aria-controls="ccapanel">Claim communication approval</a>
+      <a class="btn b-web" style="grid-column:span 2;" href="https://heirloomroofing.com">Website</a>
+      <a class="btn b-text" style="grid-column:span 2;" href="sms:+16232133768">Text</a>
+      <a class="btn b-call" href="tel:+16232133768">Call</a>
+      <a class="btn b-email" href="mailto:josh@heirloomroofing.com">Email</a>
+      <a class="btn b-save" style="grid-column:span 2;" href="#" id="savevcf">Save Contact</a>
+    </div>
+    
+
+    </div>
+    <div class="proof">
+      <a class="prooflink" href="https://azroc.my.site.com/AZRoc/s/contractor-search?licenseId=a0ocs00000P3SnlAAF">
+        Verify License - ROC 366805 &#8599;
+        <small>Heirloom Roofing LLC (CR-42 Roofing) - AZ Registrar of Contractors</small>
+      </a>
+      <a class="prooflink" href="https://heirloomroofing.github.io/kit/company.html" style="margin-top:10px; background:var(--brand); border:1.5px solid var(--brand); color:#fff; font-size:17px; padding:17px 12px;">
+        About Heirloom Roofing - License &amp; Company Info
+        <small style="color:#dbe6f0;">AZ ROC 366805 - license, bond and insurance details</small>
+      </a>
+    </div>
+  </div>
+  <div class="ccawrap"><a class="btn" id="ccabtn" style="grid-column:span 2; background:#f0f7fc;" href="#" role="button" aria-expanded="false" aria-controls="ccapanel">Claim communication approval</a>
       <div id="ccapanel" class="shareback" style="grid-column:span 2; display:none; text-align:left; border:1.5px solid #e3e8ec; border-radius:12px; padding:4px 14px 16px;">
         <p style="font-size:13px; color:var(--muted); margin:12px 0 0; line-height:1.45;">Pick your insurance carrier. If your carrier has a claims email, this opens an email to them, already written, that lets Josh receive your claim emails and talk with them about your roof claim - you review it and tap send. If not, it gives you the same text to send your adjuster yourself.</p>
         <label for="ccacarrier">Your insurance carrier</label>
@@ -73,32 +113,7 @@
         <div id="ccaerr" style="font-size:13px; color:#b3261e; font-weight:700; margin-top:8px; min-height:16px;"></div>
         <a class="btn sharebtn" id="ccasend" href="#" role="button" style="margin-top:10px;">Open email to send</a>
         <a class="btn" id="ccacopy" href="#" role="button" style="margin-top:10px; background:#fff;">Copy email text instead</a>
-      </div>
-
-    </div>
-    <div class="share" style="text-align:left; border-top:1px solid #e3e8ec; margin-top:18px; padding-top:16px;">
-      <div class="sharetitle" style="text-align:center;">Share your contact with Josh</div>
-      <div class="shareback">
-        <label for="hname">Your name</label>
-        <input id="hname" type="text" placeholder="First and last name" autocomplete="name">
-        <label for="hcell">Your cell number</label>
-        <input id="hcell" type="tel" placeholder="So Josh can save you back" autocomplete="tel">
-      </div>
-      <a class="btn sharebtn" id="sharebackbtn" href="#" style="margin-top:12px;">Text Josh my contact</a>
-    </div>
-
-    </div>
-    <div class="proof">
-      <a class="prooflink" href="https://azroc.my.site.com/AZRoc/s/contractor-search?licenseId=a0ocs00000P3SnlAAF">
-        Verify License - ROC 366805 &#8599;
-        <small>Heirloom Roofing LLC (CR-42 Roofing) - AZ Registrar of Contractors</small>
-      </a>
-      <a class="prooflink" href="https://heirloomroofing.github.io/kit/company.html" style="margin-top:10px; background:var(--brand); border:1.5px solid var(--brand); color:#fff; font-size:17px; padding:17px 12px;">
-        About Heirloom Roofing - License &amp; Company Info
-        <small style="color:#dbe6f0;">AZ ROC 366805 - license, bond and insurance details</small>
-      </a>
-    </div>
-  </div>
+      </div></div>
   <footer>Heirloom Roofing LLC - 4700 E Thomas Rd, Suite 104, Phoenix, AZ 85018</footer>
 </main>
 <script>
@@ -122,17 +137,7 @@ document.getElementById('savevcf').addEventListener('click', function(ev){
   document.body.appendChild(a); a.click();
   setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
 });
-(function(){
-  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  function smsHref(body){ return 'sms:+16232133768' + (isIOS ? '?&body=' : '?body=') + encodeURIComponent(body); }
-  document.getElementById('sharebackbtn').addEventListener('click', function(ev){
-    var n = document.getElementById('hname').value.trim();
-    var c = document.getElementById('hcell').value.trim();
-    if (!n) { ev.preventDefault(); alert('Please type your name so Josh knows who it is.'); return; }
-    var body = 'Hi Josh, this is ' + n + (c ? ' - my cell is ' + c : '') + '. You just shared your Heirloom Roofing contact with me about my roof.';
-    this.href = smsHref(body);
-  });
-})();
+
 </script>
 <style>body{background:#0161A8 !important;padding-bottom:max(80px,calc(env(safe-area-inset-bottom, 0px) + 66px)) !important} footer{color:rgba(255,255,255,.85) !important} .actions a.btn, a.sharebtn, #ccabtn{position:relative} .actions a.btn::after, a.sharebtn::after{content:" \203A";position:absolute;right:14px;top:50%;transform:translateY(-50%);opacity:.55} #ccabtn::after{content:" \25B8";position:absolute;right:14px;top:50%;transform:translateY(-50%);opacity:.55} #ccabtn[aria-expanded="true"]::after{content:" \25BE"} a[href="/kit/company.html"]{background:#fff !important;color:#0161A8 !important;border:1.5px solid #0161A8 !important;border-radius:12px;padding:14px 10px;display:block;text-align:center;font-weight:700;text-decoration:none;} a[href="/kit/company.html"] small{color:#5b6670 !important;} @media (hover:none){ a.prooflink, a.prooflink:hover{ background:#fff !important; color:#0161A8 !important; } a.prooflink small{ color:#5b6670 !important; } }</style><script>
 (function(){
